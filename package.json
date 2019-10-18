@@ -1,0 +1,20 @@
+{
+  "name": "drafttocode",
+  "version": "0.5.0",
+  "description": "Webprogramm zur Erstellung von Struktogrammen / PAP sowie zur Umwandlung dessen in Code (Python, PHP, Javascript)",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.hrz.tu-chemnitz.de:ddi-tudresden/ovk-informatik/drafttocode.git"
+  },
+  "keywords": [],
+  "author": "Klaus Ramm",
+  "license": "MIT",
+  "devDependencies": {
+    "webpack": "^4.41.1",
+    "webpack-cli": "^3.3.9"
+  }
+}
