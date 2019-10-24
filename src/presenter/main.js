@@ -391,4 +391,24 @@ export class Presenter {
         // automatic set focus on the input
         elem.getElementsByTagName('input')[0].select();
     }
+
+
+    /**
+     * Read input from a JSON file and replace the current model
+     */
+    readFile(event) {
+        // create a FileReader instance
+        const reader = new FileReader();
+        // read file and parse JSON, then update model
+        reader.onload = (event) => {
+            const newModel = JSON.parse(event.target.result);
+            this.model.setTree(newModel);
+            this.renderAllViews();
+            this.updateBrowserStore();
+            // close the modal
+            document.getElementById('IEModal').classList.remove('active');
+        }
+        // start the reading process
+        reader.readAsText(event.target.files[0]);
+    }
 }

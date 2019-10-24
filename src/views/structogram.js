@@ -101,7 +101,9 @@ export class Structogram {
         sizeIncrease.appendChild(document.createTextNode('+'));
 
         sizeButtons.appendChild(sizeText);
+        sizeButtons.appendChild(document.createTextNode(' '));
         sizeButtons.appendChild(sizeDecrease);
+        sizeButtons.appendChild(document.createTextNode(' '));
         sizeButtons.appendChild(sizeIncrease);
         document.getElementById('optionButtons').appendChild(sizeButtons);
     }

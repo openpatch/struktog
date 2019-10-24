@@ -13,6 +13,7 @@ import { model } from './model/main';
 import { Presenter } from './presenter/main';
 import { Structogram } from './views/structogram';
 import { CodeView } from './views/code';
+import { ImportExport } from './views/importExport';
 
 
 window.onload = function() {
@@ -26,6 +27,8 @@ window.onload = function() {
     presenter.addView(structogram);
     const code = new CodeView(presenter, document.getElementById("editorDisplay"));
     presenter.addView(code);
+    const importExport = new ImportExport(presenter, document.getElementById('Export'));
+    presenter.addView(importExport);
 
     // reset button must be last defined
     let resetButtonDiv = document.createElement('div');
