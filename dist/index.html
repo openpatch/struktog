@@ -22,15 +22,22 @@
                         </div>
                     </section>
                     <section class="navbar-section">
-                        <p>
-                            <span>
-                                &#169; 2019 Klaus Ramm (
-                            </span>
-                            <a href="license.html">MIT License</a>
-                            <span>
-                                )
-                            </span>
-                        </p>
+                        <div class="columns">
+                            <div class="column col-12 text-right">
+                                <span>
+                                    &#169; 2019 Klaus Ramm
+                                </span>
+                            </div>
+                            <div class="column col-12 text-right">
+                                <span>
+                                    (
+                                </span>
+                                <a href="license.html">MIT License</a>
+                                <span>
+                                    )
+                                </span>
+                            </div>
+                        </div>
                     </section>
                 </div>
             </div>
@@ -42,10 +49,6 @@
                     <div class="column col-6 col-md-12 pt-2">
 
                     </div>
-                    <!-- Option button row -->
-                    <div class="column col-auto">
-                        <button id="ToggleSourcecode" class="btn" onclick="alterSourcecodeDisplay(this.id);" value="Quellcode" />
-                    </div>
                     <div class="column col-auto elementButtonColumns">
                         <button class="btn" onclick="document.getElementById('IEModal').classList.add('active');">
                             Import / Export
@@ -53,23 +56,7 @@
                     </div>
                 </div>
                 <div id="editorDisplay" class="columns">
-                    <!-- Transform to code -->
-                    <div class="column col-3 col-md-12 col-ml-auto">
-                        <div id='SourcecodeDisplay' class="columns d-hide">
-                            <div class="column col-10 col-mx-auto">
-                                <div>
-                                    <span>Übersetzen in:</span>
-                                </div>
-                                <div class="form-group">
-                                    <select id="SourcecodeSelect" class="form-select" onchange="startTransforming(this.value);">
-                                        <option value="--">--</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div id="Sourcecode" class="column col-12 lowerPadding">
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Container for views -->
                 </div>
             </div>
             <!-- Popup modal for import and export -->

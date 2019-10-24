@@ -7,6 +7,13 @@ class Model {
                        }) {
         this.tree = tree;
         this.presenter = null;
+
+        // check the web storage for old data
+        if (typeof(Storage) !== "undefined") {
+            if ('tree' in localStorage) {
+                this.setTree(JSON.parse(localStorage.tree));
+            }
+        }
     }
 
 

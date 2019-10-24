@@ -12,15 +12,7 @@
 import { model } from './model/main';
 import { Presenter } from './presenter/main';
 import { Structogram } from './views/structogram';
-
-
-// check the web storage for old data
-if (typeof(Storage) !== "undefined") {
-    if ('tree' in localStorage) {
-        model.setTree(JSON.parse(localStorage.tree));
-        // TODO: model.displaySourcecode = JSON.parse(localStorage.displaySourcecode);
-    }
-}
+import { CodeView } from './views/code';
 
 
 window.onload = function() {
@@ -32,5 +24,19 @@ window.onload = function() {
     // create our view objects
     const structogram = new Structogram(presenter, document.getElementById("editorDisplay"));
     presenter.addView(structogram);
+    const code = new CodeView(presenter, document.getElementById("editorDisplay"));
+    presenter.addView(code);
+
+    // reset button must be last defined
+    let resetButtonDiv = document.createElement('div');
+    resetButtonDiv.classList.add('column', 'col-mr-auto');
+    let resetButton = document.createElement('button');
+    resetButton.classList.add('btn', 'float-right');
+    resetButton.addEventListener('click', () => presenter.resetModel());
+    resetButton.appendChild(document.createTextNode('Reset'));
+
+    resetButtonDiv.appendChild(resetButton);
+    document.getElementById('optionButtons').appendChild(resetButtonDiv);
+
     presenter.init();
 }

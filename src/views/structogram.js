@@ -104,17 +104,6 @@ export class Structogram {
         sizeButtons.appendChild(sizeDecrease);
         sizeButtons.appendChild(sizeIncrease);
         document.getElementById('optionButtons').appendChild(sizeButtons);
-
-        // TODO must be global defined somewhere
-        let resetButtonDiv = document.createElement('div');
-        resetButtonDiv.classList.add('column', 'col-mr-auto');
-        let resetButton = document.createElement('button');
-        resetButton.classList.add('btn', 'float-right');
-        resetButton.addEventListener('click', () => this.presenter.resetModel());
-        resetButton.appendChild(document.createTextNode('Reset'));
-
-        resetButtonDiv.appendChild(resetButton);
-        document.getElementById('optionButtons').appendChild(resetButtonDiv);
     }
 
     createButton(button) {
@@ -756,4 +745,7 @@ export class Structogram {
             }
         }
     }
+
+    displaySourcecode(buttonId) {}
+    setLang() {}
 }

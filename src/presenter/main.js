@@ -7,6 +7,7 @@ export class Presenter {
         this.views = [];
         this.moveId = null;
         this.nextInsertElement = null;
+        this.displaySourcecode = false;
     }
 
 
@@ -35,6 +36,16 @@ export class Presenter {
     }
 
 
+    setSourcecodeDisplay(state) {
+        this.displaySourcecode = state;
+    }
+
+
+    getSourcecodeDisplay() {
+        return this.displaySourcecode
+    }
+
+
     /**
      * Update the model stored in the browser store
      */
@@ -43,7 +54,7 @@ export class Presenter {
         if (typeof(Storage) !== "undefined") {
             // update the model as stringified JSON data
             localStorage.tree = JSON.stringify(this.model.getTree());
-            //localStorage.displaySourcecode = JSON.stringify(model.displaySourcecode);
+            localStorage.displaySourcecode = this.displaySourcecode;
         }
     }
 
@@ -67,6 +78,37 @@ export class Presenter {
 
     init() {
         this.renderAllViews();
+    }
+
+
+    /**
+     * Start the tranformation of the model tree to sourcecode
+     *
+     * @param   lang   programming language to which the translation happens
+     */
+    startTransforming(event) {
+        for (const view of this.views) {
+            view.setLang(event.target.value);
+        }
+        this.renderAllViews();
+    }
+
+
+    /**
+     * Toggle the rendering of sourcecode
+     *
+     * @param   buttonId   id of the sourcecode display button
+     */
+    alterSourcecodeDisplay(buttonId) {
+        if (this.displaySourcecode) {
+            this.displaySourcecode = false;
+        } else {
+            this.displaySourcecode = true;
+        }
+        this.updateBrowserStore();
+        for (const view of this.views) {
+            view.displaySourcecode(buttonId.target.id);
+        }
     }
 
 
