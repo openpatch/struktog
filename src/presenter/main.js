@@ -117,7 +117,7 @@ export class Presenter {
      *
      * @param   buttonId   id of the selected button
      */
-    insertNode(id) {
+    insertNode(id, event) {
         switch (id) {
         case 'InputButton':
             this.nextInsertElement = {'id': guidGenerator(),
@@ -244,6 +244,10 @@ export class Presenter {
                                                }
                                      };
             break;
+        }
+        if (event.dataTransfer !== undefined) {
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text', id);
         }
         let button = document.getElementById(id);
         if (button.classList.contains('btn-primary')) {
@@ -377,15 +381,13 @@ export class Presenter {
      */
     switchEditState(uid) {
         let elem = document.getElementById(uid);
-        // work around for FootLoopNodes, duo to HTML structure, the last element has to be found and edited
-        for (var i = 0; i < elem.children.length; i++) {
-            if (elem.children[i].classList.contains('element')) {
-                elem = elem.children[i];
-                break;
-            }
-        }
         // get the input field and display it
-        elem = elem.getElementsByClassName('input-group editField')[0];
+        // work around for FootLoopNodes, duo to HTML structure, the last element has to be found and edited
+        if (elem.getElementsByClassName('input-group editField ' + uid).length) {
+            elem = elem.getElementsByClassName('input-group editField ' + uid)[0];
+        } else {
+            elem = elem.getElementsByClassName('input-group editField')[0];
+        }
         elem.previousSibling.style.display = 'none';
         elem.style.display = 'inline-flex';
         // automatic set focus on the input

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     viewBox="0 0 100 100">
+  <line x1="5%" y1="60%" x2="40%" y2="95%" stroke="black" stroke-linecap="round" stroke-width="10%" />
+  <line x1="40%" y1="95%" x2="95%" y2="5%" stroke="black" stroke-linecap="round" stroke-width="10%" />
+</svg>

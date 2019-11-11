@@ -32,9 +32,9 @@ window.onload = function() {
 
     // reset button must be last defined
     let resetButtonDiv = document.createElement('div');
-    resetButtonDiv.classList.add('column', 'col-mr-auto');
+    resetButtonDiv.classList.add('column', 'container');
     let resetButton = document.createElement('button');
-    resetButton.classList.add('btn', 'float-right');
+    resetButton.classList.add('column');
     resetButton.addEventListener('click', () => presenter.resetModel());
     resetButton.appendChild(document.createTextNode('Reset'));
 

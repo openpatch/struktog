@@ -1,0 +1,121 @@
+@import "structogram";
+@import "importExport";
+@import "cases";
+@import "code";
+
+$font-stack: "Verdana", Geneva, sans-serif;
+
+body {
+    font: 100% $font-stack;
+    max-width: 1500px;
+    min-height: 100vh;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    main {
+        flex: 1;
+    }
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+    position: relative;
+}
+
+.vcontainer {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    position: relative;
+    justify-content: flex-start;
+}
+
+.column {
+    flex-basis: 100%;
+}
+
+@media screen and (min-width: 800px) {
+    .column {
+        flex: 1;
+    }
+}
+
+.logo-container {
+    min-height: 2.5em;
+    width: 3em;
+    float: left;
+}
+
+.nav-logo-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-col {
+    flex: auto;
+    margin: auto;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: flex-end;
+}
+
+.hand {
+    cursor: pointer;
+}
+
+.columnEditorFull {
+    flex-basis: 100%;
+}
+
+.columnEditorStructogram {
+    flex-basis: 100%;
+    margin: 0.2em;
+}
+
+.columnEditorCode {
+    flex-basis: 50%;
+}
+
+@media screen and (min-width: 1200px) {
+    .columnEditorStructogram {
+        flex-basis: 75%;
+    }
+
+    .columnEditorCode {
+        flex-basis: 24%;
+    }
+}
+
+.float-right {
+    float: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.ov-hidden {
+    overflow: hidden;
+}

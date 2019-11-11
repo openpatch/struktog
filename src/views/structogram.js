@@ -16,14 +16,6 @@ export class Structogram {
             text: 'Anweisung',
             icon: 'taskIcon'
         },{
-            id: 'BranchButton',
-            text: 'Verzweigung',
-            icon: 'branchIcon'
-        },{
-            id: 'CaseButton',
-            text: 'Fallunterscheidung',
-            icon: 'caseIcon'
-        },{
             id: 'CountLoopButton',
             text: 'Zählergesteuerte Schleife',
             icon: 'countLoopIcon'
@@ -35,6 +27,14 @@ export class Structogram {
             id: 'FootLoopButton',
             text: 'Fußgesteuerte Schleife',
             icon: 'footLoopIcon'
+        },{
+            id: 'BranchButton',
+            text: 'Verzweigung',
+            icon: 'branchIcon'
+        },{
+            id: 'CaseButton',
+            text: 'Fallunterscheidung',
+            icon: 'caseIcon'
         }];
 
         this.preRender();
@@ -43,91 +43,83 @@ export class Structogram {
 
     preRender() {
         let divInsert = document.createElement('div');
-        divInsert.classList.add('column', 'col-2', 'col-md-12');
+        divInsert.classList.add('columnEditorFull');
         let divHeader = document.createElement('div');
-        divHeader.classList.add('elementButtonColumns');
+        //divHeader.classList.add('elementButtonColumns');
         let spanHeader = document.createElement('span');
         spanHeader.appendChild(document.createTextNode('Element wählen:'));
         divHeader.appendChild(spanHeader);
         divInsert.appendChild(divHeader);
 
         let divButtons = document.createElement('div');
-        divButtons.classList.add('columns');
+        divButtons.classList.add('container');
         for (const item of this.buttonList) {
             divButtons.appendChild(this.createButton(item));
         }
         divInsert.appendChild(divButtons);
 
+        let divEditorHeadline = document.createElement('div');
+        divEditorHeadline.classList.add('columnEditorFull');
+        let editorHeadline = document.createElement('span');
+        editorHeadline.appendChild(document.createTextNode('Editor:'));
+        divEditorHeadline.appendChild(editorHeadline);
+
         let divWorkingArea = document.createElement('div');
-        divWorkingArea.classList.add('column', 'col-md-12', 'lowerPadding');
-        divWorkingArea.classList.add('col-' + this.size);
+        divWorkingArea.classList.add('columnEditorStructogram');
+        //divWorkingArea.classList.add('col-' + this.size);
         divWorkingArea.id = 'Sizelimiter';
         // dirty workaround
-        divWorkingArea.innerHTML = `<div class="container">
-                            <div class="columns">
-                                <div class="column col-12">
-                                    <h4>Arbeitsbereich:</h4>
-                                </div>
-                            </div>
-                            <div class="columns">
-                                <div class="column col-12">
-                                    <div class="container">
-                                        <div class="columns uLineBottom">
-                                            <div class="column col-12">
-                                                <div id="structogram" class="struktogramm"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>`;
+        divWorkingArea.innerHTML = `<div class="frameLeftRight">
+                                        <div id="structogram" class="frameBottom"></div>
+                                    </div>`;
 
         this.domRoot.prepend(divWorkingArea);
+        this.domRoot.prepend(divEditorHeadline);
         this.domRoot.prepend(divInsert);
         this.domRoot = document.getElementById('structogram');
 
         // add option buttons
-        let sizeButtons = document.createElement('div');
-        sizeButtons.classList.add('column', 'col-auto', 'hide-md');
-        let sizeText = document.createElement('span');
-        sizeText.appendChild(document.createTextNode('Breite ändern:'));
-        let sizeDecrease = document.createElement('button');
-        sizeDecrease.classList.add('btn', 'cubic');
-        sizeDecrease.addEventListener('click', () => this.decreaseSize());
-        sizeDecrease.appendChild(document.createTextNode('-'));
-        let sizeIncrease = document.createElement('button');
-        sizeIncrease.classList.add('btn', 'cubic');
-        sizeIncrease.addEventListener('click', () => this.increaseSize());
-        sizeIncrease.appendChild(document.createTextNode('+'));
+        // let sizeButtons = document.createElement('div');
+        // //sizeButtons.classList.add('column', 'col-auto', 'hide-md');
+        // let sizeText = document.createElement('span');
+        // sizeText.appendChild(document.createTextNode('Breite ändern:'));
+        // let sizeDecrease = document.createElement('button');
+        // //sizeDecrease.classList.add('btn', 'cubic');
+        // sizeDecrease.addEventListener('click', () => this.decreaseSize());
+        // sizeDecrease.appendChild(document.createTextNode('-'));
+        // let sizeIncrease = document.createElement('button');
+        // //sizeIncrease.classList.add('btn', 'cubic');
+        // sizeIncrease.addEventListener('click', () => this.increaseSize());
+        // sizeIncrease.appendChild(document.createTextNode('+'));
 
-        sizeButtons.appendChild(sizeText);
-        sizeButtons.appendChild(document.createTextNode(' '));
-        sizeButtons.appendChild(sizeDecrease);
-        sizeButtons.appendChild(document.createTextNode(' '));
-        sizeButtons.appendChild(sizeIncrease);
-        document.getElementById('optionButtons').appendChild(sizeButtons);
+        // sizeButtons.appendChild(sizeText);
+        // sizeButtons.appendChild(document.createTextNode(' '));
+        // sizeButtons.appendChild(sizeDecrease);
+        // sizeButtons.appendChild(document.createTextNode(' '));
+        // sizeButtons.appendChild(sizeIncrease);
+        // document.getElementById('optionButtons').appendChild(sizeButtons);
     }
 
     createButton(button) {
         let div = document.createElement('div');
-        div.classList.add('column', 'col-12', 'col-md-6', 'col-sm-12', 'elementButtonColumns');
-        let anker = document.createElement('a');
-        anker.classList.add('btn', 'btn-sm', 'elementButton');
-        anker.style.height = '3em';
-        anker.id = button.id;
-        anker.draggable = 'true';
-        anker.addEventListener('click', () => this.presenter.insertNode(button.id));
-        anker.addEventListener('dragstart', () => this.presenter.insertNode(button.id));
-        anker.addEventListener('dragend', () => this.presenter.resetDrop());
+        div.classList.add('columnInput', 'insertButton');
+        //let anker = document.createElement('a');
+        div.classList.add('hand');
+        //anker.style.height = '3em';
+        div.id = button.id;
+        div.draggable = 'true';
+        div.addEventListener('click', (event) => this.presenter.insertNode(button.id, event));
+        div.addEventListener('dragstart', (event) => this.presenter.insertNode(button.id, event));
+        div.addEventListener('dragend', () => this.presenter.resetDrop());
         let spanText = document.createElement('span');
         spanText.appendChild(document.createTextNode(button.text));
         let divIcon = document.createElement('div');
-        divIcon.classList.add(button.icon);
-        divIcon.classList.add('p-centered');
+        divIcon.classList.add(button.icon, 'buttonLogo');
+        //divIcon.classList.add('p-centered');
 
-        anker.append(spanText);
-        anker.append(divIcon);
-        div.appendChild(anker);
+        div.append(divIcon);
+        div.append(spanText);
+        //div.appendChild(anker);
         return div
     }
 
@@ -136,7 +128,295 @@ export class Structogram {
         while (this.domRoot.hasChildNodes()) {
             this.domRoot.removeChild(this.domRoot.lastChild);
         }
-        this.domRoot.appendChild(this.prepareRenderTree(tree, false, false));
+        //this.domRoot.appendChild(this.prepareRenderTree(tree, false, false));
+        for (const elem of this.renderElement(tree, false, false)) {
+            this.domRoot.appendChild(elem);
+        }
+    }
+
+
+    renderElement(subTree, parentIsMoving, noInsert) {
+        let elemArray = [];
+        if (subTree === null) {
+            return elemArray;
+        } else {
+            if (!(this.presenter.getMoveId() === null) && subTree.id == this.presenter.getMoveId()) {
+                parentIsMoving = true;
+                noInsert = true;
+            }
+
+            const background = document.createElement('div');
+            background.classList.add('vcontainer', 'columnAuto');
+            const container = document.createElement('div');
+            if (subTree.id) {
+                container.id = subTree.id;
+            }
+            container.classList.add('vcontainer', 'frameTop', 'columnAuto');
+            //const element = document.createElement('div');
+            //element.classList.add('column', 'vcontainer', 'frameTop');
+            //container.appendChild(element);
+
+            switch (subTree.type) {
+            case 'InsertNode':
+                {
+                    if (parentIsMoving) {
+                        return this.renderElement(subTree.followElement, false, false);
+                    } else {
+                        if (noInsert) {
+                            return this.renderElement(subTree.followElement, false, true);
+                        } else {
+                            if (this.presenter.getInsertMode()) {
+                                //container.classList.add('line');
+                                const div = document.createElement('div');
+                                div.classList.add('fixedHalfHeight', 'symbol', 'hand', 'text-center');
+                                div.addEventListener('dragover', function(event) {
+                                    event.preventDefault();
+                                });
+                                div.addEventListener('drop', () => this.presenter.appendElement(subTree.id));
+                                div.addEventListener('click', () => this.presenter.appendElement(subTree.id));
+
+                                if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id == this.presenter.getMoveId()) {
+                                    const bold = document.createElement('strong');
+                                    bold.appendChild(document.createTextNode('Verschieben abbrechen'));
+                                    div.appendChild(bold);
+                                } else {
+                                    const symbol = document.createElement('div');
+                                    symbol.classList.add('insertIcon', 'symbolHeight');
+                                    div.appendChild(symbol);
+                                }
+                                container.appendChild(div);
+                                container.classList.add('simpleBorder');
+                                elemArray.push(container);
+
+                                if (subTree.followElement === null || subTree.followElement.type == 'Placeholder') {
+                                    return elemArray;
+                                } else {
+                                    return elemArray.concat(this.renderElement(subTree.followElement, false, noInsert));
+                                }
+                            } else {
+                                return this.renderElement(subTree.followElement, parentIsMoving, noInsert);
+                            }
+                        }
+                    }
+                }
+                break;
+            case 'Placeholder':
+                {
+                    const div = document.createElement('div');
+                    div.classList.add('fixedHeight');
+                    const symbol = document.createElement('div');
+                    symbol.classList.add('placeholder', 'symbolHeight', 'symbol');
+                    div.appendChild(symbol);
+                    container.appendChild(div);
+                    elemArray.push(container);
+                    return elemArray;
+                }
+                break;
+            case 'InsertCase':
+                {
+                    container.classList.remove('frameTop', 'columnAuto');
+                    container.classList.add('fixedHeight');
+                }
+            case 'InputNode':
+            case 'OutputNode':
+            case 'TaskNode':
+                {
+                    const div = document.createElement('div');
+                    div.classList.add('fixedHeight', 'container');
+
+                    const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id);
+                    const optionDiv = this.createOptionDiv(subTree.type, subTree.id);
+                    div.appendChild(textDiv);
+                    div.appendChild(optionDiv);
+
+                    //container.classList.add('line');
+                    container.appendChild(div);
+                    elemArray.push(container);
+
+                    return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert));
+                }
+                break;
+            case 'BranchNode':
+                {
+                    // //container.classList.add('fix');
+                    const div = document.createElement('div');
+                    div.classList.add('columnAuto', 'vcontainer');
+
+                    const divHead = document.createElement('div');
+                    divHead.classList.add('branchSplit', 'vcontainer', 'fixedDoubleHeight');
+
+                    const divHeadTop = document.createElement('div');
+                    divHeadTop.classList.add('fixedHeight', 'container');
+
+                    const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id);
+                    const optionDiv = this.createOptionDiv(subTree.type, subTree.id);
+                    divHeadTop.appendChild(textDiv);
+                    divHeadTop.appendChild(optionDiv);
+
+                    const divHeadBottom = document.createElement('div');
+                    divHeadBottom.classList.add('fixedHeight', 'container', 'padding');
+
+                    const divHeaderTrue = document.createElement('div');
+                    divHeaderTrue.classList.add('columnAuto', 'text-left', 'bottomHeader');
+                    divHeaderTrue.appendChild(document.createTextNode("Wahr"));
+
+                    const divHeaderFalse = document.createElement('div');
+                    divHeaderFalse.classList.add('columnAuto', 'text-right', 'bottomHeader');
+                    divHeaderFalse.appendChild(document.createTextNode("Falsch"));
+
+                    divHeadBottom.appendChild(divHeaderTrue);
+                    divHeadBottom.appendChild(divHeaderFalse);
+
+                    divHead.appendChild(divHeadTop);
+                    divHead.appendChild(divHeadBottom);
+                    div.appendChild(divHead);
+
+                    const divChildren = document.createElement('div');
+                    divChildren.classList.add('columnAuto', 'branchCenter', 'container');
+
+                    const divTrue = document.createElement('div');
+                    divTrue.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
+                    for (const elem of this.renderElement(subTree.trueChild, false, noInsert)) {
+                        divTrue.appendChild(elem);
+                    }
+
+                    const divFalse = document.createElement('div');
+                    divFalse.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
+                    for (const elem of this.renderElement(subTree.falseChild, false, noInsert)) {
+                        divFalse.appendChild(elem);
+                    }
+
+                    divChildren.appendChild(divTrue);
+                    divChildren.appendChild(divFalse);
+                    div.appendChild(divChildren);
+                    container.appendChild(div);
+                    elemArray.push(container);
+
+                    return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert));
+                }
+            case 'HeadLoopNode':
+            case 'CountLoopNode':
+                {
+                    const div = document.createElement('div');
+                    div.classList.add('columnAuto', 'vcontainer');
+
+                    const divHead = document.createElement('div');
+                    divHead.classList.add('container', 'fixedHeight');
+
+                    const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id);
+                    const optionDiv = this.createOptionDiv(subTree.type, subTree.id);
+                    divHead.appendChild(textDiv);
+                    divHead.appendChild(optionDiv);
+                    div.appendChild(divHead);
+
+                    const divChild = document.createElement('div');
+                    divChild.classList.add('columnAuto', 'container', 'loopShift');
+
+                    const divLoop = document.createElement('div');
+                    divLoop.classList.add('loopWidth', 'frameLeft', 'vcontainer');
+
+                    for (const elem of this.renderElement(subTree.child, false, noInsert)) {
+                        divLoop.appendChild(elem);
+                    }
+
+                    divChild.appendChild(divLoop);
+                    div.appendChild(divChild);
+                    container.appendChild(div);
+                    elemArray.push(container);
+
+                    return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert));
+                }
+            case 'FootLoopNode':
+                {
+                    const div = document.createElement('div');
+                    div.classList.add('columnAuto', 'vcontainer');
+
+                    const divChild = document.createElement('div');
+                    divChild.classList.add('columnAuto', 'container', 'loopShift');
+
+                    const divLoop = document.createElement('div');
+                    divLoop.classList.add('loopWidth', 'frameLeftBottom', 'vcontainer');
+
+                    for (const elem of this.renderElement(subTree.child, false, noInsert)) {
+                        divLoop.appendChild(elem);
+                    }
+
+                    divChild.appendChild(divLoop);
+                    div.appendChild(divChild);
+
+                    const divFoot = document.createElement('div');
+                    divFoot.classList.add('container', 'fixedHeight');
+
+                    const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id);
+                    const optionDiv = this.createOptionDiv(subTree.type, subTree.id);
+                    divFoot.appendChild(textDiv);
+                    divFoot.appendChild(optionDiv);
+                    div.appendChild(divFoot);
+
+                    container.appendChild(div);
+                    elemArray.push(container);
+
+                    return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert));
+                }
+            case 'CaseNode':
+                {
+                    const div = document.createElement('div');
+                    div.classList.add('columnAuto', 'vcontainer');
+
+                    const divHead = document.createElement('div');
+                    divHead.classList.add('vcontainer', 'fixedHeight');
+                    if (subTree.defaultOn) {
+                        divHead.classList.add('caseHead-' + subTree.cases.length);
+                    } else {
+                        divHead.classList.add('caseHead-noDefault-' + subTree.cases.length);
+                    }
+
+                    let nrCases = subTree.cases.length;
+                    if (!subTree.defaultOn) {
+                        nrCases = nrCases + 2;
+                    }
+                    const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id, nrCases);
+                    const optionDiv = this.createOptionDiv(subTree.type, subTree.id);
+                    divHead.appendChild(textDiv);
+                    divHead.appendChild(optionDiv);
+                    div.appendChild(divHead);
+
+                    const divChildren = document.createElement('div');
+                    divChildren.classList.add('columnAuto', 'container');
+                    if (subTree.defaultOn) {
+                        divChildren.classList.add('caseBody-' + subTree.cases.length);
+                    } else {
+                        const level = subTree.cases.length - 1;
+                        divChildren.classList.add('caseBody-' + level);
+                    }
+
+                    for (const caseElem of subTree.cases) {
+                        let divCase = document.createElement('div');
+                        divCase.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
+
+                        for (const elem of this.renderElement(caseElem, false, noInsert)) {
+                            divCase.appendChild(elem);
+                        }
+                        divChildren.appendChild(divCase);
+                    }
+
+                    if (subTree.defaultOn) {
+                        let divCase = document.createElement('div');
+                        divCase.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
+                        for (const elem of this.renderElement(subTree.defaultNode, false, noInsert)) {
+                            divCase.appendChild(elem);
+                        }
+                        divChildren.appendChild(divCase);
+                    }
+
+                    div.appendChild(divChildren);
+                    container.appendChild(div);
+                    elemArray.push(container);
+
+                    return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert));
+                }
+            }
+        }
     }
 
 
@@ -194,7 +474,7 @@ export class Structogram {
         innerDiv.classList.add('lineTop');
 
         let box = document.createElement('div');
-        box.classList.add('columns');
+        box.classList.add('row');
 
         // element is a InsertNode
         if (inserting) {
@@ -224,30 +504,42 @@ export class Structogram {
     createOptionDiv(type, uid) {
         // create the container for all options
         let optionDiv = document.createElement('div');
-        optionDiv.classList.add('column');
-        optionDiv.classList.add('col-1');
-        optionDiv.classList.add('col-ml-auto');
-        optionDiv.classList.add('optionIcons');
+        optionDiv.classList.add('optionContainer');
 
-        // every element can be deleted
-        let deleteElem = document.createElement('div');
-        deleteElem.classList.add('deleteIcon');
-        deleteElem.classList.add('px-2');
-        deleteElem.classList.add('c-hand');
-        deleteElem.classList.add('float-right');
-        deleteElem.classList.add('tooltip');
-        deleteElem.classList.add('tooltip-bottom');
-        deleteElem.setAttribute('data-tooltip', 'Entfernen');
-        deleteElem.addEventListener('click', () => this.presenter.removeElement(uid));
 
-        optionDiv.appendChild(deleteElem);
+
+
+        // case nodes have two additional options
+        if (type == 'CaseNode') {
+            // add another new case
+            let addingCase = document.createElement('div');
+            addingCase.classList.add('addCaseIcon');
+            addingCase.classList.add('optionIcon');
+            addingCase.classList.add('hand');
+            addingCase.classList.add('tooltip');
+            addingCase.classList.add('tooltip-bottom');
+            addingCase.setAttribute('data-tooltip', 'Fall hinzufügen');
+            addingCase.addEventListener('click', () => this.presenter.addCase(uid));
+            optionDiv.appendChild(addingCase);
+
+            // switch the default state option
+            let switchDefault = document.createElement('div');
+            switchDefault.classList.add('switchDefaultCaseIcon');
+            switchDefault.classList.add('optionIcon');
+            switchDefault.classList.add('hand');
+            switchDefault.classList.add('tooltip');
+            switchDefault.classList.add('tooltip-bottom');
+            switchDefault.setAttribute('data-tooltip', 'Sonst-Zweig schalten');
+            switchDefault.addEventListener('click', () => this.presenter.switchDefaultState(uid));
+            optionDiv.appendChild(switchDefault);
+        }
 
         // all elements can be moved, except InsertCases they are bind to the case node
         if (type != 'InsertCase') {
             let moveElem = document.createElement('div');
             moveElem.classList.add('moveIcon');
-            moveElem.classList.add('c-hand');
-            moveElem.classList.add('float-right');
+            moveElem.classList.add('optionIcon');
+            moveElem.classList.add('hand');
             moveElem.classList.add('tooltip');
             moveElem.classList.add('tooltip-bottom');
             moveElem.setAttribute('data-tooltip', 'Verschieben');
@@ -255,31 +547,17 @@ export class Structogram {
             optionDiv.appendChild(moveElem);
         }
 
-        // case nodes have two additional options
-        if (type == 'CaseNode') {
-            // switch the default state option
-            let switchDefault = document.createElement('div');
-            switchDefault.classList.add('switchDefaultCaseIcon');
-            switchDefault.classList.add('c-hand');
-            switchDefault.classList.add('float-right');
-            switchDefault.classList.add('px-2');
-            switchDefault.classList.add('tooltip');
-            switchDefault.classList.add('tooltip-bottom');
-            switchDefault.setAttribute('data-tooltip', 'Sonst-Zweig schalten');
-            switchDefault.addEventListener('click', () => this.presenter.switchDefaultState(uid));
-            optionDiv.appendChild(switchDefault);
+        // every element can be deleted
+        let deleteElem = document.createElement('div');
+        deleteElem.classList.add('deleteIcon');
+        deleteElem.classList.add('optionIcon');
+        deleteElem.classList.add('hand');
+        deleteElem.classList.add('tooltip');
+        deleteElem.classList.add('tooltip-bottom');
+        deleteElem.setAttribute('data-tooltip', 'Entfernen');
+        deleteElem.addEventListener('click', () => this.presenter.removeElement(uid));
+        optionDiv.appendChild(deleteElem);
 
-            // add another new case
-            let addingCase = document.createElement('div');
-            addingCase.classList.add('addCaseIcon');
-            addingCase.classList.add('c-hand');
-            addingCase.classList.add('float-right');
-            addingCase.classList.add('tooltip');
-            addingCase.classList.add('tooltip-bottom');
-            addingCase.setAttribute('data-tooltip', 'Fall hinzufügen');
-            addingCase.addEventListener('click', () => this.presenter.addCase(uid));
-            optionDiv.appendChild(addingCase);
-        }
         return optionDiv
     }
 
@@ -292,29 +570,27 @@ export class Structogram {
      * @param    uid       id of the element
      * @return   div       complete build HTML structure
      */
-    createTextDiv(type, content, uid) {
+    createTextDiv(type, content, uid, nrCases = null) {
         // create the parent container
         let textDiv = document.createElement('div');
-        textDiv.classList.add('column');
-        textDiv.classList.add('col-10');
-        textDiv.classList.add('col-mr-auto');
-
-        // create the first subcontainer
-        let div = document.createElement('div');
-        div.classList.add('columns');
+        textDiv.classList.add('columnAuto', 'symbol');
 
         // this div contains the hidden inputfield
         let editDiv = document.createElement('div');
-        editDiv.classList.add('column');
-        editDiv.classList.add('col-12');
-        editDiv.classList.add('input-group');
-        editDiv.classList.add('input-inline');
-        editDiv.classList.add('editField');
+        //editDiv.classList.add('column');
+        //editDiv.classList.add('col-12');
+        editDiv.classList.add('input-group', 'editField', 'padding');
+        //editDiv.classList.add('input-inline');
+        //editDiv.classList.add('editField');
         editDiv.style.display = 'none';
+
+        if (type == 'FootLoopNode') {
+            editDiv.classList.add(uid);
+        }
 
         // inputfield with eventlisteners
         let editText = document.createElement('input');
-        editText.classList.add('form-input');
+        //editText.classList.add('form-input');
         editText.type = 'text';
         editText.value = content;
         // TODO: move to presenter
@@ -328,26 +604,26 @@ export class Structogram {
         });
 
         // add apply button
-        let editApply = document.createElement('button');
-        editApply.classList.add('btn');
-        editApply.classList.add('btn-primary');
-        editApply.classList.add('input-group-btn');
-        editApply.classList.add('cubic');
-        let acceptDiv = document.createElement('div');
-        acceptDiv.classList.add('acceptIcon');
-        acceptDiv.classList.add('p-centered');
-        editApply.appendChild(acceptDiv);
+        let editApply = document.createElement('div');
+        editApply.classList.add('acceptIcon', 'hand');
+        //editApply.classList.add('btn-primary');
+        //editApply.classList.add('input-group-btn');
+        //editApply.classList.add('cubic');
+        //let acceptDiv = document.createElement('div');
+        //acceptDiv.classList.add('acceptIcon');
+        //acceptDiv.classList.add('p-centered');
+        //editApply.appendChild(acceptDiv);
         editApply.addEventListener('click', () => this.presenter.editElement(uid, editText.value));
 
         // add dismiss button
-        let editDismiss = document.createElement('button');
-        editDismiss.classList.add('btn');
-        editDismiss.classList.add('input-group-btn');
-        editDismiss.classList.add('cubic');
-        let dismissDiv = document.createElement('div');
-        dismissDiv.classList.add('deleteIcon');
-        dismissDiv.classList.add('p-centered');
-        editDismiss.appendChild(dismissDiv);
+        let editDismiss = document.createElement('div');
+        //editDismiss.classList.add('squareButton');
+        //editDismiss.classList.add('input-group-btn');
+        //editDismiss.classList.add('cubic');
+        //let dismissDiv = document.createElement('div');
+        editDismiss.classList.add('deleteIcon', 'hand');
+        //dismissDiv.classList.add('p-centered');
+        //editDismiss.appendChild(dismissDiv);
         editDismiss.addEventListener('click', () => this.presenter.renderAllViews());
 
         // some types need additional text or a different position
@@ -362,19 +638,17 @@ export class Structogram {
         case 'InsertCase':
             textDiv.classList.add('text-center');
             break;
-        case 'CaseNode':
-            textDiv.classList.add('text-center');
-            textDiv.classList.add('caseIndent');
-            break;
         }
+
         // add displayed text when not in editing mode
         let innerTextDiv = document.createElement('div');
-        innerTextDiv.classList.add('column');
-        innerTextDiv.classList.add('col-12');
+        //innerTextDiv.classList.add('column');
+        //innerTextDiv.classList.add('col-12');
         // special handling for the default case of case nodes
         if (!(type == 'InsertCase' && content == 'Sonst')) {
+            innerTextDiv.classList.add('padding');
             if (!this.presenter.getInsertMode()) {
-                innerTextDiv.classList.add('c-hand');
+                innerTextDiv.classList.add('hand');
             }
             innerTextDiv.addEventListener('click', () => {
                 this.presenter.renderAllViews();
@@ -383,16 +657,20 @@ export class Structogram {
         }
 
         // insert text
+        const textSpan = document.createElement('span');
+        if (type == 'CaseNode') {
+            textSpan.style.marginLeft = 'calc(' + (nrCases/(nrCases+1))*100 + '% - 2em)';
+        }
         let text = document.createTextNode(content);
 
         editDiv.appendChild(editText);
         editDiv.appendChild(editApply);
         editDiv.appendChild(editDismiss);
 
-        innerTextDiv.appendChild(text);
-        div.appendChild(innerTextDiv);
-        div.appendChild(editDiv);
-        textDiv.appendChild(div);
+        textSpan.appendChild(text);
+        innerTextDiv.appendChild(textSpan);
+        textDiv.appendChild(innerTextDiv);
+        textDiv.appendChild(editDiv);
 
         return textDiv
     }
@@ -460,8 +738,8 @@ export class Structogram {
                             if (this.presenter.getInsertMode()) {
                                 let div = document.createElement('div');
                                 div.id = subTree.id;
-                                div.classList.add('c-hand');
-                                div.classList.add('text-center');
+                                //div.classList.add('c-hand');
+                                //div.classList.add('text-center');
                                 div.addEventListener('dragover', function(event) {
                                     event.preventDefault();
                                 });
@@ -473,9 +751,9 @@ export class Structogram {
                                     bold.appendChild(document.createTextNode('Verschieben abbrechen'));
                                     text.appendChild(bold);
                                 } else {
-                                    text.classList.add('insertHereIcon');
+                                    text.classList.add('insertIcon');
                                 }
-                                text.classList.add('p-centered');
+                                //text.classList.add('p-centered');
                                 div.appendChild(text);
                                 if (subTree.followElement === null || subTree.followElement.type == 'Placeholder') {
                                     return [this.addCssWrapper(div, true, parentIsMoving)]

@@ -105,18 +105,20 @@ export class CodeView {
 
     preRender() {
         let sourcecode = document.createElement('div');
-        sourcecode.classList.add('column', 'col-3', 'col-md-12', 'col-ml-auto');
+        //sourcecode.style.float = 'right';
+        sourcecode.id = 'SourcecodeDisplay';
+        sourcecode.classList.add('columnEditorCode');
+        sourcecode.style.display = 'none';
         let sourcecodeDisplay = document.createElement('div');
-        sourcecodeDisplay.classList.add('columns', 'd-hide');
-        sourcecodeDisplay.id = 'SourcecodeDisplay';
+        //sourcecodeDisplay.classList.add('columns', 'd-hide');
         let sourcecodeHeader = document.createElement('div');
-        sourcecodeHeader.classList.add('column', 'col-10', 'col-mx-auto');
+        //sourcecodeHeader.classList.add('column', 'col-10', 'col-mx-auto');
         let sourcecodeTitle = document.createElement('span');
         sourcecodeTitle.appendChild(document.createTextNode('Übersetzen in:'));
         let sourcecodeForm = document.createElement('div');
-        sourcecodeForm.classList.add('form-group');
+        //sourcecodeForm.classList.add('form-group');
         let sourcecodeSelect = document.createElement('select');
-        sourcecodeSelect.classList.add('form-select');
+        //sourcecodeSelect.classList.add('form-select');
         sourcecodeSelect.id = 'SourcecodeSelect';
         sourcecodeSelect.addEventListener('change', (event) => this.presenter.startTransforming(event));
         let sourcecodeOption = document.createElement('option');
@@ -135,7 +137,7 @@ export class CodeView {
         sourcecodeHeader.appendChild(sourcecodeForm);
 
         let sourcecodeWorkingArea = document.createElement('div');
-        sourcecodeWorkingArea.classList.add('column', 'col-12', 'lowerPadding');
+        //sourcecodeWorkingArea.classList.add('column', 'col-12', 'lowerPadding');
         sourcecodeWorkingArea.id = 'Sourcecode';
 
         sourcecodeDisplay.appendChild(sourcecodeHeader);
@@ -146,9 +148,9 @@ export class CodeView {
         this.domRoot = document.getElementById('Sourcecode');
 
         let options = document.createElement('div');
-        options.classList.add('column', 'col-auto');
+        options.classList.add('column', 'container');
         let optionButton = document.createElement('button');
-        optionButton.classList.add('btn');
+        optionButton.classList.add('column');
         optionButton.id = 'ToggleSourcecode';
         optionButton.addEventListener('click', (event) => this.presenter.alterSourcecodeDisplay(event));
         optionButton.appendChild(document.createTextNode('Quellcode einblenden'));
@@ -186,7 +188,7 @@ export class CodeView {
 
             // create container for the spans
             let preBlock = document.createElement('pre');
-            preBlock.classList.add('code');
+            //preBlock.classList.add('code');
             // set the language attribute
             preBlock.setAttribute('data-lang', this.lang);
 
@@ -211,6 +213,7 @@ export class CodeView {
     setLang(lang) {
         if (typeof(Storage) !== "undefined") {
             localStorage.lang = lang;
+            localStorage.displaySourcecode = true;
         }
         this.lang = lang;
     }
@@ -242,7 +245,7 @@ export class CodeView {
      */
     createHighlightedSpan(text) {
         let span = document.createElement('span');
-        span.classList.add('text-primary');
+        span.classList.add('text-code');
         span.appendChild(document.createTextNode(text));
         return span
     }
@@ -303,15 +306,15 @@ export class CodeView {
             // highlight equivalent element in struktogramm on mouseover
             elemSpan.addEventListener('mouseover', function() {
                 let node = document.getElementById(subTree.id);
-                node.parentElement.parentElement.classList.add('bg-primary');
+                node.firstChild.classList.add('bg-primary');
             });
             elemSpan.addEventListener('mouseout', function() {
                 let node = document.getElementById(subTree.id);
-                node.parentElement.parentElement.classList.remove('bg-primary');
+                node.firstChild.classList.remove('bg-primary');
             });
             // switch to edit mode of equivalent element in the struktogramm
             let text = this.createHighlightedSpan(subTree.text);
-            text.classList.add('c-hand');
+            text.classList.add('hand');
             text.addEventListener('click', () => this.presenter.switchEditState(subTree.id));
 
             switch (subTree.type) {
@@ -506,12 +509,12 @@ export class CodeView {
     displaySourcecode(buttonId) {
         if (this.presenter.getSourcecodeDisplay()) {
             document.getElementById(buttonId).textContent = "Quellcode ausblenden";
-            document.getElementById(buttonId).classList.add('btn-primary');
-            document.getElementById('SourcecodeDisplay').classList.remove('d-hide');
+            //document.getElementById(buttonId).classList.add('btn-primary');
+            document.getElementById('SourcecodeDisplay').style.display = "block";
         } else {
             document.getElementById(buttonId).textContent = "Quellcode einblenden";
-            document.getElementById(buttonId).classList.remove('btn-primary');
-            document.getElementById('SourcecodeDisplay').classList.add('d-hide');
+            //document.getElementById(buttonId).classList.remove('btn-primary');
+            document.getElementById('SourcecodeDisplay').style.display = "none";
         }
     }
 

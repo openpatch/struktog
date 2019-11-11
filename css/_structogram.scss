@@ -1,0 +1,213 @@
+$main-background-color: rgba(128,212,255, 0.5);
+
+.line {
+    height: 2em;
+    min-height: 2em;
+    width: 100%;
+
+    // display option icons on hovering on top of an line
+    &:hover .optionIcon {
+        display: inline-block;
+    }
+}
+
+.fixedHalfHeight {
+    flex: 0 0 1em;
+}
+
+.fixedHeight {
+    flex: 0 0 2em;
+    //width: 100%;
+
+    // display option icons on hovering on top of an line
+    &:hover .optionIcon {
+        display: inline-block;
+    }
+}
+
+.fixedDoubleHeight {
+    flex: 0 0 4em;
+    //width: 100%;
+
+    // display option icons on hovering on top of an line
+    &:hover .optionIcon {
+        display: inline-block;
+    }
+}
+
+.inputButtonIcon {
+    width: 3em;
+    float: left;
+}
+
+.symbol {
+    margin-top: 6.5px;
+
+    .input-group {
+        margin-top: -6px;
+    }
+}
+
+.symbolHeight {
+    height: 1em;
+}
+
+.columnInput {
+    flex: 48%;
+}
+
+@media screen and (min-width: 800px) {
+    .columnInput {
+        flex: 32%;
+    }
+}
+
+.insertButton {
+    border: 0.15em solid black;
+    text-align: center;
+    margin: 0.2em;
+
+    display: flex;
+    justify-content: center;
+
+    .buttonLogo {
+        float: left;
+        height: 1em;
+        min-width: 2em;
+        margin: auto;
+        flex: 1;
+    }
+
+    span {
+        flex: 4;
+        margin: auto;
+    }
+}
+
+.padding {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+.editField {
+    width: 80%;
+
+    input {
+        flex: 10;
+        min-width: 0;
+    }
+
+    div {
+        flex: 1;
+        margin-left: 1em;
+        height: inherit;
+        border: 0.15em solid black;
+    }
+}
+
+
+.columnText {
+    flex: auto;
+}
+
+.optionContainer {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 1em;
+    height: 100%;
+    display: inline-flex;
+    flex-wrap: nowrap;
+
+    .optionIcon {
+        width: 1em;
+        height: 100%;
+        margin-left: 0.4em;
+        flex: 1;
+        display: none;
+
+        @media screen and (min-width: 480px) {
+            display: inline-block;
+        }
+
+        @media screen and (min-width: 800px) {
+            display: none;
+        }
+    }
+}
+
+.tooltip {
+    position: relative;
+    &:after {
+        background: rgba(50, 50, 50, 0.95);
+        border-radius: 0;
+        bottom: 100%;
+        color: white;
+        content: attr(data-tooltip);
+        display: block;
+        left: -100%;
+        max-width: 15em;
+        opacity: 0;
+        overflow: hidden;
+        padding: 0.3em;
+        pointer-events: none;
+        position: absolute;
+        text-overflow: ellipsis;
+        transform: translate(-50%, 0.3em);
+        transition: opacity .2s, transform .2s;
+        white-space: pre;
+        z-index: 2;
+    }
+    &:focus,
+    &:hover {
+        &::after {
+            opacity: 1;
+            transform: translate(-50%, -0.3em);
+        }
+    }
+    &[disabled],
+    &.disabled {
+        pointer-events: auto;
+    }
+
+    &.tooltip-bottom {
+        &::after {
+            bottom: auto;
+            top: 75%;
+            transform: translate(-50%, -0.3em);
+        }
+        &:focus,
+        &:hover {
+            &::after {
+                transform: translate(-50%, 0.3em);
+            }
+        }
+    }
+}
+
+.columnFull {
+    flex-basis: 100%;
+
+}
+
+.columnAuto {
+    flex: 1;
+}
+
+.bottomHeader {
+    align-self: flex-end;
+}
+
+// display borders around elements
+.simpleBorder {
+    margin: 0 1px;
+    background-color: $main-background-color;
+}
+
+.loopShift {
+    justify-content: flex-end !important;
+
+    .loopWidth {
+        flex-basis: calc(100% - 2em);
+    }
+}
