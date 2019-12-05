@@ -13,47 +13,49 @@
         <header class="container">
             <section class="nav-col">
                 <div class="nav-logo-container">
-                <div class="logo-container logo"></div>
-                <a href="index.html">
-                    <strong>Struktog.</strong>
-                </a>
+                    <a href="index.html" class="column container">
+                        <div class="logo-container logo"></div>
+                        <strong class="nav-col">Struktog.</strong>
+                    </a>
                 </div>
             </section>
-            <section class="nav-col">
-                <div id="optionButtons" class="options-container">
-                    <div class="column container">
-                        <button class="column" onclick="document.getElementById('IEModal').style.display = 'block';">
-                            Import / Export
-                        </button>
-                    </div>
-                </div>
+            <section class="nav-col-opt">
+                <div id="optionButtons" class="options-container"></div>
             </section>
         </header>
+        <div class="divider"></div>
         <main>
             <div id="editorDisplay" class="container">
             </div>
-            <!-- Popup modal for import and export -->
-            <div id="IEModal" class="modal">
-                <div class="modal-content">
-                    <span class="close"
-                          onclick="document.getElementById('IEModal').style.display = 'none';">
-                        &times;
-                    </span>
-                    <p>
-                        JSON-Import:
-                    </p>
-                    <input id="ImportForm" type="file" class="form-input" \>
-                    <p>
-                        Export:
-                    </p>
-                    <div id="Export" class="text-center pt-1"></div>
+            <div class="modal" id="IEModal">
+                <div class="modal-overlay"
+                     aria-label="Close"
+                     onclick="document.getElementById('IEModal').classList.remove('active');">
+                </div>
+                <div class="modal-container">
+                    <div class="modal-header">
+                        <span class="close hand"
+                              onclick="document.getElementById('IEModal').classList.remove('active');">
+                            &times;
+                        </span>
+                    </div>
+                    <div class="modal-body">
+                        <div id="modal-content"
+                             class="content">
+                            Content
+                        </div>
+                    </div>
+                    <div id="modal-footer"
+                         class="modal-footer container">
+                        Footer
+                    </div>
                 </div>
             </div>
         </main>
         <footer class="container">
             <div class="column">
                 <span>
-                    &#169; 2019 Klaus Ramm
+                    © 2019 Klaus Ramm
                 </span>
                 <span>
                     (

@@ -148,14 +148,10 @@ export class CodeView {
         this.domRoot = document.getElementById('Sourcecode');
 
         let options = document.createElement('div');
-        options.classList.add('column', 'container');
-        let optionButton = document.createElement('button');
-        optionButton.classList.add('column');
-        optionButton.id = 'ToggleSourcecode';
-        optionButton.addEventListener('click', (event) => this.presenter.alterSourcecodeDisplay(event));
-        optionButton.appendChild(document.createTextNode('Quellcode einblenden'));
-
-        options.appendChild(optionButton);
+        options.classList.add('options-element', 'codeIcon', 'tooltip', 'tooltip-bottom', 'hand');
+        options.setAttribute('data-tooltip', 'Quellcode einblenden');
+        options.id = 'ToggleSourcecode';
+        options.addEventListener('click', (event) => this.presenter.alterSourcecodeDisplay(event));
         document.getElementById('optionButtons').appendChild(options);
 
         if (typeof(Storage) !== "undefined") {
@@ -508,12 +504,10 @@ export class CodeView {
      */
     displaySourcecode(buttonId) {
         if (this.presenter.getSourcecodeDisplay()) {
-            document.getElementById(buttonId).textContent = "Quellcode ausblenden";
-            //document.getElementById(buttonId).classList.add('btn-primary');
+            document.getElementById(buttonId).setAttribute('data-tooltip', 'Quellcode ausblenden');
             document.getElementById('SourcecodeDisplay').style.display = "block";
         } else {
-            document.getElementById(buttonId).textContent = "Quellcode einblenden";
-            //document.getElementById(buttonId).classList.remove('btn-primary');
+            document.getElementById(buttonId).setAttribute('data-tooltip', 'Quellcode einblenden');
             document.getElementById('SourcecodeDisplay').style.display = "none";
         }
     }

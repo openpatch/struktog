@@ -2,48 +2,37 @@ export class ImportExport {
     constructor(presenter, domRoot) {
         this.presenter = presenter;
         this.domRoot = domRoot;
-        this.printHeight = 48;
+        this.printHeight = 32;
 
-        document.getElementById('ImportForm').addEventListener('change', (e) => this.presenter.readFile(e));
+        this.preRender();
     }
 
 
-    /**
-     * Generate a JSON file of the current model status and append a button element for download
-     */
-    render(model) {
-        // remove old export elements
-        while (this.domRoot.hasChildNodes()) {
-            this.domRoot.removeChild(this.domRoot.lastChild);
-        }
+    render(model) {}
 
-        // transform the model into a JSON object
-        const dataStr = JSON.stringify(model);
-        // define the data url to start a download on click
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
 
-        // create filename with current date in the name
-        const exportFileDefaultName = 'struktog_' + (new Date(Date.now()).toJSON()).substring(0, 10) + '.json';
+    preRender() {
+        const importDiv = document.createElement('div');
+        importDiv.classList.add('options-element', 'uploadIcon', 'tooltip', 'tooltip-bottom', 'hand');
+        importDiv.setAttribute('data-tooltip', 'Laden');
+        const importInput = document.createElement('input');
+        importInput.setAttribute('type', 'file');
+        importInput.addEventListener('change', (e) => this.presenter.readFile(e));
+        importDiv.addEventListener('click', () => importInput.click());
+        document.getElementById('optionButtons').appendChild(importDiv);
 
-        // generate the download button element and append it to the node
-        let linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileDefaultName);
-        linkElement.classList.add('btn');
-        linkElement.classList.add('btn-sm');
-        linkElement.appendChild(document.createTextNode('JSON'));
-        linkElement.addEventListener('click', () => {
-            document.getElementById('IEModal').classList.remove('active');
-        });
+        const saveDiv = document.createElement('div');
+        saveDiv.classList.add('options-element', 'saveIcon', 'tooltip', 'tooltip-bottom', 'hand');
+        saveDiv.setAttribute('data-tooltip', 'Speichern');
+        saveDiv.addEventListener('click', () => this.presenter.saveDialog());
+        document.getElementById('optionButtons').appendChild(saveDiv);
 
-        let div = document.createElement('div');
-        div.classList.add('column');
-        div.classList.add('elementButtonColumns');
-
-        div.appendChild(linkElement);
-        this.domRoot.appendChild(div);
-
-        this.exportAsPng(model);
+        // right now only png export exists, in the future a dialog should be opened
+        const exportDiv = document.createElement('div');
+        exportDiv.classList.add('options-element', 'exportIcon', 'tooltip', 'tooltip-bottom', 'hand');
+        exportDiv.setAttribute('data-tooltip', 'Bildexport');
+        exportDiv.addEventListener('click', () => this.exportAsPng(this.presenter.getModelTree()));
+        document.getElementById('optionButtons').appendChild(exportDiv);
     }
 
 
@@ -62,6 +51,7 @@ export class ImportExport {
         if (subTree === null) {
             return y
         } else {
+            const defaultMargin = 22;
             // use for every possible element type a different drawing strategie
             switch (subTree.type) {
             case 'InsertNode':
@@ -98,7 +88,7 @@ export class ImportExport {
                     ctx.lineTo(xmax, y + this.printHeight);
                     ctx.stroke();
                     ctx.beginPath();
-                    ctx.fillText("E: " + subTree.text, x + 15, y + 29);
+                    ctx.fillText("E: " + subTree.text, x + 15, y + defaultMargin);
                     ctx.stroke();
                     return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight);
                 }
@@ -114,7 +104,7 @@ export class ImportExport {
                     ctx.lineTo(xmax, y + this.printHeight);
                     ctx.stroke();
                     ctx.beginPath();
-                    ctx.fillText("A: " + subTree.text, x + 15, y + 29);
+                    ctx.fillText("A: " + subTree.text, x + 15, y + defaultMargin);
                     ctx.stroke();
                     return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight);
                 }
@@ -130,7 +120,7 @@ export class ImportExport {
                     ctx.lineTo(xmax, y + this.printHeight);
                     ctx.stroke();
                     ctx.beginPath();
-                    ctx.fillText(subTree.text, x + 15, y + 29);
+                    ctx.fillText(subTree.text, x + 15, y + defaultMargin);
                     ctx.stroke();
                     return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight);
                 }
@@ -148,11 +138,11 @@ export class ImportExport {
                     // center the text
                     let textWidth = ctx.measureText(subTree.text);
                     ctx.beginPath();
-                    ctx.fillText(subTree.text, x + Math.abs(((xmax-x) - textWidth.width))/2, y + 29);
+                    ctx.fillText(subTree.text, x + Math.abs(((xmax-x) - textWidth.width))/2, y + defaultMargin);
                     ctx.stroke();
                     ctx.beginPath();
-                    ctx.fillText("Wahr", x + 15, y + this.printHeight + 29);
-                    ctx.fillText("Falsch", xmax - 15 - ctx.measureText("Falsch").width, y + this.printHeight + 29);
+                    ctx.fillText("Wahr", x + 15, y + this.printHeight + defaultMargin);
+                    ctx.fillText("Falsch", xmax - 15 - ctx.measureText("Falsch").width, y + this.printHeight + defaultMargin);
                     ctx.stroke();
                     let trueChildY = this.renderTreeAsCanvas(subTree.trueChild, ctx, x, x + (xmax-x)/2, y + 2*this.printHeight);
                     let falseChildY = this.renderTreeAsCanvas(subTree.falseChild, ctx, x + (xmax-x)/2, xmax, y + 2*this.printHeight);
@@ -173,7 +163,7 @@ export class ImportExport {
                     ctx.rect(x, y, xmax - x, childY - y);
                     ctx.stroke();
                     ctx.beginPath();
-                    ctx.fillText(subTree.text, x + 15, y + 29);
+                    ctx.fillText(subTree.text, x + 15, y + defaultMargin);
                     ctx.stroke();
                     return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, childY);
                 }
@@ -184,7 +174,7 @@ export class ImportExport {
                     ctx.rect(x, y, xmax - x, childY - y + this.printHeight);
                     ctx.stroke();
                     ctx.beginPath();
-                    ctx.fillText(subTree.text, x + 15, childY + 29);
+                    ctx.fillText(subTree.text, x + 15, childY + defaultMargin);
                     ctx.stroke();
                     ctx.beginPath();
                     ctx.moveTo(x + ((xmax - x)/12), childY);
@@ -218,7 +208,7 @@ export class ImportExport {
                     ctx.stroke();
                     let textWidth = ctx.measureText(subTree.text);
                     ctx.beginPath();
-                    ctx.fillText(subTree.text, xmax - xStep - (textWidth.width/2), y + 29);
+                    ctx.fillText(subTree.text, xmax - xStep - (textWidth.width/2), y + defaultMargin);
                     ctx.stroke();
                     let xPos = x;
                     // determine the deepest tree by the y coordinate
@@ -250,7 +240,7 @@ export class ImportExport {
                 {
                     let textWidth = ctx.measureText(subTree.text);
                     ctx.beginPath();
-                    ctx.fillText(subTree.text, x + Math.abs(((xmax-x) - textWidth.width))/2, y + 29);
+                    ctx.fillText(subTree.text, x + Math.abs(((xmax-x) - textWidth.width))/2, y + defaultMargin);
                     ctx.stroke();
                     return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight);
                 }
@@ -272,7 +262,7 @@ export class ImportExport {
         ctx.font = '16px sans-serif';
         ctx.lineWidth = '1';
         // render the tree on the canvas
-        let lastY = this.renderTreeAsCanvas(model, ctx, 0, width, 0);
+        const lastY = this.renderTreeAsCanvas(model, ctx, 0, width, 0);
         ctx.rect(0, 0, width, lastY);
         ctx.stroke();
 
@@ -280,24 +270,10 @@ export class ImportExport {
         const exportFileDefaultName = 'struktog_' + (new Date(Date.now()).toJSON()).substring(0, 10) + '.png';
 
         // create button / anker element
-        let linkElement = document.createElement('a');
+        const linkElement = document.createElement('a');
         linkElement.setAttribute('href', canvas.toDataURL('image/png'));
         linkElement.setAttribute('download', exportFileDefaultName);
-        linkElement.classList.add('btn');
-        linkElement.classList.add('btn-sm');
-        linkElement.appendChild(document.createTextNode('PNG'));
-        // close the import / export modal
-        linkElement.addEventListener('click', () => {
-            document.getElementById('IEModal').classList.remove('active');
-        });
-
-        let div = document.createElement('div');
-        div.classList.add('column');
-        div.classList.add('elementButtonColumns');
-
-        // append the download element
-        div.appendChild(linkElement);
-        this.domRoot.appendChild(div);
+        linkElement.click();
     }
 
     resetButtons() {}

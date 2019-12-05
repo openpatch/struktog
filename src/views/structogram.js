@@ -46,7 +46,8 @@ export class Structogram {
         divInsert.classList.add('columnEditorFull');
         let divHeader = document.createElement('div');
         //divHeader.classList.add('elementButtonColumns');
-        let spanHeader = document.createElement('span');
+        let spanHeader = document.createElement('strong');
+        spanHeader.classList.add('margin-small');
         spanHeader.appendChild(document.createTextNode('Element wählen:'));
         divHeader.appendChild(spanHeader);
         divInsert.appendChild(divHeader);
@@ -60,7 +61,8 @@ export class Structogram {
 
         let divEditorHeadline = document.createElement('div');
         divEditorHeadline.classList.add('columnEditorFull');
-        let editorHeadline = document.createElement('span');
+        let editorHeadline = document.createElement('strong');
+        editorHeadline.classList.add('margin-small');
         editorHeadline.appendChild(document.createTextNode('Editor:'));
         divEditorHeadline.appendChild(editorHeadline);
 
@@ -168,7 +170,7 @@ export class Structogram {
                             if (this.presenter.getInsertMode()) {
                                 //container.classList.add('line');
                                 const div = document.createElement('div');
-                                div.classList.add('fixedHalfHeight', 'symbol', 'hand', 'text-center');
+                                div.classList.add('container', 'fixedHalfHeight', 'symbol', 'hand', 'text-center');
                                 div.addEventListener('dragover', function(event) {
                                     event.preventDefault();
                                 });
@@ -185,7 +187,6 @@ export class Structogram {
                                     div.appendChild(symbol);
                                 }
                                 container.appendChild(div);
-                                container.classList.add('simpleBorder');
                                 elemArray.push(container);
 
                                 if (subTree.followElement === null || subTree.followElement.type == 'Placeholder') {
@@ -203,7 +204,7 @@ export class Structogram {
             case 'Placeholder':
                 {
                     const div = document.createElement('div');
-                    div.classList.add('fixedHeight');
+                    div.classList.add('container', 'fixedHeight');
                     const symbol = document.createElement('div');
                     symbol.classList.add('placeholder', 'symbolHeight', 'symbol');
                     div.appendChild(symbol);
@@ -517,7 +518,7 @@ export class Structogram {
             addingCase.classList.add('optionIcon');
             addingCase.classList.add('hand');
             addingCase.classList.add('tooltip');
-            addingCase.classList.add('tooltip-bottom');
+            addingCase.classList.add('tooltip-bottoml');
             addingCase.setAttribute('data-tooltip', 'Fall hinzufügen');
             addingCase.addEventListener('click', () => this.presenter.addCase(uid));
             optionDiv.appendChild(addingCase);
@@ -528,7 +529,7 @@ export class Structogram {
             switchDefault.classList.add('optionIcon');
             switchDefault.classList.add('hand');
             switchDefault.classList.add('tooltip');
-            switchDefault.classList.add('tooltip-bottom');
+            switchDefault.classList.add('tooltip-bottoml');
             switchDefault.setAttribute('data-tooltip', 'Sonst-Zweig schalten');
             switchDefault.addEventListener('click', () => this.presenter.switchDefaultState(uid));
             optionDiv.appendChild(switchDefault);
@@ -541,7 +542,7 @@ export class Structogram {
             moveElem.classList.add('optionIcon');
             moveElem.classList.add('hand');
             moveElem.classList.add('tooltip');
-            moveElem.classList.add('tooltip-bottom');
+            moveElem.classList.add('tooltip-bottoml');
             moveElem.setAttribute('data-tooltip', 'Verschieben');
             moveElem.addEventListener('click', () => this.presenter.moveElement(uid));
             optionDiv.appendChild(moveElem);
@@ -553,7 +554,7 @@ export class Structogram {
         deleteElem.classList.add('optionIcon');
         deleteElem.classList.add('hand');
         deleteElem.classList.add('tooltip');
-        deleteElem.classList.add('tooltip-bottom');
+        deleteElem.classList.add('tooltip-bottoml');
         deleteElem.setAttribute('data-tooltip', 'Entfernen');
         deleteElem.addEventListener('click', () => this.presenter.removeElement(uid));
         optionDiv.appendChild(deleteElem);

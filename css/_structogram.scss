@@ -12,7 +12,13 @@ $main-background-color: rgba(128,212,255, 0.5);
 }
 
 .fixedHalfHeight {
-    flex: 0 0 1em;
+    flex-grow: 0;
+    flex-shrink: 0;
+    flex-basis: 0.7em;
+    transition: flex-basis 0.2s ease-in-out;
+    &:hover {
+        flex-basis: 1.3em;
+    }
 }
 
 .fixedHeight {
@@ -41,15 +47,19 @@ $main-background-color: rgba(128,212,255, 0.5);
 }
 
 .symbol {
-    margin-top: 6.5px;
+    margin: 6.5px 0;
 
     .input-group {
         margin-top: -6px;
     }
 }
 
+.margin-small {
+    margin-left: 0.2em;
+}
+
 .symbolHeight {
-    height: 1em;
+    flex: auto;
 }
 
 .columnInput {
@@ -63,16 +73,16 @@ $main-background-color: rgba(128,212,255, 0.5);
 }
 
 .insertButton {
-    border: 0.15em solid black;
+    border: 0.15em solid rgb(38, 64, 64);
     text-align: center;
     margin: 0.2em;
-
+    border-radius: 0.2em;
     display: flex;
     justify-content: center;
 
     .buttonLogo {
         float: left;
-        height: 1em;
+        height: 1.3em;
         min-width: 2em;
         margin: auto;
         flex: 1;
@@ -105,14 +115,12 @@ $main-background-color: rgba(128,212,255, 0.5);
     }
 }
 
-
 .columnText {
     flex: auto;
 }
 
 .optionContainer {
     position: absolute;
-    z-index: 1;
     top: 0;
     right: 1em;
     height: 100%;
@@ -136,55 +144,6 @@ $main-background-color: rgba(128,212,255, 0.5);
     }
 }
 
-.tooltip {
-    position: relative;
-    &:after {
-        background: rgba(50, 50, 50, 0.95);
-        border-radius: 0;
-        bottom: 100%;
-        color: white;
-        content: attr(data-tooltip);
-        display: block;
-        left: -100%;
-        max-width: 15em;
-        opacity: 0;
-        overflow: hidden;
-        padding: 0.3em;
-        pointer-events: none;
-        position: absolute;
-        text-overflow: ellipsis;
-        transform: translate(-50%, 0.3em);
-        transition: opacity .2s, transform .2s;
-        white-space: pre;
-        z-index: 2;
-    }
-    &:focus,
-    &:hover {
-        &::after {
-            opacity: 1;
-            transform: translate(-50%, -0.3em);
-        }
-    }
-    &[disabled],
-    &.disabled {
-        pointer-events: auto;
-    }
-
-    &.tooltip-bottom {
-        &::after {
-            bottom: auto;
-            top: 75%;
-            transform: translate(-50%, -0.3em);
-        }
-        &:focus,
-        &:hover {
-            &::after {
-                transform: translate(-50%, 0.3em);
-            }
-        }
-    }
-}
-
 .columnFull {
     flex-basis: 100%;
 
@@ -196,12 +155,6 @@ $main-background-color: rgba(128,212,255, 0.5);
 
 .bottomHeader {
     align-self: flex-end;
-}
-
-// display borders around elements
-.simpleBorder {
-    margin: 0 1px;
-    background-color: $main-background-color;
 }
 
 .loopShift {

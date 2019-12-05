@@ -21,6 +21,11 @@ export class Presenter {
     }
 
 
+    getModelTree() {
+        return this.model.getTree();
+    }
+
+
     resetButtons() {
         for (const view of this.views) {
             view.resetButtons();
@@ -284,6 +289,7 @@ export class Presenter {
         this.model.reset();
         this.updateBrowserStore();
         this.renderAllViews();
+        document.getElementById('IEModal').classList.remove('active');
     }
 
     /**
@@ -392,6 +398,24 @@ export class Presenter {
         elem.style.display = 'inline-flex';
         // automatic set focus on the input
         elem.getElementsByTagName('input')[0].select();
+    }
+
+
+    getStringifiedTree() {
+        return JSON.stringify(this.model.getTree());
+    }
+
+
+    saveDialog() {
+        // define the data url to start a download on click
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(this.getStringifiedTree());
+        // create filename with current date in the name
+        const exportFileDefaultName = 'struktog_' + (new Date(Date.now()).toJSON()).substring(0, 10) + '.json';
+        // generate the download button element and append it to the node
+        let linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
     }
 
 
