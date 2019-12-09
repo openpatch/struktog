@@ -24,6 +24,10 @@ body {
     }
 }
 
+strong {
+    color: rgb(38, 64, 64);
+}
+
 .container {
     display: flex;
     flex-direction: row;
@@ -224,4 +228,11 @@ body {
   border-top: 0.1em solid rgb(38, 64, 64);
   height: 0.1em;
   margin: 0.2em 0;
+}
+
+.borderWidth {
+    flex: 0 0 2px;
+}
+.borderHeight {
+    height: 2px;
 }

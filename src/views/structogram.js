@@ -1,41 +1,20 @@
+import { config } from '../config.js';
+
 export class Structogram {
     constructor(presenter, domRoot) {
         this.presenter = presenter;
         this.domRoot = domRoot;
         this.size = 7;
-        this.buttonList = [{
-            id: 'InputButton',
-            text: 'Eingabe-Feld',
-            icon: 'taskIcon'
-        },{
-            id: 'OutputButton',
-            text: 'Ausgabe-Feld',
-            icon: 'taskIcon'
-        },{
-            id: 'TaskButton',
-            text: 'Anweisung',
-            icon: 'taskIcon'
-        },{
-            id: 'CountLoopButton',
-            text: 'Zählergesteuerte Schleife',
-            icon: 'countLoopIcon'
-        },{
-            id: 'HeadLoopButton',
-            text: 'Kopfgesteuerte Schleife',
-            icon: 'countLoopIcon'
-        },{
-            id: 'FootLoopButton',
-            text: 'Fußgesteuerte Schleife',
-            icon: 'footLoopIcon'
-        },{
-            id: 'BranchButton',
-            text: 'Verzweigung',
-            icon: 'branchIcon'
-        },{
-            id: 'CaseButton',
-            text: 'Fallunterscheidung',
-            icon: 'caseIcon'
-        }];
+        this.buttonList = [
+            'InputNode',
+            'OutputNode',
+            'TaskNode',
+            'CountLoopNode',
+            'HeadLoopNode',
+            'FootLoopNode',
+            'BranchNode',
+            'CaseNode'
+        ];
 
         this.preRender();
     }
@@ -53,9 +32,11 @@ export class Structogram {
         divInsert.appendChild(divHeader);
 
         let divButtons = document.createElement('div');
-        divButtons.classList.add('container');
+        divButtons.classList.add('container', 'justify-center');
         for (const item of this.buttonList) {
-            divButtons.appendChild(this.createButton(item));
+            if (config[item].use) {
+                divButtons.appendChild(this.createButton(item));
+            }
         }
         divInsert.appendChild(divButtons);
 
@@ -66,62 +47,50 @@ export class Structogram {
         editorHeadline.appendChild(document.createTextNode('Editor:'));
         divEditorHeadline.appendChild(editorHeadline);
 
+        const divEditorContent = document.createElement('div');
+        divEditorContent.classList.add('vcontainer', 'columnEditorStructogram');
+
+        const divEditorContentSplitTop = document.createElement('div');
+        divEditorContentSplitTop.classList.add('columnAuto', 'container');
+
+        const divEditorContentSplitBottom = document.createElement('div');
+        divEditorContentSplitBottom.classList.add('columnAuto');
+
+        const divFixRightBorder = document.createElement('div');
+        divFixRightBorder.classList.add('borderWidth', 'frameLeft');
+
         let divWorkingArea = document.createElement('div');
-        divWorkingArea.classList.add('columnEditorStructogram');
-        //divWorkingArea.classList.add('col-' + this.size);
-        divWorkingArea.id = 'Sizelimiter';
-        // dirty workaround
-        divWorkingArea.innerHTML = `<div class="frameLeftRight">
-                                        <div id="structogram" class="frameBottom"></div>
-                                    </div>`;
+        divWorkingArea.classList.add('columnAuto');
+        divWorkingArea.id = 'structogram';
 
-        this.domRoot.prepend(divWorkingArea);
-        this.domRoot.prepend(divEditorHeadline);
-        this.domRoot.prepend(divInsert);
+        divEditorContent.appendChild(divEditorContentSplitTop);
+        divEditorContentSplitTop.appendChild(divWorkingArea);
+        divEditorContentSplitTop.appendChild(divFixRightBorder);
+        divEditorContent.appendChild(divEditorContentSplitBottom);
+
+        this.domRoot.appendChild(divInsert);
+        this.domRoot.appendChild(divEditorHeadline);
+        this.domRoot.appendChild(divEditorContent);
+
         this.domRoot = document.getElementById('structogram');
-
-        // add option buttons
-        // let sizeButtons = document.createElement('div');
-        // //sizeButtons.classList.add('column', 'col-auto', 'hide-md');
-        // let sizeText = document.createElement('span');
-        // sizeText.appendChild(document.createTextNode('Breite ändern:'));
-        // let sizeDecrease = document.createElement('button');
-        // //sizeDecrease.classList.add('btn', 'cubic');
-        // sizeDecrease.addEventListener('click', () => this.decreaseSize());
-        // sizeDecrease.appendChild(document.createTextNode('-'));
-        // let sizeIncrease = document.createElement('button');
-        // //sizeIncrease.classList.add('btn', 'cubic');
-        // sizeIncrease.addEventListener('click', () => this.increaseSize());
-        // sizeIncrease.appendChild(document.createTextNode('+'));
-
-        // sizeButtons.appendChild(sizeText);
-        // sizeButtons.appendChild(document.createTextNode(' '));
-        // sizeButtons.appendChild(sizeDecrease);
-        // sizeButtons.appendChild(document.createTextNode(' '));
-        // sizeButtons.appendChild(sizeIncrease);
-        // document.getElementById('optionButtons').appendChild(sizeButtons);
     }
 
     createButton(button) {
         let div = document.createElement('div');
-        div.classList.add('columnInput', 'insertButton');
-        //let anker = document.createElement('a');
-        div.classList.add('hand');
-        //anker.style.height = '3em';
-        div.id = button.id;
+        div.classList.add('columnInput', 'insertButton', 'hand');
+        div.style.backgroundColor = config[button].color;
+        div.id = config[button].id;
         div.draggable = 'true';
-        div.addEventListener('click', (event) => this.presenter.insertNode(button.id, event));
-        div.addEventListener('dragstart', (event) => this.presenter.insertNode(button.id, event));
+        div.addEventListener('click', (event) => this.presenter.insertNode(config[button].id, event));
+        div.addEventListener('dragstart', (event) => this.presenter.insertNode(config[button].id, event));
         div.addEventListener('dragend', () => this.presenter.resetDrop());
         let spanText = document.createElement('span');
-        spanText.appendChild(document.createTextNode(button.text));
+        spanText.appendChild(document.createTextNode(config[button].text));
         let divIcon = document.createElement('div');
-        divIcon.classList.add(button.icon, 'buttonLogo');
-        //divIcon.classList.add('p-centered');
+        divIcon.classList.add(config[button].icon, 'buttonLogo');
 
         div.append(divIcon);
         div.append(spanText);
-        //div.appendChild(anker);
         return div
     }
 
@@ -134,6 +103,9 @@ export class Structogram {
         for (const elem of this.renderElement(tree, false, false)) {
             this.domRoot.appendChild(elem);
         }
+        const lastLine = document.createElement('div');
+        lastLine.classList.add('frameTop', 'borderHeight');
+        this.domRoot.appendChild(lastLine);
     }
 
 
@@ -147,13 +119,13 @@ export class Structogram {
                 noInsert = true;
             }
 
-            const background = document.createElement('div');
-            background.classList.add('vcontainer', 'columnAuto');
             const container = document.createElement('div');
             if (subTree.id) {
                 container.id = subTree.id;
             }
-            container.classList.add('vcontainer', 'frameTop', 'columnAuto');
+            container.classList.add('vcontainer', 'frameTopLeft', 'columnAuto');
+            container.style.backgroundColor = config[subTree.type].color;
+            //container.style.margin = '0 .75px';
             //const element = document.createElement('div');
             //element.classList.add('column', 'vcontainer', 'frameTop');
             //container.appendChild(element);
@@ -171,14 +143,15 @@ export class Structogram {
                                 //container.classList.add('line');
                                 const div = document.createElement('div');
                                 div.classList.add('container', 'fixedHalfHeight', 'symbol', 'hand', 'text-center');
-                                div.addEventListener('dragover', function(event) {
+                                container.addEventListener('dragover', function(event) {
                                     event.preventDefault();
                                 });
-                                div.addEventListener('drop', () => this.presenter.appendElement(subTree.id));
-                                div.addEventListener('click', () => this.presenter.appendElement(subTree.id));
+                                container.addEventListener('drop', () => this.presenter.appendElement(subTree.id));
+                                container.addEventListener('click', () => this.presenter.appendElement(subTree.id));
 
                                 if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id == this.presenter.getMoveId()) {
                                     const bold = document.createElement('strong');
+                                    bold.classList.add('moveText');
                                     bold.appendChild(document.createTextNode('Verschieben abbrechen'));
                                     div.appendChild(bold);
                                 } else {
@@ -215,8 +188,8 @@ export class Structogram {
                 break;
             case 'InsertCase':
                 {
-                    container.classList.remove('frameTop', 'columnAuto');
-                    container.classList.add('fixedHeight');
+                    container.classList.remove('frameTopLeft', 'columnAuto');
+                    container.classList.add('frameLeft', 'fixedHeight');
                 }
             case 'InputNode':
             case 'OutputNode':
@@ -341,6 +314,10 @@ export class Structogram {
                     for (const elem of this.renderElement(subTree.child, false, noInsert)) {
                         divLoop.appendChild(elem);
                     }
+                    // Fix for overlapped bottom line
+                    const lastLine = document.createElement('div');
+                    lastLine.classList.add('borderHeight');
+                    divLoop.appendChild(lastLine);
 
                     divChild.appendChild(divLoop);
                     div.appendChild(divChild);
@@ -427,7 +404,9 @@ export class Structogram {
     resetButtons() {
         // remove color of buttons
         for (const button of this.buttonList) {
-            document.getElementById(button.id).classList.remove('btn-primary');
+            if (config[button].use) {
+                document.getElementById(config[button].id).classList.remove('btn-primary');
+            }
         }
     }
 
@@ -507,9 +486,6 @@ export class Structogram {
         let optionDiv = document.createElement('div');
         optionDiv.classList.add('optionContainer');
 
-
-
-
         // case nodes have two additional options
         if (type == 'CaseNode') {
             // add another new case
@@ -550,7 +526,7 @@ export class Structogram {
 
         // every element can be deleted
         let deleteElem = document.createElement('div');
-        deleteElem.classList.add('deleteIcon');
+        deleteElem.classList.add('trashcan');
         deleteElem.classList.add('optionIcon');
         deleteElem.classList.add('hand');
         deleteElem.classList.add('tooltip');

@@ -3,7 +3,7 @@
      viewBox="0 0 100 100">
   <rect x="2.5%" y="2.5%" width="95%" height="95%" rx="5%" ry="5%" fill="white" stroke="rgb(38, 64, 64)" stroke-width="5%"/>
 
-  <g transform="scale(1, -1) translate(0, -100)">
+  <g transform="scale(1, -1) translate(0, -100) rotate(90, 50, 50)">
     <circle cx="50%" cy="50%" r="38%" fill="white" stroke="rgb(38, 64, 64)" stroke-linecap="round" stroke-width="10%" />
     <circle cx="50%" cy="50%" r="5%" fill="rgb(38, 64, 64)" />
 

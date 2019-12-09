@@ -62,13 +62,25 @@ $main-background-color: rgba(128,212,255, 0.5);
     flex: auto;
 }
 
+.justify-center {
+    justify-content: center;
+}
+
 .columnInput {
     flex: 48%;
 }
 
+@media screen and (min-width: 486px) {
+    .columnInput {
+        flex-grow: 0;
+        flex-basis: 48%;
+    }
+}
+
 @media screen and (min-width: 800px) {
     .columnInput {
-        flex: 32%;
+        flex-grow: 0;
+        flex-basis: 32%;
     }
 }
 
@@ -151,6 +163,12 @@ $main-background-color: rgba(128,212,255, 0.5);
 
 .columnAuto {
     flex: 1;
+}
+
+.moveText {
+    flex: auto;
+    margin: auto;
+    padding-bottom: 0.15em;
 }
 
 .bottomHeader {
