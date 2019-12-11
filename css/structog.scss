@@ -114,6 +114,11 @@ strong {
     cursor: pointer;
 }
 
+.center {
+    flex: auto;
+    margin: auto;
+}
+
 .columnEditorFull {
     margin-top: 0.5em;
     flex-basis: 100%;
@@ -125,7 +130,16 @@ strong {
 }
 
 .columnEditorCode {
-    flex-basis: 50%;
+    margin: 0.2em;
+    padding-top: 1em;
+    flex-grow: 0;
+    width: 100%;
+}
+
+@media screen and (min-width: 480px) {
+    .columnEditorCode {
+        width: 50%;
+    }
 }
 
 @media screen and (min-width: 1200px) {
@@ -134,7 +148,9 @@ strong {
     }
 
     .columnEditorCode {
-        flex-basis: 24%;
+        padding-top: 0;
+        margin: 0 1em;
+        width: calc(25% - 4.5em);
     }
 }
 
@@ -156,6 +172,12 @@ strong {
 
 .ov-hidden {
     overflow: hidden;
+}
+
+.fixFullWidth {
+    flex-basis: 100%;
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 .tooltip {
@@ -231,7 +253,7 @@ strong {
 }
 
 .borderWidth {
-    flex: 0 0 2px;
+    flex: 0 0 3px;
 }
 .borderHeight {
     height: 2px;

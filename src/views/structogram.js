@@ -54,7 +54,7 @@ export class Structogram {
         divEditorContentSplitTop.classList.add('columnAuto', 'container');
 
         const divEditorContentSplitBottom = document.createElement('div');
-        divEditorContentSplitBottom.classList.add('columnAuto');
+        divEditorContentSplitBottom.classList.add('columnAuto-2');
 
         const divFixRightBorder = document.createElement('div');
         divFixRightBorder.classList.add('borderWidth', 'frameLeft');
@@ -101,6 +101,7 @@ export class Structogram {
         }
         //this.domRoot.appendChild(this.prepareRenderTree(tree, false, false));
         for (const elem of this.renderElement(tree, false, false)) {
+            this.applyCodeEventListeners(elem);
             this.domRoot.appendChild(elem);
         }
         const lastLine = document.createElement('div');
@@ -251,12 +252,14 @@ export class Structogram {
                     const divTrue = document.createElement('div');
                     divTrue.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
                     for (const elem of this.renderElement(subTree.trueChild, false, noInsert)) {
+                        this.applyCodeEventListeners(elem);
                         divTrue.appendChild(elem);
                     }
 
                     const divFalse = document.createElement('div');
                     divFalse.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
                     for (const elem of this.renderElement(subTree.falseChild, false, noInsert)) {
+                        this.applyCodeEventListeners(elem);
                         divFalse.appendChild(elem);
                     }
 
@@ -290,6 +293,7 @@ export class Structogram {
                     divLoop.classList.add('loopWidth', 'frameLeft', 'vcontainer');
 
                     for (const elem of this.renderElement(subTree.child, false, noInsert)) {
+                        this.applyCodeEventListeners(elem);
                         divLoop.appendChild(elem);
                     }
 
@@ -312,6 +316,7 @@ export class Structogram {
                     divLoop.classList.add('loopWidth', 'frameLeftBottom', 'vcontainer');
 
                     for (const elem of this.renderElement(subTree.child, false, noInsert)) {
+                        this.applyCodeEventListeners(elem);
                         divLoop.appendChild(elem);
                     }
                     // Fix for overlapped bottom line
@@ -373,6 +378,7 @@ export class Structogram {
                         divCase.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
 
                         for (const elem of this.renderElement(caseElem, false, noInsert)) {
+                            this.applyCodeEventListeners(elem);
                             divCase.appendChild(elem);
                         }
                         divChildren.appendChild(divCase);
@@ -382,6 +388,7 @@ export class Structogram {
                         let divCase = document.createElement('div');
                         divCase.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
                         for (const elem of this.renderElement(subTree.defaultNode, false, noInsert)) {
+                            this.applyCodeEventListeners(elem);
                             divCase.appendChild(elem);
                         }
                         divChildren.appendChild(divCase);
@@ -650,6 +657,36 @@ export class Structogram {
         textDiv.appendChild(editDiv);
 
         return textDiv
+    }
+
+    applyCodeEventListeners(obj) {
+        if (obj.firstChild.firstChild.classList.contains('loopShift')) {
+            obj.firstChild.lastChild.addEventListener('mouseover', function() {
+                const elemSpan = document.getElementById(obj.id + '-codeLine');
+                if (elemSpan) {
+                    elemSpan.classList.add('highlight');
+                }
+            });
+            obj.firstChild.lastChild.addEventListener('mouseout', function() {
+                const elemSpan = document.getElementById(obj.id + '-codeLine');
+                if (elemSpan) {
+                    elemSpan.classList.remove('highlight');
+                }
+            });
+        } else {
+            obj.firstChild.firstChild.addEventListener('mouseover', function() {
+                const elemSpan = document.getElementById(obj.id + '-codeLine');
+                if (elemSpan) {
+                    elemSpan.classList.add('highlight');
+                }
+            });
+            obj.firstChild.firstChild.addEventListener('mouseout', function() {
+                const elemSpan = document.getElementById(obj.id + '-codeLine');
+                if (elemSpan) {
+                    elemSpan.classList.remove('highlight');
+                }
+            });
+        }
     }
 
 
