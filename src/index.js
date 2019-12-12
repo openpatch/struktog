@@ -14,9 +14,27 @@ import { Presenter } from './presenter/main';
 import { Structogram } from './views/structogram';
 import { CodeView } from './views/code';
 import { ImportExport } from './views/importExport';
+import { templates } from './templates.js';
 
 
 window.onload = function() {
+    // manipulate the localStorage before loading the presenter
+    if (typeof(Storage) !== "undefined") {
+        const url = new URL(window.location.href);
+        const template = url.searchParams.get("template");
+        if (template in templates) {
+            if ('model' in templates[template]) {
+                localStorage.tree = JSON.stringify(templates[template].model);
+                model.setTree(templates[template].model);
+            }
+            if ('lang' in templates[template]) {
+                localStorage.lang = templates[template].lang;
+            }
+            if ('displaySourcecode' in templates[template]) {
+                localStorage.displaySourcecode = templates[template].displaySourcecode;
+            }
+        }
+    }
     // create presenter object
     const presenter = new Presenter(model);
     // TODO: this should not be necessary, but some functions depend on moveId and nextInsertElement

@@ -353,6 +353,7 @@ export class Structogram {
                     } else {
                         divHead.classList.add('caseHead-noDefault-' + subTree.cases.length);
                     }
+                    divHead.style.backgroundPosition = '1px 0px';
 
                     let nrCases = subTree.cases.length;
                     if (!subTree.defaultOn) {
