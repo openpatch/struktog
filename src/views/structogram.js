@@ -147,7 +147,10 @@ export class Structogram {
                                 container.addEventListener('dragover', function(event) {
                                     event.preventDefault();
                                 });
-                                container.addEventListener('drop', () => this.presenter.appendElement(subTree.id));
+                                container.addEventListener('drop', (event) => {
+                                    event.preventDefault();
+                                    this.presenter.appendElement(subTree.id)
+                                });
                                 container.addEventListener('click', () => this.presenter.appendElement(subTree.id));
 
                                 if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id == this.presenter.getMoveId()) {
