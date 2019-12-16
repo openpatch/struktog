@@ -60,38 +60,46 @@ export function generateHtmltree () {
   header.appendChild(section2)
 
   // main
-
   let mdiv1 = document.createElement('div')
   mdiv1.setAttribute('class', 'container')
   mdiv1.setAttribute('id', 'editorDisplay')
 
+  let mdiv20 = document.createElement('div')
+  mdiv20.setAttribute('class', 'modal.overlay')
+  mdiv20.setAttribute('aria-label', 'Close')
+  mdiv20.setAttribute('onclick', "document.getElementById('IEModal').classList.remove('active');")
+
   let span = document.createElement('span')
-  span.setAttribute('class', 'close')
-  span.setAttribute('onclick', "document.getElementById('IEModal').style.display = 'none';")
+  span.setAttribute('class', 'close hand')
+  span.setAttribute('onclick', "document.getElementById('IEModal').classList.remove('active');")
   span.innerHTML = '&times;'
-  let p = document.createElement('p')
-  p.innerHTML = 'JSON-Import:'
-  let input = document.createElement('input')
-  input.setAttribute('id', 'ImportForm')
-  input.setAttribute('type', 'file')
-  input.setAttribute('class', 'form-input')
-  let p2 = document.createElement('p')
-  p2.innerHTML = 'Export:'
+  let mdiv210 = document.createElement('div')
+  mdiv210.setAttribute('class', 'modal-header')
+  mdiv210.appendChild(span)
+
+  let mdiv2110 = document.createElement('div')
+  mdiv2110.setAttribute('id', 'modal-content')
+  mdiv2110.setAttribute('class', 'content')
+  mdiv2110.innerHTML = 'Content'
   let mdiv211 = document.createElement('div')
-  mdiv211.setAttribute('id', 'Export')
-  mdiv211.setAttribute('class', 'text-center pt-1')
+  mdiv211.setAttribute('class', 'modal-body')
+  mdiv211.appendChild(mdiv2110)
+
+  let mdiv212 = document.createElement('div')
+  mdiv212.setAttribute('class', 'modal-footer container')
+  mdiv212.setAttribute('id', 'modal-footer')
+  mdiv212.innerHTML = 'Footer'
 
   let mdiv21 = document.createElement('div')
-  mdiv21.setAttribute('class', 'modal-content')
-  mdiv21.appendChild(span)
-  mdiv21.appendChild(p)
-  mdiv21.appendChild(input)
-  mdiv21.appendChild(p2)
+  mdiv21.setAttribute('class', 'modal-container')
+  mdiv21.appendChild(mdiv210)
   mdiv21.appendChild(mdiv211)
+  mdiv21.appendChild(mdiv212)
 
   let mdiv2 = document.createElement('div')
   mdiv2.setAttribute('class', 'modal')
   mdiv2.setAttribute('id', 'IEModal')
+  mdiv2.appendChild(mdiv20)
   mdiv2.appendChild(mdiv21)
 
   let main = document.createElement('main')
@@ -126,6 +134,7 @@ export function generateHtmltree () {
   footer.appendChild(fdiv)
 
   document.body.appendChild(header)
+  // append   <div class="divider"></div>
   document.body.appendChild(main)
   document.body.appendChild(footer)
 }

@@ -1,3 +1,2 @@
 node_modules
-dist/main.js
-dist/struktog.min.css
+build

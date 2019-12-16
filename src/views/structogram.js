@@ -1,41 +1,20 @@
+import { config } from '../config.js';
+
 export class Structogram {
     constructor(presenter, domRoot) {
         this.presenter = presenter;
         this.domRoot = domRoot;
         this.size = 7;
-        this.buttonList = [{
-            id: 'InputButton',
-            text: 'Eingabe-Feld',
-            icon: 'taskIcon'
-        },{
-            id: 'OutputButton',
-            text: 'Ausgabe-Feld',
-            icon: 'taskIcon'
-        },{
-            id: 'TaskButton',
-            text: 'Anweisung',
-            icon: 'taskIcon'
-        },{
-            id: 'CountLoopButton',
-            text: 'Zählergesteuerte Schleife',
-            icon: 'countLoopIcon'
-        },{
-            id: 'HeadLoopButton',
-            text: 'Kopfgesteuerte Schleife',
-            icon: 'countLoopIcon'
-        },{
-            id: 'FootLoopButton',
-            text: 'Fußgesteuerte Schleife',
-            icon: 'footLoopIcon'
-        },{
-            id: 'BranchButton',
-            text: 'Verzweigung',
-            icon: 'branchIcon'
-        },{
-            id: 'CaseButton',
-            text: 'Fallunterscheidung',
-            icon: 'caseIcon'
-        }];
+        this.buttonList = [
+            'InputNode',
+            'OutputNode',
+            'TaskNode',
+            'CountLoopNode',
+            'HeadLoopNode',
+            'FootLoopNode',
+            'BranchNode',
+            'CaseNode'
+        ];
 
         this.preRender();
     }
@@ -46,80 +25,72 @@ export class Structogram {
         divInsert.classList.add('columnEditorFull');
         let divHeader = document.createElement('div');
         //divHeader.classList.add('elementButtonColumns');
-        let spanHeader = document.createElement('span');
+        let spanHeader = document.createElement('strong');
+        spanHeader.classList.add('margin-small');
         spanHeader.appendChild(document.createTextNode('Element wählen:'));
         divHeader.appendChild(spanHeader);
         divInsert.appendChild(divHeader);
 
         let divButtons = document.createElement('div');
-        divButtons.classList.add('container');
+        divButtons.classList.add('container', 'justify-center');
         for (const item of this.buttonList) {
-            divButtons.appendChild(this.createButton(item));
+            if (config[item].use) {
+                divButtons.appendChild(this.createButton(item));
+            }
         }
         divInsert.appendChild(divButtons);
 
         let divEditorHeadline = document.createElement('div');
         divEditorHeadline.classList.add('columnEditorFull');
-        let editorHeadline = document.createElement('span');
+        let editorHeadline = document.createElement('strong');
+        editorHeadline.classList.add('margin-small');
         editorHeadline.appendChild(document.createTextNode('Editor:'));
         divEditorHeadline.appendChild(editorHeadline);
 
+        const divEditorContent = document.createElement('div');
+        divEditorContent.classList.add('vcontainer', 'columnEditorStructogram');
+
+        const divEditorContentSplitTop = document.createElement('div');
+        divEditorContentSplitTop.classList.add('columnAuto', 'container');
+
+        const divEditorContentSplitBottom = document.createElement('div');
+        divEditorContentSplitBottom.classList.add('columnAuto-2');
+
+        const divFixRightBorder = document.createElement('div');
+        divFixRightBorder.classList.add('borderWidth', 'frameLeft');
+
         let divWorkingArea = document.createElement('div');
-        divWorkingArea.classList.add('columnEditorStructogram');
-        //divWorkingArea.classList.add('col-' + this.size);
-        divWorkingArea.id = 'Sizelimiter';
-        // dirty workaround
-        divWorkingArea.innerHTML = `<div class="frameLeftRight">
-                                        <div id="structogram" class="frameBottom"></div>
-                                    </div>`;
+        divWorkingArea.classList.add('columnAuto');
+        divWorkingArea.id = 'structogram';
 
-        this.domRoot.prepend(divWorkingArea);
-        this.domRoot.prepend(divEditorHeadline);
-        this.domRoot.prepend(divInsert);
+        divEditorContent.appendChild(divEditorContentSplitTop);
+        divEditorContentSplitTop.appendChild(divWorkingArea);
+        divEditorContentSplitTop.appendChild(divFixRightBorder);
+        divEditorContent.appendChild(divEditorContentSplitBottom);
+
+        this.domRoot.appendChild(divInsert);
+        this.domRoot.appendChild(divEditorHeadline);
+        this.domRoot.appendChild(divEditorContent);
+
         this.domRoot = document.getElementById('structogram');
-
-        // add option buttons
-        // let sizeButtons = document.createElement('div');
-        // //sizeButtons.classList.add('column', 'col-auto', 'hide-md');
-        // let sizeText = document.createElement('span');
-        // sizeText.appendChild(document.createTextNode('Breite ändern:'));
-        // let sizeDecrease = document.createElement('button');
-        // //sizeDecrease.classList.add('btn', 'cubic');
-        // sizeDecrease.addEventListener('click', () => this.decreaseSize());
-        // sizeDecrease.appendChild(document.createTextNode('-'));
-        // let sizeIncrease = document.createElement('button');
-        // //sizeIncrease.classList.add('btn', 'cubic');
-        // sizeIncrease.addEventListener('click', () => this.increaseSize());
-        // sizeIncrease.appendChild(document.createTextNode('+'));
-
-        // sizeButtons.appendChild(sizeText);
-        // sizeButtons.appendChild(document.createTextNode(' '));
-        // sizeButtons.appendChild(sizeDecrease);
-        // sizeButtons.appendChild(document.createTextNode(' '));
-        // sizeButtons.appendChild(sizeIncrease);
-        // document.getElementById('optionButtons').appendChild(sizeButtons);
     }
 
     createButton(button) {
         let div = document.createElement('div');
-        div.classList.add('columnInput', 'insertButton');
-        //let anker = document.createElement('a');
-        div.classList.add('hand');
-        //anker.style.height = '3em';
-        div.id = button.id;
+        div.classList.add('columnInput', 'insertButton', 'hand');
+        div.style.backgroundColor = config[button].color;
+        div.id = config[button].id;
         div.draggable = 'true';
-        div.addEventListener('click', (event) => this.presenter.insertNode(button.id, event));
-        div.addEventListener('dragstart', (event) => this.presenter.insertNode(button.id, event));
+        div.addEventListener('click', (event) => this.presenter.insertNode(config[button].id, event));
+        div.addEventListener('dragstart', (event) => this.presenter.insertNode(config[button].id, event));
         div.addEventListener('dragend', () => this.presenter.resetDrop());
         let spanText = document.createElement('span');
-        spanText.appendChild(document.createTextNode(button.text));
+        spanText.appendChild(document.createTextNode(config[button].text));
         let divIcon = document.createElement('div');
-        divIcon.classList.add(button.icon, 'buttonLogo');
-        //divIcon.classList.add('p-centered');
+        divIcon.classList.add(config[button].icon, 'buttonLogo');
 
         div.append(divIcon);
         div.append(spanText);
-        //div.appendChild(anker);
         return div
     }
 
@@ -130,8 +101,12 @@ export class Structogram {
         }
         //this.domRoot.appendChild(this.prepareRenderTree(tree, false, false));
         for (const elem of this.renderElement(tree, false, false)) {
+            this.applyCodeEventListeners(elem);
             this.domRoot.appendChild(elem);
         }
+        const lastLine = document.createElement('div');
+        lastLine.classList.add('frameTop', 'borderHeight');
+        this.domRoot.appendChild(lastLine);
     }
 
 
@@ -145,13 +120,13 @@ export class Structogram {
                 noInsert = true;
             }
 
-            const background = document.createElement('div');
-            background.classList.add('vcontainer', 'columnAuto');
             const container = document.createElement('div');
             if (subTree.id) {
                 container.id = subTree.id;
             }
-            container.classList.add('vcontainer', 'frameTop', 'columnAuto');
+            container.classList.add('vcontainer', 'frameTopLeft', 'columnAuto');
+            container.style.backgroundColor = config[subTree.type].color;
+            //container.style.margin = '0 .75px';
             //const element = document.createElement('div');
             //element.classList.add('column', 'vcontainer', 'frameTop');
             //container.appendChild(element);
@@ -168,15 +143,16 @@ export class Structogram {
                             if (this.presenter.getInsertMode()) {
                                 //container.classList.add('line');
                                 const div = document.createElement('div');
-                                div.classList.add('fixedHalfHeight', 'symbol', 'hand', 'text-center');
-                                div.addEventListener('dragover', function(event) {
+                                div.classList.add('container', 'fixedHalfHeight', 'symbol', 'hand', 'text-center');
+                                container.addEventListener('dragover', function(event) {
                                     event.preventDefault();
                                 });
-                                div.addEventListener('drop', () => this.presenter.appendElement(subTree.id));
-                                div.addEventListener('click', () => this.presenter.appendElement(subTree.id));
+                                container.addEventListener('drop', () => this.presenter.appendElement(subTree.id));
+                                container.addEventListener('click', () => this.presenter.appendElement(subTree.id));
 
                                 if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id == this.presenter.getMoveId()) {
                                     const bold = document.createElement('strong');
+                                    bold.classList.add('moveText');
                                     bold.appendChild(document.createTextNode('Verschieben abbrechen'));
                                     div.appendChild(bold);
                                 } else {
@@ -185,7 +161,6 @@ export class Structogram {
                                     div.appendChild(symbol);
                                 }
                                 container.appendChild(div);
-                                container.classList.add('simpleBorder');
                                 elemArray.push(container);
 
                                 if (subTree.followElement === null || subTree.followElement.type == 'Placeholder') {
@@ -203,7 +178,7 @@ export class Structogram {
             case 'Placeholder':
                 {
                     const div = document.createElement('div');
-                    div.classList.add('fixedHeight');
+                    div.classList.add('container', 'fixedHeight');
                     const symbol = document.createElement('div');
                     symbol.classList.add('placeholder', 'symbolHeight', 'symbol');
                     div.appendChild(symbol);
@@ -214,8 +189,8 @@ export class Structogram {
                 break;
             case 'InsertCase':
                 {
-                    container.classList.remove('frameTop', 'columnAuto');
-                    container.classList.add('fixedHeight');
+                    container.classList.remove('frameTopLeft', 'columnAuto');
+                    container.classList.add('frameLeft', 'fixedHeight');
                 }
             case 'InputNode':
             case 'OutputNode':
@@ -277,12 +252,14 @@ export class Structogram {
                     const divTrue = document.createElement('div');
                     divTrue.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
                     for (const elem of this.renderElement(subTree.trueChild, false, noInsert)) {
+                        this.applyCodeEventListeners(elem);
                         divTrue.appendChild(elem);
                     }
 
                     const divFalse = document.createElement('div');
                     divFalse.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
                     for (const elem of this.renderElement(subTree.falseChild, false, noInsert)) {
+                        this.applyCodeEventListeners(elem);
                         divFalse.appendChild(elem);
                     }
 
@@ -316,6 +293,7 @@ export class Structogram {
                     divLoop.classList.add('loopWidth', 'frameLeft', 'vcontainer');
 
                     for (const elem of this.renderElement(subTree.child, false, noInsert)) {
+                        this.applyCodeEventListeners(elem);
                         divLoop.appendChild(elem);
                     }
 
@@ -338,8 +316,13 @@ export class Structogram {
                     divLoop.classList.add('loopWidth', 'frameLeftBottom', 'vcontainer');
 
                     for (const elem of this.renderElement(subTree.child, false, noInsert)) {
+                        this.applyCodeEventListeners(elem);
                         divLoop.appendChild(elem);
                     }
+                    // Fix for overlapped bottom line
+                    const lastLine = document.createElement('div');
+                    lastLine.classList.add('borderHeight');
+                    divLoop.appendChild(lastLine);
 
                     divChild.appendChild(divLoop);
                     div.appendChild(divChild);
@@ -395,6 +378,7 @@ export class Structogram {
                         divCase.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
 
                         for (const elem of this.renderElement(caseElem, false, noInsert)) {
+                            this.applyCodeEventListeners(elem);
                             divCase.appendChild(elem);
                         }
                         divChildren.appendChild(divCase);
@@ -404,6 +388,7 @@ export class Structogram {
                         let divCase = document.createElement('div');
                         divCase.classList.add('columnAuto', 'vcontainer', 'ov-hidden');
                         for (const elem of this.renderElement(subTree.defaultNode, false, noInsert)) {
+                            this.applyCodeEventListeners(elem);
                             divCase.appendChild(elem);
                         }
                         divChildren.appendChild(divCase);
@@ -426,7 +411,9 @@ export class Structogram {
     resetButtons() {
         // remove color of buttons
         for (const button of this.buttonList) {
-            document.getElementById(button.id).classList.remove('btn-primary');
+            if (config[button].use) {
+                document.getElementById(config[button].id).classList.remove('btn-primary');
+            }
         }
     }
 
@@ -506,9 +493,6 @@ export class Structogram {
         let optionDiv = document.createElement('div');
         optionDiv.classList.add('optionContainer');
 
-
-
-
         // case nodes have two additional options
         if (type == 'CaseNode') {
             // add another new case
@@ -517,7 +501,7 @@ export class Structogram {
             addingCase.classList.add('optionIcon');
             addingCase.classList.add('hand');
             addingCase.classList.add('tooltip');
-            addingCase.classList.add('tooltip-bottom');
+            addingCase.classList.add('tooltip-bottoml');
             addingCase.setAttribute('data-tooltip', 'Fall hinzufügen');
             addingCase.addEventListener('click', () => this.presenter.addCase(uid));
             optionDiv.appendChild(addingCase);
@@ -528,7 +512,7 @@ export class Structogram {
             switchDefault.classList.add('optionIcon');
             switchDefault.classList.add('hand');
             switchDefault.classList.add('tooltip');
-            switchDefault.classList.add('tooltip-bottom');
+            switchDefault.classList.add('tooltip-bottoml');
             switchDefault.setAttribute('data-tooltip', 'Sonst-Zweig schalten');
             switchDefault.addEventListener('click', () => this.presenter.switchDefaultState(uid));
             optionDiv.appendChild(switchDefault);
@@ -541,7 +525,7 @@ export class Structogram {
             moveElem.classList.add('optionIcon');
             moveElem.classList.add('hand');
             moveElem.classList.add('tooltip');
-            moveElem.classList.add('tooltip-bottom');
+            moveElem.classList.add('tooltip-bottoml');
             moveElem.setAttribute('data-tooltip', 'Verschieben');
             moveElem.addEventListener('click', () => this.presenter.moveElement(uid));
             optionDiv.appendChild(moveElem);
@@ -549,11 +533,11 @@ export class Structogram {
 
         // every element can be deleted
         let deleteElem = document.createElement('div');
-        deleteElem.classList.add('deleteIcon');
+        deleteElem.classList.add('trashcan');
         deleteElem.classList.add('optionIcon');
         deleteElem.classList.add('hand');
         deleteElem.classList.add('tooltip');
-        deleteElem.classList.add('tooltip-bottom');
+        deleteElem.classList.add('tooltip-bottoml');
         deleteElem.setAttribute('data-tooltip', 'Entfernen');
         deleteElem.addEventListener('click', () => this.presenter.removeElement(uid));
         optionDiv.appendChild(deleteElem);
@@ -673,6 +657,36 @@ export class Structogram {
         textDiv.appendChild(editDiv);
 
         return textDiv
+    }
+
+    applyCodeEventListeners(obj) {
+        if (obj.firstChild.firstChild.classList.contains('loopShift')) {
+            obj.firstChild.lastChild.addEventListener('mouseover', function() {
+                const elemSpan = document.getElementById(obj.id + '-codeLine');
+                if (elemSpan) {
+                    elemSpan.classList.add('highlight');
+                }
+            });
+            obj.firstChild.lastChild.addEventListener('mouseout', function() {
+                const elemSpan = document.getElementById(obj.id + '-codeLine');
+                if (elemSpan) {
+                    elemSpan.classList.remove('highlight');
+                }
+            });
+        } else {
+            obj.firstChild.firstChild.addEventListener('mouseover', function() {
+                const elemSpan = document.getElementById(obj.id + '-codeLine');
+                if (elemSpan) {
+                    elemSpan.classList.add('highlight');
+                }
+            });
+            obj.firstChild.firstChild.addEventListener('mouseout', function() {
+                const elemSpan = document.getElementById(obj.id + '-codeLine');
+                if (elemSpan) {
+                    elemSpan.classList.remove('highlight');
+                }
+            });
+        }
     }
 
 
