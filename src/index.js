@@ -4,6 +4,7 @@ import { Structogram } from './views/structogram'
 import { CodeView } from './views/code'
 import { ImportExport } from './views/importExport'
 import { generateHtmltree } from './helpers/generator'
+import { templates } from './templates.js';
 
 import './assets/scss/structog.scss'
 

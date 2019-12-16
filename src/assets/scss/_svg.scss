@@ -28,7 +28,19 @@
   background-position: center;
 }
 
+.cancelIcon {
+  background: url("../svg/cancelIcon.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 .caseIcon {
+  background: url("../svg/caseIcon.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.codeIcon {
   background: url("../svg/caseIcon.svg");
   background-repeat: no-repeat;
   background-position: center;
@@ -42,6 +54,12 @@
 
 .deleteIcon {
   background: url("../svg/deleteIcon.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.exportIcon {
+  background: url("../svg/exportIcon.svg");
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -76,6 +94,18 @@
   background-position: center;
 }
 
+.frameTopLeft {
+  background: url("../svg/frameTopLeft.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.frameTopLeftBottom {
+  background: url("../svg/frameTopLeftBottom.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 .insertIcon {
   background: url("../svg/insertIcon.svg");
   background-repeat: no-repeat;
@@ -100,6 +130,18 @@
   background-position: center;
 }
 
+.resetIcon {
+  background: url("../svg/resetIcon.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.saveIcon {
+  background: url("../svg/saveIcon.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 .switchDefaultCaseIcon {
   background: url("../svg/switchDefaultCaseIcon.svg");
   background-repeat: no-repeat;
@@ -108,6 +150,18 @@
 
 .taskIcon {
   background: url("../svg/taskIcon.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.trashcan {
+  background: url("../svg/trashcan.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.uploadIcon {
+  background: url("../svg/uploadIcon.svg");
   background-repeat: no-repeat;
   background-position: center;
 }
