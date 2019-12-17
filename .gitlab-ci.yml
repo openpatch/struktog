@@ -9,10 +9,10 @@ buildGame:
     - npm install
     - webpack --mode production
     - cd build
-    - tar -czf tool.tar.gz *
-    - mv ./tool.tar.gz ..
+    - tar -czf ${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.tar.gz *
+    - mv ./${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.tar.gz ..
   artifacts:
     paths:
-      - tool.tar.gz
+      - ${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.tar.gz
   only:
     - webpack
