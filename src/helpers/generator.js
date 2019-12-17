@@ -102,33 +102,16 @@ export function generateHtmltree () {
 
   // footer
   let fspan1 = document.createElement('span')
-  fspan1.innerHTML = ('&#169; 2019 Didaktik der Informatik')
-
-  let fspan2 = document.createElement('span')
-  fspan2.innerHTML = '('
-
-  let fspan3 = document.createElement('span')
-  fspan3.innerHTML = ')'
-
-  let flink = document.createElement('a')
-  let ftext = document.createTextNode('MIT License')
-  // strong
-  flink.innerHTML = ftext
-  flink.title = ''
-  flink.href = 'license.html'
+  fspan1.innerHTML = ('&#169; 2019 Didaktik der Informatik der TU Dresden')
 
   let fdiv = document.createElement('div')
   fdiv.setAttribute('class', 'column')
   fdiv.appendChild(fspan1)
-  fdiv.appendChild(fspan2)
-  fdiv.appendChild(flink)
-  fdiv.appendChild(fspan3)
 
   let footer = document.createElement('footer')
   footer.appendChild(fdiv)
 
   document.body.appendChild(header)
-  // append   <div class="divider"></div>
   document.body.appendChild(main)
   document.body.appendChild(footer)
 

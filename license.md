@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright © 2019 Klaus Ramm
+Copyright © 2019 Didaktik der Informatik der TU Dresden
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the “Software”), to deal in

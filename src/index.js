@@ -15,14 +15,14 @@ window.onload = function () {
     const template = url.searchParams.get('template')
     if (template in templates) {
       if ('model' in templates[template]) {
-        localStorage.tree = JSON.stringify(templates[template].model)
+        window.localStorage.tree = JSON.stringify(templates[template].model)
         model.setTree(templates[template].model)
       }
       if ('lang' in templates[template]) {
-        localStorage.lang = templates[template].lang
+        window.localStorage.lang = templates[template].lang
       }
       if ('displaySourcecode' in templates[template]) {
-        localStorage.displaySourcecode = templates[template].displaySourcecode
+        window.localStorage.displaySourcecode = templates[template].displaySourcecode
       }
     }
   }

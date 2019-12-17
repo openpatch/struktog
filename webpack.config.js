@@ -75,7 +75,8 @@ var config = {
     contentBase: './src',
     watchOptions: {
       poll: true
-    }
+    },
+    open: true
   }
 }
 
