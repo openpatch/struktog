@@ -7,7 +7,7 @@ buildGame:
   script:
     - PATH="./node_modules/.bin:$PATH"
     - npm install
-    - npm build
+    - webpack --mode production
     - cd build
     - tar -czf tool.tar.gz *
     - mv ./tool.tar.gz ..
