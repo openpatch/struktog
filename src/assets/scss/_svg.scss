@@ -41,7 +41,7 @@
 }
 
 .codeIcon {
-  background: url("../svg/caseIcon.svg");
+  background: url("../svg/codeIcon.svg");
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -72,6 +72,12 @@
 
 .frameBottom {
   background: url("../svg/frameBottom.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.frameLeft {
+  background: url("../svg/frameLeft.svg");
   background-repeat: no-repeat;
   background-position: center;
 }

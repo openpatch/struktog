@@ -38,11 +38,6 @@ export function generateHtmltree () {
   let section2 = document.createElement('section')
   section2.setAttribute('class', 'nav-col')
 
-  let button = document.createElement('button')
-  button.setAttribute('class', 'column')
-  button.setAttribute('onclick', "document.getElementById('IEModal').style.display = 'block';")
-  button.innerHTML = 'Import / Export'
-
   let divinner = document.createElement('div')
   divinner.setAttribute('class', 'column container')
 
@@ -50,7 +45,6 @@ export function generateHtmltree () {
   divouter.setAttribute('class', 'options-container')
   divouter.setAttribute('id', 'optionButtons')
 
-  divinner.appendChild(button)
   divouter.appendChild(divinner)
   section2.appendChild(divouter)
 

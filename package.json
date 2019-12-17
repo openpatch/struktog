@@ -14,7 +14,10 @@
   },
   "keywords": [],
   "author": "Didaktik der Informatik TU Dresden",
-  "contributors": ["Klaus Ramm", "Thiemo Leonhardt"],
+  "contributors": [
+    "Klaus Ramm",
+    "Thiemo Leonhardt"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@webpack-cli/serve": "^0",
