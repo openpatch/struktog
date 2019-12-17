@@ -14,6 +14,6 @@ build:
     - mv ./${CI_PROJECT_NAME}${TAG}.tar.gz ..
   artifacts:
     paths:
-      - ${CI_PROJECT_NAME}.tar.gz
+      - ${CI_PROJECT_NAME}${TAG}.tar.gz
   only:
     - webpack
