@@ -69,7 +69,14 @@ var config = {
       title: 'Struktogramm',
       meta: { viewport: 'width=device-width, initial-scale=1, user-scalable=no' }
     })
-  ]
+  ],
+  devServer: {
+    port: 8080,
+    contentBase: './src',
+    watchOptions: {
+      poll: true
+    }
+  }
 }
 
 module.exports = (env, argv) => {
