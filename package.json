@@ -1,8 +1,7 @@
 {
-  "name": "drafttocode",
+  "name": "struktog.ramm",
   "version": "0.5.1",
   "description": "Webprogramm zur Erstellung von Struktogrammen / PAP sowie zur Umwandlung dessen in Code (Python, PHP, Javascript)",
-  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack serve",

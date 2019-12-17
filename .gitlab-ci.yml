@@ -1,18 +1,19 @@
 stages:
   - build
 
-buildGame:
-  image: node:latest
-  stage: build
+build:
+  image:     node:latest
+  stage:     build
   script:
     - PATH="./node_modules/.bin:$PATH"
     - npm install
     - webpack --mode production
     - cd build
-    - tar -czf ${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.tar.gz *
-    - mv ./${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.tar.gz ..
+    - if [ "${CI_COMMIT_TAG}" != "" ]; then TAG="-${CI_COMMIT_TAG}"; else TAG=""; fi
+    - tar -czf ${CI_PROJECT_NAME}${TAG}.tar.gz *
+    - mv ./${CI_PROJECT_NAME}${TAG}.tar.gz ..
   artifacts:
     paths:
-      - ${CI_PROJECT_NAME}-${CI_COMMIT_TAG}.tar.gz
+      - ${CI_PROJECT_NAME}.tar.gz
   only:
     - webpack
