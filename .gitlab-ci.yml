@@ -3,8 +3,8 @@ stages:
   - deploy
 
 packen:
-  image:     node:latest
-  stage:     build
+  image: node:latest
+  stage: build
   script:
     - PATH="./node_modules/.bin:$PATH"
     - npm install
@@ -26,7 +26,8 @@ deploy:
     - apk add --no-cache sshpass
     - export SSHPASS=${PASS}
     - echo ${USER}
-    - sshpass -e sftp -v -P 44 ${USER}@dditools.inf.tu-dresden.de:dditools <<< $'ls'
+    - ls
+    #- sshpass -e sftp -v -P 44 ${USER}@dditools.inf.tu-dresden.de:dditools <<< $'ls'
   variables:
     GIT_STRATEGY: none
   only:
