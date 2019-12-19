@@ -26,6 +26,7 @@ deploy:
     - apk add --no-cache sshpass
     - apk add --no-cache openssh
     - export SSHPASS=${PASS}
+    - ssh -vvv dditools.inf.tu-dresden.de
     - sftp -v -P 44 deploy@dditools.inf.tu-dresden.de
     - exit
     #- sshpass -e sftp -v -P 44 ${USER}@dditools.inf.tu-dresden.de:dditools <<< $'ls'
