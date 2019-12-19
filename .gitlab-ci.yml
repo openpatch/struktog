@@ -24,7 +24,7 @@ deploy:
   stage: deploy
   script:
     - apk add --no-cache sshpass
-    - SSHPASS=${PASS} sshpass -e sftp -v ${USER}@$dditools.inf.tu-dresden.de:dditools <<< $'ls'
+    - SSHPASS=${PASS} sshpass -e sftp ${USER}@dditools.inf.tu-dresden.de:dditools <<< $'put ${CI_PROJECT_NAME}${TAG}.tar.gz'
     # - curl -v --data-binary @game.tar.gz ${DEPLOY_URL}/${CI_PROJECT_NAME}?token=${DEPLOY_TOKEN} | cat
   variables:
     GIT_STRATEGY: none
