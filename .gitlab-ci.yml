@@ -25,7 +25,8 @@ deploy:
   script:
     - apk add --no-cache sshpass
     - export SSHPASS=${PASS}
-    - sshpass -e sftp -v -P 44 ${USER}@dditools.inf.tu-dresden.de:dditools
+    - sftp -v -P 44 deploy@dditools.inf.tu-dresden.de
+    - exit
     #- sshpass -e sftp -v -P 44 ${USER}@dditools.inf.tu-dresden.de:dditools <<< $'ls'
   variables:
     GIT_STRATEGY: none
