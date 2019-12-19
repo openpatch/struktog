@@ -26,6 +26,7 @@ deploy:
     - apk add --no-cache sshpass
     - export SSHPASS=${PASS}
     - echo ${USER}
+    - echo ${CI_PROJECT_NAME}
     - ls
     #- sshpass -e sftp -v -P 44 ${USER}@dditools.inf.tu-dresden.de:dditools <<< $'ls'
   variables:
