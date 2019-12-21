@@ -29,7 +29,7 @@ deploy:
     - apk add --no-cache openssh
     - export SSHPASS=${PASS}
     #- ssh -vvv -p 44 dditools.inf.tu-dresden.de
-    - sshpass -e sftp -vr -P 44 -o StrictHostKeyChecking=no deploy@dditools.inf.tu-dresden.de:dditools /struktog <<< $'put ./build'
+    - sshpass -e sftp -vr -P 44 -o StrictHostKeyChecking=no deploy@dditools.inf.tu-dresden.de:dditools/struktog <<< $'put ./build'
     #- sshpass -e sftp -v -P 44 ${USER}@dditools.inf.tu-dresden.de:dditools <<< $'ls'
   variables:
     GIT_STRATEGY: none
