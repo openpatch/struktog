@@ -4,10 +4,10 @@
  * @ return   string   random generated
  */
 export function guidGenerator () {
-  const gen = function () {
-    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
-  }
-  return (gen() + gen() + '-' + gen() + '-' + gen() + '-' + gen() + '-' + gen() + gen())
+    const gen = function () {
+        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
+    }
+    return (gen() + gen() + '-' + gen() + '-' + gen() + '-' + gen() + '-' + gen() + gen())
 }
 
 /**
@@ -15,130 +15,137 @@ export function guidGenerator () {
  *
  */
 export function generateHtmltree () {
-  // Header
-  let section1 = document.createElement('section')
-  section1.setAttribute('class', 'nav-col')
+    // Header
+    const header = document.createElement('header')
+    header.classList.add('container')
+    document.body.appendChild(header)
 
-  let div = document.createElement('div')
-  div.setAttribute('class', 'nav-logo-container')
-  section1.appendChild(div)
+    const section1 = document.createElement('section')
+    section1.classList.add('nav-col')
+    header.appendChild(section1)
 
-  div = document.createElement('div')
-  div.setAttribute('class', 'logo-container logo')
-  section1.appendChild(div)
+    const logoDiv = document.createElement('div')
+    logoDiv.classList.add('nav-logo-container')
+    section1.appendChild(logoDiv)
 
-  let link = document.createElement('a')
-  let text = document.createTextNode('Struktog.')
-  // strong
-  link.appendChild(text)
-  link.title = ''
-  link.href = 'index.html'
-  section1.appendChild(link)
+    const logoAnker = document.createElement('a')
+    logoAnker.classList.add('column', 'container')
+    logoAnker.setAttribute('href', 'index.html')
+    logoDiv.appendChild(logoAnker)
 
-  let section2 = document.createElement('section')
-  section2.setAttribute('class', 'nav-col')
+    const logo = document.createElement('div')
+    logo.classList.add('logo', 'logo-container')
+    logoAnker.appendChild(logo)
 
-  let divinner = document.createElement('div')
-  divinner.setAttribute('class', 'column container')
+    const logoText = document.createElement('strong')
+    logoText.classList.add('nav-col')
+    logoText.appendChild(document.createTextNode('Struktog.'))
+    logoAnker.appendChild(logoText)
 
-  let divouter = document.createElement('div')
-  divouter.setAttribute('class', 'options-container')
-  divouter.setAttribute('id', 'optionButtons')
+    const section2 = document.createElement('section')
+    section2.classList.add('nav-col-opt')
+    header.appendChild(section2)
 
-  divouter.appendChild(divinner)
-  section2.appendChild(divouter)
+    const divOptions = document.createElement('div')
+    divOptions.classList.add('options-container')
+    divOptions.setAttribute('id', 'optionButtons')
+    section2.appendChild(divOptions)
 
-  let header = document.createElement('header')
-  header.setAttribute('class', 'container')
-  header.appendChild(section1)
-  header.appendChild(section2)
+    const divider = document.createElement('div')
+    divider.classList.add('divider')
+    document.body.appendChild(divider)
 
-  // main
-  let mdiv1 = document.createElement('div')
-  mdiv1.setAttribute('class', 'container')
-  mdiv1.setAttribute('id', 'editorDisplay')
+    // main
+    const main = document.createElement('main')
+    document.body.appendChild(main)
 
-  let mdiv20 = document.createElement('div')
-  mdiv20.setAttribute('class', 'modal.overlay')
-  mdiv20.setAttribute('aria-label', 'Close')
-  mdiv20.setAttribute('onclick', "document.getElementById('IEModal').classList.remove('active');")
+    const editor = document.createElement('div')
+    editor.classList.add('container')
+    editor.setAttribute('id', 'editorDisplay')
+    main.appendChild(editor)
 
-  let span = document.createElement('span')
-  span.setAttribute('class', 'close hand')
-  span.setAttribute('onclick', "document.getElementById('IEModal').classList.remove('active');")
-  span.innerHTML = '&times;'
-  let mdiv210 = document.createElement('div')
-  mdiv210.setAttribute('class', 'modal-header')
-  mdiv210.appendChild(span)
+    const modal = document.createElement('div')
+    modal.classList.add('modal')
+    modal.setAttribute('id', 'IEModal')
+    main.appendChild(modal)
 
-  let mdiv2110 = document.createElement('div')
-  mdiv2110.setAttribute('id', 'modal-content')
-  mdiv2110.setAttribute('class', 'content')
-  mdiv2110.innerHTML = 'Content'
-  let mdiv211 = document.createElement('div')
-  mdiv211.setAttribute('class', 'modal-body')
-  mdiv211.appendChild(mdiv2110)
+    const modalOverlay = document.createElement('div')
+    modalOverlay.classList.add('modal-overlay')
+    modalOverlay.setAttribute('aria-label', 'Close')
+    modalOverlay.addEventListener('click', () => {
+        document.getElementById('IEModal').classList.remove('active')
+    })
+    modal.appendChild(modalOverlay)
 
-  let mdiv212 = document.createElement('div')
-  mdiv212.setAttribute('class', 'modal-footer container')
-  mdiv212.setAttribute('id', 'modal-footer')
-  mdiv212.innerHTML = 'Footer'
+    const modalContainer = document.createElement('div')
+    modalContainer.classList.add('modal-container')
+    modal.appendChild(modalContainer)
 
-  let mdiv21 = document.createElement('div')
-  mdiv21.setAttribute('class', 'modal-container')
-  mdiv21.appendChild(mdiv210)
-  mdiv21.appendChild(mdiv211)
-  mdiv21.appendChild(mdiv212)
+    const modalHeader = document.createElement('div')
+    modalHeader.classList.add('modal-header')
+    modalContainer.appendChild(modalHeader)
 
-  let mdiv2 = document.createElement('div')
-  mdiv2.setAttribute('class', 'modal')
-  mdiv2.setAttribute('id', 'IEModal')
-  mdiv2.appendChild(mdiv20)
-  mdiv2.appendChild(mdiv21)
+    const modalHeaderClose = document.createElement('span')
+    modalHeaderClose.classList.add('close', 'hand')
+    modalHeaderClose.addEventListener('click', () => {
+        document.getElementById('IEModal').classList.remove('active')
+    })
+    modalHeaderClose.appendChild(document.createTextNode('&times;'))
+    modalHeader.appendChild(modalHeaderClose)
 
-  let main = document.createElement('main')
-  main.appendChild(mdiv1)
-  main.appendChild(mdiv2)
+    const modalBody = document.createElement('div')
+    modalBody.classList.add('modal-body')
+    modalContainer.appendChild(modalBody)
 
-  // footer
-  let fspan1 = document.createElement('span')
-  fspan1.innerHTML = ('&#169; 2019 Didaktik der Informatik der TU Dresden')
+    const modalBodyContent = document.createElement('div')
+    modalBodyContent.classList.add('content')
+    modalBodyContent.setAttribute('id', 'modal-content')
+    modalBody.appendChild(modalBodyContent)
 
-  let fdiv = document.createElement('div')
-  fdiv.setAttribute('class', 'column')
-  fdiv.appendChild(fspan1)
+    const modalFooter = document.createElement('div')
+    modalFooter.classList.add('modal-footer', 'container')
+    modalFooter.setAttribute('id', 'modal-footer')
+    modalContainer.appendChild(modalFooter)
 
-  let footer = document.createElement('footer')
-  footer.appendChild(fdiv)
+    // footer
+    const footer = document.createElement('footer')
+    footer.classList.add('container')
+    document.body.appendChild(footer)
 
-  document.body.appendChild(header)
-  document.body.appendChild(main)
-  document.body.appendChild(footer)
+    const footerDiv = document.createElement('div')
+    footerDiv.classList.add('column')
+    footer.appendChild(footerDiv)
 
-  // reset button must be last defined
-  let resetButtonDiv = document.createElement('div')
-  resetButtonDiv.classList.add('options-element', 'resetIcon', 'tooltip', 'tooltip-bottom', 'hand')
-  resetButtonDiv.setAttribute('data-tooltip', 'Reset')
-  resetButtonDiv.addEventListener('click', () => {
-    const content = document.getElementById('modal-content')
-    const footer = document.getElementById('modal-footer')
-    while (content.hasChildNodes()) {
-      content.removeChild(content.lastChild)
-    }
-    while (footer.hasChildNodes()) {
-      footer.removeChild(footer.lastChild)
-    }
-    content.appendChild(document.createTextNode('Alles löschen?'))
-    const doButton = document.createElement('div')
-    doButton.classList.add('modal-buttons', 'acceptIcon', 'hand')
-    doButton.addEventListener('click', () => presenter.resetModel())
-    footer.appendChild(doButton)
-    const cancelButton = document.createElement('div')
-    cancelButton.classList.add('modal-buttons', 'deleteIcon', 'hand')
-    cancelButton.addEventListener('click', () => document.getElementById('IEModal').classList.remove('active'))
-    footer.appendChild(cancelButton)
+    const footerSpan = document.createElement('span')
+    footerSpan.appendChild(document.createTextNode('© 2019 Didaktik der Informatik der TU Dresden'))
+    footerDiv.appendChild(footerSpan)
+}
 
-    document.getElementById('IEModal').classList.add('active')
-  })
-  document.getElementById('optionButtons').appendChild(resetButtonDiv)
+export function generateResetButton(presenter) {
+    // reset button must be last defined
+    let resetButtonDiv = document.createElement('div')
+    resetButtonDiv.classList.add('options-element', 'resetIcon', 'tooltip', 'tooltip-bottom', 'hand')
+    resetButtonDiv.setAttribute('data-tooltip', 'Reset')
+    resetButtonDiv.addEventListener('click', () => {
+        const content = document.getElementById('modal-content')
+        const footer = document.getElementById('modal-footer')
+        while (content.hasChildNodes()) {
+            content.removeChild(content.lastChild)
+        }
+        while (footer.hasChildNodes()) {
+            footer.removeChild(footer.lastChild)
+        }
+        content.appendChild(document.createTextNode('Alles löschen?'))
+        const doButton = document.createElement('div')
+        doButton.classList.add('modal-buttons', 'acceptIcon', 'hand')
+        doButton.addEventListener('click', () => presenter.resetModel())
+        footer.appendChild(doButton)
+        const cancelButton = document.createElement('div')
+        cancelButton.classList.add('modal-buttons', 'deleteIcon', 'hand')
+        cancelButton.addEventListener('click', () => document.getElementById('IEModal').classList.remove('active'))
+        footer.appendChild(cancelButton)
+
+        document.getElementById('IEModal').classList.add('active')
+    })
+    document.getElementById('optionButtons').appendChild(resetButtonDiv)
 }
