@@ -32,7 +32,7 @@ deploy:
     # - sshpass -p ${PASS} ssh -vvv -p 44 ${USER}dditools.inf.tu-dresden.de
     #- sshpass -e sftp -vr -P 44 -o StrictHostKeyChecking=no deploy@dditools.inf.tu-dresden.de:dditools/struktog <<< $'put ./build'
     #- sshpass -e sftp -v -P 44 ${USER}@dditools.inf.tu-dresden.de:dditools <<< $'ls'
-    - sshpass -e scp -o stricthostkeychecking=no -r ./build deploy@dditools.inf.tu-dresden.de:dditools/struktog
+    - sshpass -e scp -o stricthostkeychecking=no -P 44 -r ./build deploy@dditools.inf.tu-dresden.de:dditools/struktog
   variables:
     GIT_STRATEGY: none
   only:
