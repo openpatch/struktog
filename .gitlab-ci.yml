@@ -30,7 +30,7 @@ deploy:
     - apk add --no-cache sshpass
     - apk add --no-cache openssh
     - export SSHPASS=${PASS}
-    - sshpass -e ssh -o stricthostkeychecking=no -p 44 deploy@dditools.inf.tu-dresden.de "cd ./dditools/struktog/ && ls"
+    - sshpass -e ssh -o stricthostkeychecking=no -p 44 deploy@dditools.inf.tu-dresden.de "cd ./dditools/struktog/ && rm -rf ./"
     - sshpass -e scp -o stricthostkeychecking=no -P 44 -r ./build deploy@dditools.inf.tu-dresden.de:dditools/struktog
   variables:
     GIT_STRATEGY: none
@@ -44,6 +44,7 @@ deploydev:
     - apk add --no-cache sshpass
     - apk add --no-cache openssh
     - export SSHPASS=${PASS}
+    - sshpass -e ssh -o stricthostkeychecking=no -p 44 deploy@dditools.inf.tu-dresden.de "cd ./dditools/dev/struktog/ && rm -rf ./"
     - sshpass -e scp -o stricthostkeychecking=no -P 44 -r ./build deploy@dditools.inf.tu-dresden.de:dditools/dev/struktog
   variables:
     GIT_STRATEGY: none
