@@ -20,7 +20,7 @@ packen:
       - ./build
       #- ${CI_PROJECT_NAME}${TAG}.tar.gz
   only:
-    - webpack
+    - master
     - development
 
 deploy:
@@ -35,7 +35,7 @@ deploy:
   variables:
     GIT_STRATEGY: none
   only:
-    - webpack
+    - master
 
 deploydev:
   image: alpine:latest
