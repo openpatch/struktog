@@ -1,7 +1,7 @@
 stages:
   - build
-  - deploy
-  -
+  - deploymaster
+  - deploydev
 
 packen:
   image: node:latest
@@ -21,16 +21,31 @@ packen:
       #- ${CI_PROJECT_NAME}${TAG}.tar.gz
   only:
     - webpack
+    - development
 
-deploy:
+deploymaster:
   image: alpine:latest
   stage: deploy
   script:
     - apk add --no-cache sshpass
     - apk add --no-cache openssh
     - export SSHPASS=${PASS}
+    - sshpass -e ssh deploy@dditools.inf.tu-dresden.de:dditools/struktog "ls"
     - sshpass -e scp -o stricthostkeychecking=no -P 44 -r ./build deploy@dditools.inf.tu-dresden.de:dditools/struktog
   variables:
     GIT_STRATEGY: none
   only:
     - webpack
+
+deploymaster:
+  image: alpine:latest
+  stage: deploy
+  script:
+    - apk add --no-cache sshpass
+    - apk add --no-cache openssh
+    - export SSHPASS=${PASS}
+    - sshpass -e scp -o stricthostkeychecking=no -P 44 -r ./build deploy@dditools.inf.tu-dresden.de:dditools/dev/struktog
+  variables:
+    GIT_STRATEGY: none
+  only:
+    - development
