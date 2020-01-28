@@ -23,9 +23,9 @@ packen:
     - webpack
     - development
 
-deploymaster:
+deploy:
   image: alpine:latest
-  stage: deploy
+  stage: deploymaster
   script:
     - apk add --no-cache sshpass
     - apk add --no-cache openssh
@@ -37,9 +37,9 @@ deploymaster:
   only:
     - webpack
 
-deploymaster:
+deploydev:
   image: alpine:latest
-  stage: deploy
+  stage: deploydev
   script:
     - apk add --no-cache sshpass
     - apk add --no-cache openssh
