@@ -3,6 +3,7 @@
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const WebpackShellPlugin = require('webpack-shell-plugin');
 const gameRoot = process.cwd()
 
 // the path(s) that should be cleaned
@@ -30,7 +31,9 @@ var config = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        exclude: ['/node_modules/',
+                  '/build_tools/'
+                 ],
         use: {
           loader: 'babel-loader'
         }
@@ -60,6 +63,9 @@ var config = {
     ]
   },
   plugins: [
+    new WebpackShellPlugin({
+      onBuildStart:['node build_tools/prepareSvg.js']
+    }),
     new CleanWebpackPlugin({ pathsToClean, cleanOptions }),
     new MiniCssExtractPlugin({
       filename: 'struktogramm.css',
