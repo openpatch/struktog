@@ -565,11 +565,7 @@ export class Structogram {
 
         // this div contains the hidden inputfield
         let editDiv = document.createElement('div');
-        //editDiv.classList.add('column');
-        //editDiv.classList.add('col-12');
-        editDiv.classList.add('input-group', 'editField', 'padding');
-        //editDiv.classList.add('input-inline');
-        //editDiv.classList.add('editField');
+        editDiv.classList.add('input-group', 'editField');
         editDiv.style.display = 'none';
 
         if (type == 'FootLoopNode') {
@@ -578,7 +574,6 @@ export class Structogram {
 
         // inputfield with eventlisteners
         let editText = document.createElement('input');
-        //editText.classList.add('form-input');
         editText.type = 'text';
         editText.value = content;
         // TODO: move to presenter
@@ -594,24 +589,11 @@ export class Structogram {
         // add apply button
         let editApply = document.createElement('div');
         editApply.classList.add('acceptIcon', 'hand');
-        //editApply.classList.add('btn-primary');
-        //editApply.classList.add('input-group-btn');
-        //editApply.classList.add('cubic');
-        //let acceptDiv = document.createElement('div');
-        //acceptDiv.classList.add('acceptIcon');
-        //acceptDiv.classList.add('p-centered');
-        //editApply.appendChild(acceptDiv);
         editApply.addEventListener('click', () => this.presenter.editElement(uid, editText.value));
 
         // add dismiss button
         let editDismiss = document.createElement('div');
-        //editDismiss.classList.add('squareButton');
-        //editDismiss.classList.add('input-group-btn');
-        //editDismiss.classList.add('cubic');
-        //let dismissDiv = document.createElement('div');
         editDismiss.classList.add('deleteIcon', 'hand');
-        //dismissDiv.classList.add('p-centered');
-        //editDismiss.appendChild(dismissDiv);
         editDismiss.addEventListener('click', () => this.presenter.renderAllViews());
 
         // some types need additional text or a different position

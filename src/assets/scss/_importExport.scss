@@ -57,12 +57,11 @@
     }
 
     .modal-header {
-        padding: 0 1em;
+        padding: 0.3em 0.3em;
         .close {
-            color: #aaa;
+            height: 1.5em;
+            width: 1.5em;
             float: right;
-            font-size: 28px;
-            font-weight: bold;
         }
     }
 
@@ -74,14 +73,11 @@
 
     .modal-footer {
         padding: 1em;
-        text-align: right;
 
         .modal-buttons {
             flex: auto;
-            min-height: 1.5em;
-            margin: 0 1em;
-            border: 0.15em solid rgb(38, 64, 64);
-            border-radius: 0.2em;
+            min-height: 2.5em;
+            margin: 0 2em;
         }
     }
 }

@@ -85,12 +85,11 @@ export function generateHtmltree () {
     modalHeader.classList.add('modal-header')
     modalContainer.appendChild(modalHeader)
 
-    const modalHeaderClose = document.createElement('span')
-    modalHeaderClose.classList.add('close', 'hand')
+    const modalHeaderClose = document.createElement('div')
+    modalHeaderClose.classList.add('close', 'hand', 'cancelIcon')
     modalHeaderClose.addEventListener('click', () => {
         document.getElementById('IEModal').classList.remove('active')
     })
-    modalHeaderClose.appendChild(document.createTextNode('&times;'))
     modalHeader.appendChild(modalHeaderClose)
 
     const modalBody = document.createElement('div')
