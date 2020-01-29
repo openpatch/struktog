@@ -322,9 +322,85 @@ export class Presenter {
      * @param   uid   id of the clicked element in the struktogramm
      */
     removeElement(uid) {
+        const deleteElem = this.model.getElementInTree(uid, this.model.getTree());
+        switch (deleteElem.type) {
+        case 'TaskNode':
+        case 'InputNode':
+        case 'OutputNode':
+            this.removeNodeFromTree(uid);
+            break;
+        case 'HeadLoopNode':
+        case 'CountLoopNode':
+        case 'FootLoopNode':
+            if (deleteElem.child.followElement.type != 'Placeholder') {
+                this.prepareRemoveQuestion(uid);
+            } else {
+                this.removeNodeFromTree(uid);
+            }
+            break;
+        case 'BranchNode':
+            if (deleteElem.trueChild.followElement.type != 'Placeholder' || deleteElem.falseChild.followElement.type != 'Placeholder') {
+                this.prepareRemoveQuestion(uid);
+            } else {
+                this.removeNodeFromTree(uid);
+            }
+            break;
+        case 'CaseNode':
+            console.log(deleteElem);
+            let check = false;
+            for (const item of deleteElem.cases) {
+                if (item.followElement.followElement.type != 'Placeholder') {
+                    check = true;
+                }
+            }
+            if (deleteElem.defaultNode.followElement.followElement.type != 'Placeholder') {
+                check = true;
+            }
+            if (check) {
+                this.prepareRemoveQuestion(uid);
+            } else {
+                this.removeNodeFromTree(uid);
+            }
+            break;
+        case 'InsertCase':
+            if (deleteElem.followElement.followElement.type != 'Placeholder') {
+                this.prepareRemoveQuestion(uid);
+            } else {
+                this.removeNodeFromTree(uid);
+            }
+            break;
+        }
+    }
+
+    prepareRemoveQuestion(uid) {
+        const content = document.getElementById('modal-content');
+        const footer = document.getElementById('modal-footer');
+        while (content.hasChildNodes()) {
+            content.removeChild(content.lastChild);
+        }
+        while (footer.hasChildNodes()) {
+            footer.removeChild(footer.lastChild);
+        }
+        content.appendChild(document.createTextNode('Dieses Element und alle darin erstellten Blöcke löschen?'));
+        const doButton = document.createElement('div');
+        doButton.classList.add('modal-buttons', 'acceptIcon', 'hand');
+        doButton.addEventListener('click', () => this.removeNodeFromTree(uid, true));
+        footer.appendChild(doButton);
+        const cancelButton = document.createElement('div');
+        cancelButton.classList.add('modal-buttons', 'deleteIcon', 'hand');
+        cancelButton.addEventListener('click', () => document.getElementById('IEModal').classList.remove('active'));
+        footer.appendChild(cancelButton);
+
+        document.getElementById('IEModal').classList.add('active');
+    }
+
+    removeNodeFromTree(uid, closeModal = false) {
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.removeNode, false, ""));
         this.updateBrowserStore();
         this.renderAllViews();
+        if (closeModal) {
+            document.getElementById('IEModal').classList.remove('active');
+        }
     }
 
 
