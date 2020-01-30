@@ -104,12 +104,9 @@ export class CodeView {
 
 
     preRender() {
-        let sourcecode = document.createElement('div');
-        sourcecode.id = 'SourcecodeDisplay';
-        sourcecode.classList.add('columnEditorCode', 'vcontainer');
-        sourcecode.style.display = 'none';
+        const sourcecode =  document.getElementById('SourcecodeDisplay');
         let sourcecodeDisplay = document.createElement('div');
-        sourcecodeDisplay.classList.add('fixFullWidth');
+        sourcecodeDisplay.classList.add('fixFullWidth', 'margin-top-small');
         let sourcecodeHeader = document.createElement('div');
         sourcecodeHeader.classList.add('columnAuto', 'container');
         let sourcecodeTitle = document.createElement('strong');
@@ -144,15 +141,10 @@ export class CodeView {
         sourcecodeDisplay.appendChild(sourcecodeWorkingArea);
         sourcecode.appendChild(sourcecodeDisplay);
 
-        this.domRoot.appendChild(sourcecode);
         this.domRoot = document.getElementById('Sourcecode');
 
-        let options = document.createElement('div');
-        options.classList.add('options-element', 'codeIcon', 'tooltip', 'tooltip-bottom', 'hand');
-        options.setAttribute('data-tooltip', 'Quellcode einblenden');
-        options.id = 'ToggleSourcecode';
-        options.addEventListener('click', (event) => this.presenter.alterSourcecodeDisplay(event));
-        document.getElementById('optionButtons').appendChild(options);
+        this.generateCodeSwitch(this.presenter, document.getElementById('struktoOptions1'));
+        this.generateCodeSwitch(this.presenter, document.getElementById('struktoOptions2'));
 
         if (typeof(Storage) !== "undefined") {
             if ('displaySourcecode' in localStorage && 'lang' in localStorage) {
@@ -205,6 +197,13 @@ export class CodeView {
         }
     }
 
+    generateCodeSwitch(presenter, domNode) {
+        const option = document.createElement('div');
+        option.classList.add('struktoOption', 'codeIcon', 'tooltip', 'tooltip-bottomCode', 'hand', 'ToggleSourcecode');
+        option.setAttribute('data-tooltip', 'Quellcode einblenden');
+        option.addEventListener('click', (event) => presenter.alterSourcecodeDisplay(event));
+        domNode.appendChild(option);
+    }
 
     setLang(lang) {
         if (typeof(Storage) !== "undefined") {
@@ -568,12 +567,17 @@ export class CodeView {
      *
      * @param   buttonId   id of the sourcecode display toggle button
      */
-    displaySourcecode(buttonId) {
+    displaySourcecode(buttonClass) {
+        const fields = document.getElementsByClassName(buttonClass);
         if (this.presenter.getSourcecodeDisplay()) {
-            document.getElementById(buttonId).setAttribute('data-tooltip', 'Quellcode ausblenden');
+            for (const item of fields) {
+                item.setAttribute('data-tooltip', 'Quellcode ausblenden');
+            }
             document.getElementById('SourcecodeDisplay').style.display = "block";
         } else {
-            document.getElementById(buttonId).setAttribute('data-tooltip', 'Quellcode einblenden');
+            for (const item of fields) {
+                item.setAttribute('data-tooltip', 'Quellcode einblenden');
+            }
             document.getElementById('SourcecodeDisplay').style.display = "none";
         }
     }

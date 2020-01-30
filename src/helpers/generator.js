@@ -120,10 +120,10 @@ export function generateHtmltree () {
     footerDiv.appendChild(footerSpan)
 }
 
-export function generateResetButton(presenter) {
+export function generateResetButton(presenter, domNode) {
     // reset button must be last defined
     let resetButtonDiv = document.createElement('div')
-    resetButtonDiv.classList.add('options-element', 'resetIcon', 'tooltip', 'tooltip-bottom', 'hand')
+    resetButtonDiv.classList.add('struktoOption', 'resetIcon', 'tooltip', 'tooltip-bottom', 'hand')
     resetButtonDiv.setAttribute('data-tooltip', 'Reset')
     resetButtonDiv.addEventListener('click', () => {
         const content = document.getElementById('modal-content')
@@ -146,5 +146,5 @@ export function generateResetButton(presenter) {
 
         document.getElementById('IEModal').classList.add('active')
     })
-    document.getElementById('optionButtons').appendChild(resetButtonDiv)
+    domNode.appendChild(resetButtonDiv)
 }

@@ -1,4 +1,5 @@
 import { config } from '../config.js';
+import { generateResetButton } from '../helpers/generator';
 
 export class Structogram {
     constructor(presenter, domRoot) {
@@ -41,11 +42,18 @@ export class Structogram {
         divInsert.appendChild(divButtons);
 
         let divEditorHeadline = document.createElement('div');
-        divEditorHeadline.classList.add('columnEditorFull');
+        divEditorHeadline.classList.add('columnEditorFull', 'headerContainer');
         let editorHeadline = document.createElement('strong');
-        editorHeadline.classList.add('margin-small');
+        editorHeadline.classList.add('margin-small', 'floatBottom');
         editorHeadline.appendChild(document.createTextNode('Editor:'));
         divEditorHeadline.appendChild(editorHeadline);
+
+        const optionsContainer1 = document.createElement('div');
+        optionsContainer1.id = 'struktoOptions1';
+        optionsContainer1.classList.add('struktoOptions1');
+        divEditorHeadline.appendChild(optionsContainer1);
+
+        this.createStrukOptions(optionsContainer1);
 
         const divEditorContent = document.createElement('div');
         divEditorContent.classList.add('vcontainer', 'columnEditorStructogram');
@@ -54,7 +62,7 @@ export class Structogram {
         divEditorContentSplitTop.classList.add('columnAuto', 'container');
 
         const divEditorContentSplitBottom = document.createElement('div');
-        divEditorContentSplitBottom.classList.add('columnAuto-2');
+        divEditorContentSplitBottom.classList.add('columnAuto-3');
 
         const divFixRightBorder = document.createElement('div');
         divFixRightBorder.classList.add('borderWidth', 'frameLeft');
@@ -72,7 +80,28 @@ export class Structogram {
         this.domRoot.appendChild(divEditorHeadline);
         this.domRoot.appendChild(divEditorContent);
 
+        const codeAndOptions = document.createElement('div');
+        codeAndOptions.classList.add('columnEditorCode', 'container');
+        this.domRoot.appendChild(codeAndOptions);
+
+        const optionsContainer2 = document.createElement('div');
+        optionsContainer2.id = 'struktoOptions2';
+        optionsContainer2.classList.add('columnFull', 'container', 'struktoOptions2');
+        codeAndOptions.appendChild(optionsContainer2);
+
+        this.createStrukOptions(optionsContainer2);
+
+        const sourcecode = document.createElement('div');
+        sourcecode.id = 'SourcecodeDisplay';
+        sourcecode.classList.add('fullWidth', 'fullHeight', 'vcontainer');
+        sourcecode.style.display = 'none';
+        codeAndOptions.appendChild(sourcecode);
+
         this.domRoot = document.getElementById('structogram');
+    }
+
+    createStrukOptions(domNode) {
+        generateResetButton(this.presenter, domNode);
     }
 
     createButton(button) {

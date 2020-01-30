@@ -112,7 +112,7 @@ export class Presenter {
         }
         this.updateBrowserStore();
         for (const view of this.views) {
-            view.displaySourcecode(buttonId.target.id);
+            view.displaySourcecode('ToggleSourcecode');
         }
     }
 

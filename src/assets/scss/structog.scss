@@ -229,6 +229,21 @@ strong {
         }
     }
 
+    &.tooltip-bottomCode {
+        &::after {
+            bottom: auto;
+            top: 100%;
+            left: -170%;
+            transform: translate(-50%, -0.3em);
+        }
+        &:focus,
+        &:hover {
+            &::after {
+                transform: translate(-50%, 0.3em);
+            }
+        }
+    }
+
     &.tooltip-bottoml {
         &::after {
             bottom: auto;
@@ -258,4 +273,12 @@ strong {
 }
 .borderHeight {
     height: 2px;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.fullHeight {
+    height: 100%;
 }

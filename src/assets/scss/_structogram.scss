@@ -64,6 +64,10 @@ $main-background-color: rgba(128,212,255, 0.5);
     margin-left: 0.2em;
 }
 
+.margin-top-small {
+    margin-top: 0.75em;
+}
+
 .symbolHeight {
     flex: auto;
 }
@@ -174,8 +178,8 @@ $main-background-color: rgba(128,212,255, 0.5);
     flex: 1;
 }
 
-.columnAuto-2 {
-    flex: 2;
+.columnAuto-3 {
+    flex: 3;
 }
 
 .moveText {
@@ -194,4 +198,42 @@ $main-background-color: rgba(128,212,255, 0.5);
     .loopWidth {
         flex-basis: calc(100% - 2em);
     }
+}
+
+.headerContainer {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.floatBottom {
+    flex: auto;
+    align-self: flex-end;
+}
+
+.struktoOptions1 {
+    display: flex !important;
+    height: 2em;
+    flex: auto;
+    justify-content: flex-end;
+}
+
+.struktoOptions2 {
+    display: none !important;
+    height: 2em;
+    padding-top: 0.3em;
+}
+
+@media screen and (min-width: 1200px) {
+    .struktoOptions1 {
+        display: none !important;
+    }
+
+    .struktoOptions2 {
+        display: flex !important;
+    }
+}
+
+.struktoOption {
+    width: 2em;
+    margin-right: 0.5em;
 }
