@@ -8,6 +8,8 @@ export class Presenter {
         this.moveId = null;
         this.nextInsertElement = null;
         this.displaySourcecode = false;
+        this.undoList = [];
+        this.redoList = [];
     }
 
 
@@ -286,6 +288,7 @@ export class Presenter {
 
 
     resetModel() {
+        this.updateUndo();
         this.model.reset();
         this.updateBrowserStore();
         this.renderAllViews();
@@ -395,6 +398,7 @@ export class Presenter {
     }
 
     removeNodeFromTree(uid, closeModal = false) {
+        this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.removeNode, false, ""));
         this.updateBrowserStore();
         this.renderAllViews();
@@ -421,6 +425,7 @@ export class Presenter {
 
 
     editElement(uid, textValue) {
+        this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.editElement, false, textValue));
         this.updateBrowserStore();
         this.renderAllViews();
@@ -432,6 +437,7 @@ export class Presenter {
      * @param   uid   id of the clicked InsertNode in the struktogramm
      */
     appendElement(uid) {
+        this.updateUndo();
         // remove old node, when moving is used
         let moveState = this.moveId;
         if (moveState) {
@@ -504,13 +510,60 @@ export class Presenter {
         // read file and parse JSON, then update model
         reader.onload = (event) => {
             const newModel = JSON.parse(event.target.result);
+            this.updateUndo();
             this.model.setTree(newModel);
             this.renderAllViews();
             this.updateBrowserStore();
-            // close the modal
-            document.getElementById('IEModal').classList.remove('active');
         }
         // start the reading process
         reader.readAsText(event.target.files[0]);
+    }
+
+    updateUndo() {
+        this.undoList.push(this.getStringifiedTree());
+        for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {
+            console.log(item);
+            item.classList.remove('disableIcon');
+        }
+        this.redoList = [];
+        for (const item of document.getElementsByClassName('RedoIconButtonOverlay')) {
+            item.classList.add('disableIcon');
+        }
+    }
+
+    undo() {
+        if (this.undoList.length) {
+            this.redoList.unshift(this.getStringifiedTree());
+            this.model.setTree(JSON.parse(this.undoList[this.undoList.length - 1]));
+            this.undoList.pop();
+            if (this.undoList == 0) {
+                for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {
+                    item.classList.add('disableIcon');
+                }
+            }
+            for (const item of document.getElementsByClassName('RedoIconButtonOverlay')) {
+                item.classList.remove('disableIcon');
+            }
+            this.renderAllViews();
+            this.updateBrowserStore();
+        }
+    }
+
+    redo() {
+        if (this.redoList.length) {
+            this.undoList.push(this.getStringifiedTree());
+            this.model.setTree(JSON.parse(this.redoList[0]));
+            this.redoList.shift();
+            if (this.redoList.length == 0) {
+                for (const item of document.getElementsByClassName('RedoIconButtonOverlay')) {
+                    item.classList.add('disableIcon');
+                }
+            }
+            for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {
+                item.classList.remove('disableIcon');
+            }
+            this.renderAllViews();
+            this.updateBrowserStore();
+        }
     }
 }

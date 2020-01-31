@@ -101,7 +101,28 @@ export class Structogram {
     }
 
     createStrukOptions(domNode) {
+        this.generateUndoRedoButtons(this.presenter, domNode);
         generateResetButton(this.presenter, domNode);
+    }
+
+    generateUndoRedoButtons(presenter, domNode) {
+        const undo = document.createElement('div');
+        undo.classList.add('struktoOption', 'undoIcon', 'tooltip', 'tooltip-bottom', 'hand');
+        undo.setAttribute('data-tooltip', 'Undo');
+        domNode.appendChild(undo);
+        const undoOverlay = document.createElement('div');
+        undoOverlay.classList.add('fullWidth', 'fullHeight', 'UndoIconButtonOverlay', 'disableIcon');
+        undoOverlay.addEventListener('click', () => presenter.undo());
+        undo.appendChild(undoOverlay);
+
+        const redo = document.createElement('div');
+        redo.classList.add('struktoOption', 'redoIcon', 'tooltip', 'tooltip-bottom', 'hand');
+        redo.setAttribute('data-tooltip', 'Redo');
+        domNode.appendChild(redo);
+        const redoOverlay = document.createElement('div');
+        redoOverlay.classList.add('fullWidth', 'fullHeight', 'RedoIconButtonOverlay', 'disableIcon');
+        redoOverlay.addEventListener('click', () => presenter.redo());
+        redo.appendChild(redoOverlay);
     }
 
     createButton(button) {
