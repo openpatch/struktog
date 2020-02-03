@@ -729,7 +729,7 @@ export class Structogram {
         if (!(type == 'InsertCase' && content == 'Sonst')) {
             innerTextDiv.classList.add('padding');
             if (!this.presenter.getInsertMode()) {
-                innerTextDiv.classList.add('hand');
+                innerTextDiv.classList.add('hand', 'fullHeight');
             }
             innerTextDiv.addEventListener('click', () => {
                 this.presenter.renderAllViews();
