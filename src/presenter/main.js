@@ -293,6 +293,7 @@ export class Presenter {
     resetModel() {
         this.updateUndo();
         this.model.reset();
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
         document.getElementById('IEModal').classList.remove('active');
@@ -306,6 +307,7 @@ export class Presenter {
     switchDefaultState(uid) {
         this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.switchDefaultCase, false, ""));
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
     }
@@ -319,6 +321,7 @@ export class Presenter {
     addCase(uid) {
         this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.insertNewCase, false, ""));
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
     }
@@ -354,7 +357,6 @@ export class Presenter {
             }
             break;
         case 'CaseNode':
-            console.log(deleteElem);
             let check = false;
             for (const item of deleteElem.cases) {
                 if (item.followElement.followElement.type != 'Placeholder') {
@@ -405,6 +407,7 @@ export class Presenter {
     removeNodeFromTree(uid, closeModal = false) {
         this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.removeNode, false, ""));
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
         if (closeModal) {
@@ -432,6 +435,7 @@ export class Presenter {
     editElement(uid, textValue) {
         this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.editElement, false, textValue));
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
     }
@@ -458,6 +462,7 @@ export class Presenter {
         }
         // rerender
         this.reset();
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
         // on new inserted elements start the editing mode of the element
@@ -517,6 +522,7 @@ export class Presenter {
             const newModel = JSON.parse(event.target.result);
             this.updateUndo();
             this.model.setTree(newModel);
+            this.checkUndo();
             this.renderAllViews();
             this.updateBrowserStore();
         }
@@ -527,7 +533,6 @@ export class Presenter {
     updateUndo() {
         this.undoList.push(this.getStringifiedTree());
         for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {
-            console.log(item);
             item.classList.remove('disableIcon');
         }
         this.redoList = [];
@@ -551,6 +556,17 @@ export class Presenter {
             }
             this.renderAllViews();
             this.updateBrowserStore();
+        }
+    }
+
+    checkUndo() {
+        if (this.undoList[this.undoList.length - 1] == this.getStringifiedTree()) {
+            this.undoList.pop();
+            if (this.undoList == 0) {
+                for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {
+                    item.classList.add('disableIcon');
+                }
+            }
         }
     }
 
