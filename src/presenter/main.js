@@ -260,14 +260,14 @@ export class Presenter {
             event.dataTransfer.setData('text', id);
         }
         let button = document.getElementById(id);
-        if (button.classList.contains('btn-primary')) {
+        if (button.classList.contains('boldText')) {
             this.resetButtons();
             this.reset();
         } else {
             // prepare insert by updating the model data
             this.resetButtons();
             this.insertMode = true;
-            button.classList.add('btn-primary');
+            button.classList.add('boldText');
         }
         // rerender the struktogramm
         this.renderAllViews();

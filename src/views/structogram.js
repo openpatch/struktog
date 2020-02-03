@@ -466,7 +466,7 @@ export class Structogram {
         // remove color of buttons
         for (const button of this.buttonList) {
             if (config[button].use) {
-                document.getElementById(config[button].id).classList.remove('btn-primary');
+                document.getElementById(config[button].id).classList.remove('boldText');
             }
         }
     }
