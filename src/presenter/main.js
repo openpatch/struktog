@@ -27,6 +27,9 @@ export class Presenter {
         return this.model.getTree();
     }
 
+    getElementByUid(uid) {
+        return this.model.getElementInTree(uid, this.model.getTree());
+    }
 
     resetButtons() {
         for (const view of this.views) {
@@ -301,6 +304,7 @@ export class Presenter {
      * @param   uid   id of the clicked element in the struktogramm
      */
     switchDefaultState(uid) {
+        this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.switchDefaultCase, false, ""));
         this.updateBrowserStore();
         this.renderAllViews();
@@ -313,6 +317,7 @@ export class Presenter {
      * @param   uid   id of the clicked element in the struktogramm
      */
     addCase(uid) {
+        this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.insertNewCase, false, ""));
         this.updateBrowserStore();
         this.renderAllViews();

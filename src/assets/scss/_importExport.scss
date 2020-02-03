@@ -69,15 +69,22 @@
         overflow-y: auto;
         padding: 0 1em;
         position: relative;
+
+        .caseTitle {
+            margin-top: 0.5em;
+            text-align: center;
+        }
     }
 
     .modal-footer {
         padding: 1em;
+        color: rgb(38, 64, 64);
 
         .modal-buttons {
             flex: auto;
             min-height: 2.5em;
             margin: 0 2em;
+            text-align: end;
         }
     }
 }

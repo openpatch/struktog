@@ -62,7 +62,7 @@ export class Structogram {
         divEditorContentSplitTop.classList.add('columnAuto', 'container');
 
         const divEditorContentSplitBottom = document.createElement('div');
-        divEditorContentSplitBottom.classList.add('columnAuto-3');
+        divEditorContentSplitBottom.classList.add('columnAuto-6');
 
         const divFixRightBorder = document.createElement('div');
         divFixRightBorder.classList.add('borderWidth', 'frameLeft');
@@ -535,6 +535,83 @@ export class Structogram {
     }
 
 
+    openCaseOptions(uid) {
+        const content = document.getElementById('modal-content')
+        const footer = document.getElementById('modal-footer')
+        while (content.hasChildNodes()) {
+            content.removeChild(content.lastChild)
+        }
+        while (footer.hasChildNodes()) {
+            footer.removeChild(footer.lastChild)
+        }
+        const element = this.presenter.getElementByUid(uid);
+
+        const title = document.createElement('strong');
+        title.appendChild(document.createTextNode("Einstellungen der " + config.CaseNode.text + ": "));
+        content.appendChild(title);
+        const elementText = document.createElement('div');
+        elementText.classList.add('caseTitle', 'boldText');
+        elementText.appendChild(document.createTextNode(element.text));
+        content.appendChild(elementText);
+
+        const list = document.createElement('dl');
+        list.classList.add('container');
+        content.appendChild(list);
+        const caseNumberTitle = document.createElement('dt')
+        caseNumberTitle.classList.add('dtItem');
+        caseNumberTitle.appendChild(document.createTextNode("Anzahl der Fälle:"));
+        list.appendChild(caseNumberTitle);
+        const caseNumber = document.createElement('dd');
+        caseNumber.classList.add('ddItem');
+        caseNumber.appendChild(document.createTextNode(element.cases.length));
+        list.appendChild(caseNumber);
+
+        const defaultOnTitle = document.createElement('dt');
+        defaultOnTitle.classList.add('dtItem');
+        defaultOnTitle.appendChild(document.createTextNode("Sonst Zweig vorhanden:"));
+        list.appendChild(defaultOnTitle);
+        let defaultText = "Nein";
+        if (element.defaultOn) {
+            defaultText = "Ja";
+        }
+        const defaultOn = document.createElement('dd');
+        defaultOn.classList.add('ddItem');
+        defaultOn.appendChild(document.createTextNode(defaultText));
+        list.appendChild(defaultOn);
+
+        const addCaseTitle = document.createElement('dt');
+        addCaseTitle.classList.add('dtItem');
+        addCaseTitle.appendChild(document.createTextNode("Fall hinzufügen:"));
+        list.appendChild(addCaseTitle);
+        const addCase = document.createElement('dd');
+        addCase.classList.add('addCaseIcon', 'hand', 'caseOptionsIcons', 'ddItem');
+        addCase.addEventListener('click', () => {
+            this.presenter.addCase(uid);
+            this.openCaseOptions(uid);
+        });
+        list.appendChild(addCase);
+
+        const switchDefaultTitle = document.createElement('dt');
+        switchDefaultTitle.classList.add('dtItem');
+        switchDefaultTitle.appendChild(document.createTextNode("Sonst Zweig schalten:"));
+        list.appendChild(switchDefaultTitle);
+        const switchDefault = document.createElement('dd');
+        switchDefault.classList.add('switchDefaultCaseIcon', 'hand', 'caseOptionsIcons', 'ddItem');
+        switchDefault.addEventListener('click', () => {
+            this.presenter.switchDefaultState(uid);
+            this.openCaseOptions(uid);
+        });
+        list.appendChild(switchDefault);
+
+        const cancelButton = document.createElement('div');
+        cancelButton.classList.add('modal-buttons', 'hand');
+        cancelButton.appendChild(document.createTextNode("Schließen"));
+        cancelButton.addEventListener('click', () => document.getElementById('IEModal').classList.remove('active'));
+        footer.appendChild(cancelButton);
+
+        document.getElementById('IEModal').classList.add('active');
+    }
+
     /**
      * Create option elements and add them to the displayed element
      *
@@ -547,29 +624,13 @@ export class Structogram {
         let optionDiv = document.createElement('div');
         optionDiv.classList.add('optionContainer');
 
-        // case nodes have two additional options
+        // case nodes have additional options
         if (type == 'CaseNode') {
-            // add another new case
-            let addingCase = document.createElement('div');
-            addingCase.classList.add('addCaseIcon');
-            addingCase.classList.add('optionIcon');
-            addingCase.classList.add('hand');
-            addingCase.classList.add('tooltip');
-            addingCase.classList.add('tooltip-bottoml');
-            addingCase.setAttribute('data-tooltip', 'Fall hinzufügen');
-            addingCase.addEventListener('click', () => this.presenter.addCase(uid));
-            optionDiv.appendChild(addingCase);
-
-            // switch the default state option
-            let switchDefault = document.createElement('div');
-            switchDefault.classList.add('switchDefaultCaseIcon');
-            switchDefault.classList.add('optionIcon');
-            switchDefault.classList.add('hand');
-            switchDefault.classList.add('tooltip');
-            switchDefault.classList.add('tooltip-bottoml');
-            switchDefault.setAttribute('data-tooltip', 'Sonst-Zweig schalten');
-            switchDefault.addEventListener('click', () => this.presenter.switchDefaultState(uid));
-            optionDiv.appendChild(switchDefault);
+            const caseOptions = document.createElement('div');
+            caseOptions.classList.add('gearIcon', 'optionIcon', 'hand', 'tooltip', 'tooltip-bottoml');
+            caseOptions.setAttribute('data-tooltip', 'Einstellung');
+            caseOptions.addEventListener('click', () => this.openCaseOptions(uid));
+            optionDiv.appendChild(caseOptions);
         }
 
         // all elements can be moved, except InsertCases they are bind to the case node

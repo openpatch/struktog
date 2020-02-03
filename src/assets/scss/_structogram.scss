@@ -178,8 +178,8 @@ $main-background-color: rgba(128,212,255, 0.5);
     flex: 1;
 }
 
-.columnAuto-3 {
-    flex: 3;
+.columnAuto-6 {
+    flex: 6;
 }
 
 .moveText {
@@ -240,4 +240,19 @@ $main-background-color: rgba(128,212,255, 0.5);
 
 .disableIcon {
     background-color: rgba(250,250,250,0.75);
+}
+
+.caseOptionsIcons {
+    height: 1.5em;
+}
+
+.dtItem {
+    margin: 0.5em 0;
+    flex-basis: 60%;
+}
+
+.ddItem {
+    margin: 0.5em 0;
+    flex-basis: 40%;
+    text-align: center;
 }
