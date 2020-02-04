@@ -562,46 +562,48 @@ export class Structogram {
         caseNumberTitle.appendChild(document.createTextNode("Anzahl der Fälle:"));
         list.appendChild(caseNumberTitle);
         const caseNumber = document.createElement('dd');
-        caseNumber.classList.add('ddItem');
-        caseNumber.appendChild(document.createTextNode(element.cases.length));
+        caseNumber.classList.add('ddItem', 'container');
         list.appendChild(caseNumber);
-
-        const defaultOnTitle = document.createElement('dt');
-        defaultOnTitle.classList.add('dtItem');
-        defaultOnTitle.appendChild(document.createTextNode("Sonst Zweig vorhanden:"));
-        list.appendChild(defaultOnTitle);
-        let defaultText = "Nein";
-        if (element.defaultOn) {
-            defaultText = "Ja";
-        }
-        const defaultOn = document.createElement('dd');
-        defaultOn.classList.add('ddItem');
-        defaultOn.appendChild(document.createTextNode(defaultText));
-        list.appendChild(defaultOn);
-
-        const addCaseTitle = document.createElement('dt');
-        addCaseTitle.classList.add('dtItem');
-        addCaseTitle.appendChild(document.createTextNode("Fall hinzufügen:"));
-        list.appendChild(addCaseTitle);
-        const addCase = document.createElement('dd');
-        addCase.classList.add('addCaseIcon', 'hand', 'caseOptionsIcons', 'ddItem');
+        const caseNr = document.createElement('div');
+        caseNr.classList.add('text-center');
+        caseNr.appendChild(document.createTextNode(element.cases.length));
+        caseNumber.appendChild(caseNr);
+        const addCase = document.createElement('div');
+        addCase.classList.add('addCaseIcon', 'hand', 'caseOptionsIcons', 'tooltip', 'tooltip-bottom');
         addCase.addEventListener('click', () => {
             this.presenter.addCase(uid);
             this.openCaseOptions(uid);
         });
-        list.appendChild(addCase);
+        addCase.setAttribute('data-tooltip', 'Fall hinzufügen');
+        caseNumber.appendChild(addCase);
 
-        const switchDefaultTitle = document.createElement('dt');
-        switchDefaultTitle.classList.add('dtItem');
-        switchDefaultTitle.appendChild(document.createTextNode("Sonst Zweig schalten:"));
-        list.appendChild(switchDefaultTitle);
-        const switchDefault = document.createElement('dd');
-        switchDefault.classList.add('switchDefaultCaseIcon', 'hand', 'caseOptionsIcons', 'ddItem');
-        switchDefault.addEventListener('click', () => {
+        const defaultOnTitle = document.createElement('dt');
+        defaultOnTitle.classList.add('dtItem');
+        defaultOnTitle.appendChild(document.createTextNode("Sonst Zweig einschalten:"));
+        list.appendChild(defaultOnTitle);
+        const defaultOn = document.createElement('dd');
+        defaultOn.classList.add('ddItem', 'container');
+        defaultOn.addEventListener('click', () => {
             this.presenter.switchDefaultState(uid);
             this.openCaseOptions(uid);
         });
-        list.appendChild(switchDefault);
+        list.appendChild(defaultOn);
+        const defaultNo = document.createElement('div');
+        defaultNo.appendChild(document.createTextNode("Nein"));
+        defaultNo.classList.add('text-center');
+        defaultOn.appendChild(defaultNo);
+        const switchDefault = document.createElement('div');
+        switchDefault.classList.add('hand', 'caseOptionsIcons');
+        if (element.defaultOn) {
+            switchDefault.classList.add('switchOn');
+        } else {
+            switchDefault.classList.add('switchOff');
+        }
+        defaultOn.appendChild(switchDefault);
+        const defaultYes = document.createElement('div');
+        defaultYes.appendChild(document.createTextNode("Ja"));
+        defaultYes.classList.add('text-center');
+        defaultOn.appendChild(defaultYes);
 
         const cancelButton = document.createElement('div');
         cancelButton.classList.add('modal-buttons', 'hand');

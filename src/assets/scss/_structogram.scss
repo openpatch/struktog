@@ -243,7 +243,7 @@ $main-background-color: rgba(128,212,255, 0.5);
 }
 
 .caseOptionsIcons {
-    height: 1.5em;
+    height: 1.25em;
 }
 
 .dtItem {
@@ -254,5 +254,8 @@ $main-background-color: rgba(128,212,255, 0.5);
 .ddItem {
     margin: 0.5em 0;
     flex-basis: 40%;
-    text-align: center;
+
+    div {
+        flex-basis: 3em;
+    }
 }
