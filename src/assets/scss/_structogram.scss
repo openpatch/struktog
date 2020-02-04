@@ -244,6 +244,7 @@ $main-background-color: rgba(128,212,255, 0.5);
 
 .caseOptionsIcons {
     height: 1.25em;
+    flex-basis: 3em;
 }
 
 .dtItem {
@@ -255,7 +256,21 @@ $main-background-color: rgba(128,212,255, 0.5);
     margin: 0.5em 0;
     flex-basis: 40%;
 
-    div {
+    .shortenOnMobile {
         flex-basis: 3em;
+    }
+
+    @media screen and (max-width: 450px) {
+        .shortenOnMobile {
+            flex-basis: 1.25em;
+
+            &:before {
+                content: attr(data-abbr);
+            }
+
+            > span {
+                display: none;
+            }
+        }
     }
 }

@@ -565,7 +565,7 @@ export class Structogram {
         caseNumber.classList.add('ddItem', 'container');
         list.appendChild(caseNumber);
         const caseNr = document.createElement('div');
-        caseNr.classList.add('text-center');
+        caseNr.classList.add('text-center', 'shortenOnMobile');
         caseNr.appendChild(document.createTextNode(element.cases.length));
         caseNumber.appendChild(caseNr);
         const addCase = document.createElement('div');
@@ -589,9 +589,12 @@ export class Structogram {
         });
         list.appendChild(defaultOn);
         const defaultNo = document.createElement('div');
-        defaultNo.appendChild(document.createTextNode("Nein"));
-        defaultNo.classList.add('text-center');
+        defaultNo.classList.add('text-center', 'shortenOnMobile');
+        defaultNo.setAttribute('data-abbr', 'N');
         defaultOn.appendChild(defaultNo);
+        const defaultNoText = document.createElement('span');
+        defaultNoText.appendChild(document.createTextNode("Nein"));
+        defaultNo.appendChild(defaultNoText);
         const switchDefault = document.createElement('div');
         switchDefault.classList.add('hand', 'caseOptionsIcons');
         if (element.defaultOn) {
@@ -601,9 +604,12 @@ export class Structogram {
         }
         defaultOn.appendChild(switchDefault);
         const defaultYes = document.createElement('div');
-        defaultYes.appendChild(document.createTextNode("Ja"));
-        defaultYes.classList.add('text-center');
+        defaultYes.classList.add('text-center', 'shortenOnMobile');
+        defaultYes.setAttribute('data-abbr', 'J');
         defaultOn.appendChild(defaultYes);
+        const defaultYesText = document.createElement('span');
+        defaultYesText.appendChild(document.createTextNode("Ja"));
+        defaultYes.appendChild(defaultYesText);
 
         const cancelButton = document.createElement('div');
         cancelButton.classList.add('modal-buttons', 'hand');
