@@ -4,7 +4,7 @@ export class CodeView {
         this.domRoot = domRoot;
         this.lang = '--';
         this.translationMap = {
-            'Python': {'untranslatable': ['FootLoopNode', 'CaseNode'],
+            'Python': {'untranslatable': ['FootLoopNode'],
                        'InputNode': {'pre': '',
                                      'post': " = input(\"Eingabe\")\n"
                                     },
@@ -24,8 +24,17 @@ export class CodeView {
                        'HeadLoopNode': {'pre': "while ",
                                         'post': ":\n"
                                        },
+                       'CaseNode': {'pre': "if ",
+                                    'post': ":\n",
+                                   },
+                       'InsertCase': {'preNormal': "elif ",
+                                      'preDefault': "else",
+                                      'post': ":\n",
+                                      'postpost': "\n"
+                                     },
                        'leftBracket': '',
-                       'rightBracket': ''
+                       'rightBracket': '',
+                       'pseudoSwitch': true
                       },
             'PHP': {'untranslatable': [],
                     'InputNode': {'pre': '',
@@ -60,7 +69,8 @@ export class CodeView {
                                    'postpost': "break;\n"
                                   },
                     'leftBracket': '{',
-                    'rightBracket': '}'
+                    'rightBracket': '}',
+                    'pseudoSwitch': false
                    },
             'Java': {'untranslatable': [],
                      'InputNode': {'pre': '',
@@ -95,7 +105,8 @@ export class CodeView {
                                     'postpost': "break;\n"
                                    },
                      'leftBracket': '{',
-                     'rightBracket': '}'
+                     'rightBracket': '}',
+                    'pseudoSwitch': false
                     }
         }
 
@@ -290,7 +301,7 @@ export class CodeView {
      * @param    lang          current sourcecode language
      * @return   []            array of span elements with the tranformed element
      */
-    transformToCode(subTree, indentLevel, lang) {
+    transformToCode(subTree, indentLevel, lang, switchVar = false) {
         // end recursion
         if (subTree.type == 'Placeholder' || subTree.type == 'InsertNode' && subTree.followElement === null) {
             return []
@@ -485,29 +496,49 @@ export class CodeView {
                 break;
             case 'CaseNode':
                 {
-                    const caseHeadPre = document.createElement('span');
-                    caseHeadPre.classList.add('keyword');
-                    caseHeadPre.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].CaseNode.pre));
-                    elemSpan.appendChild(caseHeadPre);
-                    elemSpan.appendChild(text);
-                    const caseHeadPost = document.createElement('span');
-                    caseHeadPost.classList.add('keyword');
-                    caseHeadPost.appendChild(document.createTextNode(this.translationMap[lang].CaseNode.post));
-                    elemSpan.appendChild(caseHeadPost);
+                    if (!this.translationMap[lang].pseudoSwitch) {
+                        const caseHeadPre = document.createElement('span');
+                        caseHeadPre.classList.add('keyword');
+                        caseHeadPre.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].CaseNode.pre));
+                        elemSpan.appendChild(caseHeadPre);
+                        elemSpan.appendChild(text);
+
+                        const caseHeadPost = document.createElement('span');
+                        caseHeadPost.classList.add('keyword');
+                        caseHeadPost.appendChild(document.createTextNode(this.translationMap[lang].CaseNode.post));
+                        elemSpan.appendChild(caseHeadPost);
+                    }
                     let cases = [elemSpan];
+                    if (this.translationMap[lang].pseudoSwitch) {
+                        cases = [];
+                    }
                     if (this.translationMap[lang].leftBracket != '') {
                         let leftBracket = document.createElement('span');
                         leftBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].leftBracket + "\n"));
                         cases.push(leftBracket);
                     }
                     for (const element of subTree.cases) {
-                        cases = cases.concat(this.transformToCode(element, indentLevel + 1, lang));
+                        if (this.translationMap[lang].pseudoSwitch) {
+                            const switchVarSpan = this.createHighlightedSpan(subTree.text);
+                            switchVarSpan.classList.add('hand');
+                            switchVarSpan.addEventListener('click', () => this.presenter.switchEditState(subTree.id));
+                            cases = cases.concat(this.transformToCode(element, indentLevel, lang, switchVarSpan));
+                        } else {
+                            cases = cases.concat(this.transformToCode(element, indentLevel + 1, lang));
+                        }
+                    }
+                    if (this.translationMap[lang].pseudoSwitch) {
+                        cases[0].firstChild.innerText = "if ";
                     }
                     if (subTree.defaultOn) {
                         let defaultCase = document.createElement('span');
                         defaultCase.classList.add('keyword');
                         defaultCase.id = subTree.defaultNode.id + '-codeLine';
-                        defaultCase.appendChild(document.createTextNode(this.addIndentations(indentLevel + 1) + this.translationMap[lang].InsertCase.preDefault + this.translationMap[lang].InsertCase.post));
+                        if (this.translationMap[lang].pseudoSwitch) {
+                            defaultCase.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].InsertCase.preDefault + this.translationMap[lang].InsertCase.post));
+                        } else {
+                            defaultCase.appendChild(document.createTextNode(this.addIndentations(indentLevel + 1) + this.translationMap[lang].InsertCase.preDefault + this.translationMap[lang].InsertCase.post));
+                        }
                         defaultCase.addEventListener('mouseover', function() {
                             const node = document.getElementById(subTree.defaultNode.id);
                             node.firstChild.classList.add('highlight');
@@ -517,7 +548,12 @@ export class CodeView {
                             node.firstChild.classList.remove('highlight');
                         });
                         cases.push(defaultCase);
-                        cases = cases.concat(this.transformToCode(subTree.defaultNode.followElement, indentLevel + 2, lang));
+                        if (this.translationMap[lang].pseudoSwitch) {
+                            cases = cases.concat(this.transformToCode(subTree.defaultNode.followElement, indentLevel + 1, lang));
+                        } else {
+                            cases = cases.concat(this.transformToCode(subTree.defaultNode.followElement, indentLevel + 2, lang));
+                        }
+
                     }
                     if (this.translationMap[lang].rightBracket != '') {
                         let rightBracket = document.createElement('span');
@@ -533,6 +569,12 @@ export class CodeView {
                     casePre.classList.add('keyword');
                     casePre.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].InsertCase.preNormal));
                     elemSpan.appendChild(casePre);
+                    if (switchVar) {
+                        elemSpan.appendChild(switchVar);
+                        const equals = document.createElement('span');
+                        equals.appendChild(document.createTextNode(" == "));
+                        elemSpan.appendChild(equals);
+                    }
                     elemSpan.appendChild(text);
                     const casePost = document.createElement('span');
                     casePost.classList.add('keyword');
@@ -541,10 +583,12 @@ export class CodeView {
                     let content = [elemSpan];
                     content = content.concat(this.transformToCode(subTree.followElement, indentLevel + 1, lang));
 
-                    let endContent = document.createElement('span');
-                    endContent.classList.add('keyword');
-                    endContent.appendChild(document.createTextNode(this.addIndentations(indentLevel + 1) + this.translationMap[lang].InsertCase.postpost));
-                    content.push(endContent);
+                    if (!this.translationMap[lang].pseudoSwitch) {
+                        let endContent = document.createElement('span');
+                        endContent.classList.add('keyword');
+                        endContent.appendChild(document.createTextNode(this.addIndentations(indentLevel + 1) + this.translationMap[lang].InsertCase.postpost));
+                        content.push(endContent);
+                    }
                     return content;
                 }
                 break;
