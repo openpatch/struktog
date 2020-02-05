@@ -6,6 +6,7 @@ import { CodeView } from './views/code'
 import { ImportExport } from './views/importExport'
 import { generateHtmltree } from './helpers/generator'
 import { templates } from './templates.js'
+import { generateInfoButton } from './helpers/generator'
 
 import './assets/scss/structog.scss'
 
@@ -43,6 +44,8 @@ window.onload = function () {
     presenter.addView(code)
     const importExport = new ImportExport(presenter, document.getElementById('Export'))
     presenter.addView(importExport)
+
+    generateInfoButton(document.getElementById('optionButtons'))
 
     presenter.init()
 }
