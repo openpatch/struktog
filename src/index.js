@@ -1,3 +1,4 @@
+import { config } from './config.js';
 import { model } from './model/main'
 import { Presenter } from './presenter/main'
 import { Structogram } from './views/structogram'
@@ -25,6 +26,8 @@ window.onload = function () {
                 window.localStorage.displaySourcecode = templates[template].displaySourcecode
             }
         }
+        const configId = url.searchParams.get('config')
+        config.loadConfig(configId);
     }
 
     generateHtmltree()

@@ -30,7 +30,12 @@ export function generateHtmltree () {
 
     const logoAnker = document.createElement('a')
     logoAnker.classList.add('column', 'container')
-    logoAnker.setAttribute('href', 'index.html')
+    let url = 'index.html';
+    const browserUrl = new URL(window.location.href)
+    if (browserUrl.searchParams.get('config')) {
+        url = url + '?config=' + browserUrl.searchParams.get('config');
+    }
+    logoAnker.setAttribute('href', url)
     logoDiv.appendChild(logoAnker)
 
     const logo = document.createElement('div')

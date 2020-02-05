@@ -35,7 +35,7 @@ export class Structogram {
         let divButtons = document.createElement('div');
         divButtons.classList.add('container', 'justify-center');
         for (const item of this.buttonList) {
-            if (config[item].use) {
+            if (config.get()[item].use) {
                 divButtons.appendChild(this.createButton(item));
             }
         }
@@ -128,16 +128,16 @@ export class Structogram {
     createButton(button) {
         let div = document.createElement('div');
         div.classList.add('columnInput', 'insertButton', 'hand');
-        div.style.backgroundColor = config[button].color;
-        div.id = config[button].id;
+        div.style.backgroundColor = config.get()[button].color;
+        div.id = config.get()[button].id;
         div.draggable = 'true';
-        div.addEventListener('click', (event) => this.presenter.insertNode(config[button].id, event));
-        div.addEventListener('dragstart', (event) => this.presenter.insertNode(config[button].id, event));
+        div.addEventListener('click', (event) => this.presenter.insertNode(config.get()[button].id, event));
+        div.addEventListener('dragstart', (event) => this.presenter.insertNode(config.get()[button].id, event));
         div.addEventListener('dragend', () => this.presenter.resetDrop());
         let spanText = document.createElement('span');
-        spanText.appendChild(document.createTextNode(config[button].text));
+        spanText.appendChild(document.createTextNode(config.get()[button].text));
         let divIcon = document.createElement('div');
-        divIcon.classList.add(config[button].icon, 'buttonLogo');
+        divIcon.classList.add(config.get()[button].icon, 'buttonLogo');
 
         div.append(divIcon);
         div.append(spanText);
@@ -175,7 +175,7 @@ export class Structogram {
                 container.id = subTree.id;
             }
             container.classList.add('vcontainer', 'frameTopLeft', 'columnAuto');
-            container.style.backgroundColor = config[subTree.type].color;
+            container.style.backgroundColor = config.get()[subTree.type].color;
             //container.style.margin = '0 .75px';
             //const element = document.createElement('div');
             //element.classList.add('column', 'vcontainer', 'frameTop');
@@ -465,8 +465,8 @@ export class Structogram {
     resetButtons() {
         // remove color of buttons
         for (const button of this.buttonList) {
-            if (config[button].use) {
-                document.getElementById(config[button].id).classList.remove('boldText');
+            if (config.get()[button].use) {
+                document.getElementById(config.get()[button].id).classList.remove('boldText');
             }
         }
     }
@@ -547,7 +547,7 @@ export class Structogram {
         const element = this.presenter.getElementByUid(uid);
 
         const title = document.createElement('strong');
-        title.appendChild(document.createTextNode("Einstellungen der " + config.CaseNode.text + ": "));
+        title.appendChild(document.createTextNode("Einstellungen der " + config.get().CaseNode.text + ": "));
         content.appendChild(title);
         const elementText = document.createElement('div');
         elementText.classList.add('caseTitle', 'boldText');
