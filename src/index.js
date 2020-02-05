@@ -1,3 +1,4 @@
+import './assets/favicons/favicons';
 import { config } from './config.js';
 import { model } from './model/main'
 import { Presenter } from './presenter/main'
