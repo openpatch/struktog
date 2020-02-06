@@ -229,6 +229,36 @@ strong {
         }
     }
 
+    &.tooltip-bottomCode {
+        &::after {
+            bottom: auto;
+            top: 100%;
+            left: -170%;
+            transform: translate(-50%, -0.3em);
+        }
+        &:focus,
+        &:hover {
+            &::after {
+                transform: translate(-50%, 0.3em);
+            }
+        }
+    }
+
+    &.tooltip-bottomInfo {
+        &::after {
+            bottom: auto;
+            top: 100%;
+            left: 0;
+            transform: translate(-50%, -0.3em);
+        }
+        &:focus,
+        &:hover {
+            &::after {
+                transform: translate(-50%, 0.3em);
+            }
+        }
+    }
+
     &.tooltip-bottoml {
         &::after {
             bottom: auto;
@@ -258,4 +288,34 @@ strong {
 }
 .borderHeight {
     height: 2px;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.fullHeight {
+    height: 100%;
+}
+
+.boldText {
+    font-weight: bold;
+    color: rgb(38, 64, 64);
+}
+
+.infoBox {
+    dt {
+        margin-top: 0.6em;
+        font-weight: bold;
+        color: rgb(38, 64, 64);
+    }
+
+    dd {
+        margin-left: 5em;
+
+        span {
+            display: block;
+            width: 100%;
+        }
+    }
 }

@@ -1,11 +1,13 @@
+import './assets/favicons/favicons';
+import { config } from './config.js';
 import { model } from './model/main'
 import { Presenter } from './presenter/main'
 import { Structogram } from './views/structogram'
 import { CodeView } from './views/code'
 import { ImportExport } from './views/importExport'
 import { generateHtmltree } from './helpers/generator'
-import { generateResetButton } from './helpers/generator'
 import { templates } from './templates.js'
+import { generateInfoButton } from './helpers/generator'
 
 import './assets/scss/structog.scss'
 
@@ -26,6 +28,8 @@ window.onload = function () {
                 window.localStorage.displaySourcecode = templates[template].displaySourcecode
             }
         }
+        const configId = url.searchParams.get('config')
+        config.loadConfig(configId);
     }
 
     generateHtmltree()
@@ -42,6 +46,7 @@ window.onload = function () {
     const importExport = new ImportExport(presenter, document.getElementById('Export'))
     presenter.addView(importExport)
 
-    generateResetButton(presenter)
+    generateInfoButton(document.getElementById('optionButtons'))
+
     presenter.init()
 }

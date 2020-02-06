@@ -73,7 +73,11 @@ var config = {
     }),
     new HtmlWebpackPlugin({
       title: 'Struktog.',
-      meta: { viewport: 'width=device-width, initial-scale=1, user-scalable=no' }
+      template: './src/index.html',
+      meta: { viewport: 'width=device-width, initial-scale=1, user-scalable=no',
+              'msapplication-TileColor': '#2d89ef',
+              'theme-color': '#ffffff'
+            }
     })
   ],
   devServer: {

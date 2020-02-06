@@ -8,6 +8,8 @@ export class Presenter {
         this.moveId = null;
         this.nextInsertElement = null;
         this.displaySourcecode = false;
+        this.undoList = [];
+        this.redoList = [];
     }
 
 
@@ -25,6 +27,9 @@ export class Presenter {
         return this.model.getTree();
     }
 
+    getElementByUid(uid) {
+        return this.model.getElementInTree(uid, this.model.getTree());
+    }
 
     resetButtons() {
         for (const view of this.views) {
@@ -112,7 +117,7 @@ export class Presenter {
         }
         this.updateBrowserStore();
         for (const view of this.views) {
-            view.displaySourcecode(buttonId.target.id);
+            view.displaySourcecode('ToggleSourcecode');
         }
     }
 
@@ -255,14 +260,14 @@ export class Presenter {
             event.dataTransfer.setData('text', id);
         }
         let button = document.getElementById(id);
-        if (button.classList.contains('btn-primary')) {
+        if (button.classList.contains('boldText')) {
             this.resetButtons();
             this.reset();
         } else {
             // prepare insert by updating the model data
             this.resetButtons();
             this.insertMode = true;
-            button.classList.add('btn-primary');
+            button.classList.add('boldText');
         }
         // rerender the struktogramm
         this.renderAllViews();
@@ -286,7 +291,9 @@ export class Presenter {
 
 
     resetModel() {
+        this.updateUndo();
         this.model.reset();
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
         document.getElementById('IEModal').classList.remove('active');
@@ -298,7 +305,9 @@ export class Presenter {
      * @param   uid   id of the clicked element in the struktogramm
      */
     switchDefaultState(uid) {
+        this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.switchDefaultCase, false, ""));
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
     }
@@ -310,7 +319,9 @@ export class Presenter {
      * @param   uid   id of the clicked element in the struktogramm
      */
     addCase(uid) {
+        this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.insertNewCase, false, ""));
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
     }
@@ -322,9 +333,86 @@ export class Presenter {
      * @param   uid   id of the clicked element in the struktogramm
      */
     removeElement(uid) {
+        const deleteElem = this.model.getElementInTree(uid, this.model.getTree());
+        switch (deleteElem.type) {
+        case 'TaskNode':
+        case 'InputNode':
+        case 'OutputNode':
+            this.removeNodeFromTree(uid);
+            break;
+        case 'HeadLoopNode':
+        case 'CountLoopNode':
+        case 'FootLoopNode':
+            if (deleteElem.child.followElement.type != 'Placeholder') {
+                this.prepareRemoveQuestion(uid);
+            } else {
+                this.removeNodeFromTree(uid);
+            }
+            break;
+        case 'BranchNode':
+            if (deleteElem.trueChild.followElement.type != 'Placeholder' || deleteElem.falseChild.followElement.type != 'Placeholder') {
+                this.prepareRemoveQuestion(uid);
+            } else {
+                this.removeNodeFromTree(uid);
+            }
+            break;
+        case 'CaseNode':
+            let check = false;
+            for (const item of deleteElem.cases) {
+                if (item.followElement.followElement.type != 'Placeholder') {
+                    check = true;
+                }
+            }
+            if (deleteElem.defaultNode.followElement.followElement.type != 'Placeholder') {
+                check = true;
+            }
+            if (check) {
+                this.prepareRemoveQuestion(uid);
+            } else {
+                this.removeNodeFromTree(uid);
+            }
+            break;
+        case 'InsertCase':
+            if (deleteElem.followElement.followElement.type != 'Placeholder') {
+                this.prepareRemoveQuestion(uid);
+            } else {
+                this.removeNodeFromTree(uid);
+            }
+            break;
+        }
+    }
+
+    prepareRemoveQuestion(uid) {
+        const content = document.getElementById('modal-content');
+        const footer = document.getElementById('modal-footer');
+        while (content.hasChildNodes()) {
+            content.removeChild(content.lastChild);
+        }
+        while (footer.hasChildNodes()) {
+            footer.removeChild(footer.lastChild);
+        }
+        content.appendChild(document.createTextNode('Dieses Element und alle darin erstellten Blöcke löschen?'));
+        const doButton = document.createElement('div');
+        doButton.classList.add('modal-buttons', 'acceptIcon', 'hand');
+        doButton.addEventListener('click', () => this.removeNodeFromTree(uid, true));
+        footer.appendChild(doButton);
+        const cancelButton = document.createElement('div');
+        cancelButton.classList.add('modal-buttons', 'deleteIcon', 'hand');
+        cancelButton.addEventListener('click', () => document.getElementById('IEModal').classList.remove('active'));
+        footer.appendChild(cancelButton);
+
+        document.getElementById('IEModal').classList.add('active');
+    }
+
+    removeNodeFromTree(uid, closeModal = false) {
+        this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.removeNode, false, ""));
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
+        if (closeModal) {
+            document.getElementById('IEModal').classList.remove('active');
+        }
     }
 
 
@@ -345,7 +433,9 @@ export class Presenter {
 
 
     editElement(uid, textValue) {
+        this.updateUndo();
         this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.editElement, false, textValue));
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
     }
@@ -356,6 +446,7 @@ export class Presenter {
      * @param   uid   id of the clicked InsertNode in the struktogramm
      */
     appendElement(uid) {
+        this.updateUndo();
         // remove old node, when moving is used
         let moveState = this.moveId;
         if (moveState) {
@@ -371,6 +462,7 @@ export class Presenter {
         }
         // rerender
         this.reset();
+        this.checkUndo();
         this.updateBrowserStore();
         this.renderAllViews();
         // on new inserted elements start the editing mode of the element
@@ -428,13 +520,71 @@ export class Presenter {
         // read file and parse JSON, then update model
         reader.onload = (event) => {
             const newModel = JSON.parse(event.target.result);
+            this.updateUndo();
             this.model.setTree(newModel);
+            this.checkUndo();
             this.renderAllViews();
             this.updateBrowserStore();
-            // close the modal
-            document.getElementById('IEModal').classList.remove('active');
         }
         // start the reading process
         reader.readAsText(event.target.files[0]);
+    }
+
+    updateUndo() {
+        this.undoList.push(this.getStringifiedTree());
+        for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {
+            item.classList.remove('disableIcon');
+        }
+        this.redoList = [];
+        for (const item of document.getElementsByClassName('RedoIconButtonOverlay')) {
+            item.classList.add('disableIcon');
+        }
+    }
+
+    undo() {
+        if (this.undoList.length) {
+            this.redoList.unshift(this.getStringifiedTree());
+            this.model.setTree(JSON.parse(this.undoList[this.undoList.length - 1]));
+            this.undoList.pop();
+            if (this.undoList == 0) {
+                for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {
+                    item.classList.add('disableIcon');
+                }
+            }
+            for (const item of document.getElementsByClassName('RedoIconButtonOverlay')) {
+                item.classList.remove('disableIcon');
+            }
+            this.renderAllViews();
+            this.updateBrowserStore();
+        }
+    }
+
+    checkUndo() {
+        if (this.undoList[this.undoList.length - 1] == this.getStringifiedTree()) {
+            this.undoList.pop();
+            if (this.undoList == 0) {
+                for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {
+                    item.classList.add('disableIcon');
+                }
+            }
+        }
+    }
+
+    redo() {
+        if (this.redoList.length) {
+            this.undoList.push(this.getStringifiedTree());
+            this.model.setTree(JSON.parse(this.redoList[0]));
+            this.redoList.shift();
+            if (this.redoList.length == 0) {
+                for (const item of document.getElementsByClassName('RedoIconButtonOverlay')) {
+                    item.classList.add('disableIcon');
+                }
+            }
+            for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {
+                item.classList.remove('disableIcon');
+            }
+            this.renderAllViews();
+            this.updateBrowserStore();
+        }
     }
 }

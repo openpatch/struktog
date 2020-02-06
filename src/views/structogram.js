@@ -1,4 +1,5 @@
 import { config } from '../config.js';
+import { generateResetButton } from '../helpers/generator';
 
 export class Structogram {
     constructor(presenter, domRoot) {
@@ -34,18 +35,25 @@ export class Structogram {
         let divButtons = document.createElement('div');
         divButtons.classList.add('container', 'justify-center');
         for (const item of this.buttonList) {
-            if (config[item].use) {
+            if (config.get()[item].use) {
                 divButtons.appendChild(this.createButton(item));
             }
         }
         divInsert.appendChild(divButtons);
 
         let divEditorHeadline = document.createElement('div');
-        divEditorHeadline.classList.add('columnEditorFull');
+        divEditorHeadline.classList.add('columnEditorFull', 'headerContainer');
         let editorHeadline = document.createElement('strong');
-        editorHeadline.classList.add('margin-small');
+        editorHeadline.classList.add('margin-small', 'floatBottom');
         editorHeadline.appendChild(document.createTextNode('Editor:'));
         divEditorHeadline.appendChild(editorHeadline);
+
+        const optionsContainer1 = document.createElement('div');
+        optionsContainer1.id = 'struktoOptions1';
+        optionsContainer1.classList.add('struktoOptions1');
+        divEditorHeadline.appendChild(optionsContainer1);
+
+        this.createStrukOptions(optionsContainer1);
 
         const divEditorContent = document.createElement('div');
         divEditorContent.classList.add('vcontainer', 'columnEditorStructogram');
@@ -54,7 +62,7 @@ export class Structogram {
         divEditorContentSplitTop.classList.add('columnAuto', 'container');
 
         const divEditorContentSplitBottom = document.createElement('div');
-        divEditorContentSplitBottom.classList.add('columnAuto-2');
+        divEditorContentSplitBottom.classList.add('columnAuto-6');
 
         const divFixRightBorder = document.createElement('div');
         divFixRightBorder.classList.add('borderWidth', 'frameLeft');
@@ -72,22 +80,64 @@ export class Structogram {
         this.domRoot.appendChild(divEditorHeadline);
         this.domRoot.appendChild(divEditorContent);
 
+        const codeAndOptions = document.createElement('div');
+        codeAndOptions.classList.add('columnEditorCode', 'container');
+        this.domRoot.appendChild(codeAndOptions);
+
+        const optionsContainer2 = document.createElement('div');
+        optionsContainer2.id = 'struktoOptions2';
+        optionsContainer2.classList.add('columnFull', 'container', 'struktoOptions2');
+        codeAndOptions.appendChild(optionsContainer2);
+
+        this.createStrukOptions(optionsContainer2);
+
+        const sourcecode = document.createElement('div');
+        sourcecode.id = 'SourcecodeDisplay';
+        sourcecode.classList.add('fullWidth', 'fullHeight', 'vcontainer');
+        sourcecode.style.display = 'none';
+        codeAndOptions.appendChild(sourcecode);
+
         this.domRoot = document.getElementById('structogram');
+    }
+
+    createStrukOptions(domNode) {
+        this.generateUndoRedoButtons(this.presenter, domNode);
+        generateResetButton(this.presenter, domNode);
+    }
+
+    generateUndoRedoButtons(presenter, domNode) {
+        const undo = document.createElement('div');
+        undo.classList.add('struktoOption', 'undoIcon', 'tooltip', 'tooltip-bottom', 'hand');
+        undo.setAttribute('data-tooltip', 'Undo');
+        domNode.appendChild(undo);
+        const undoOverlay = document.createElement('div');
+        undoOverlay.classList.add('fullWidth', 'fullHeight', 'UndoIconButtonOverlay', 'disableIcon');
+        undoOverlay.addEventListener('click', () => presenter.undo());
+        undo.appendChild(undoOverlay);
+
+        const redo = document.createElement('div');
+        redo.classList.add('struktoOption', 'redoIcon', 'tooltip', 'tooltip-bottom', 'hand');
+        redo.setAttribute('data-tooltip', 'Redo');
+        domNode.appendChild(redo);
+        const redoOverlay = document.createElement('div');
+        redoOverlay.classList.add('fullWidth', 'fullHeight', 'RedoIconButtonOverlay', 'disableIcon');
+        redoOverlay.addEventListener('click', () => presenter.redo());
+        redo.appendChild(redoOverlay);
     }
 
     createButton(button) {
         let div = document.createElement('div');
         div.classList.add('columnInput', 'insertButton', 'hand');
-        div.style.backgroundColor = config[button].color;
-        div.id = config[button].id;
+        div.style.backgroundColor = config.get()[button].color;
+        div.id = config.get()[button].id;
         div.draggable = 'true';
-        div.addEventListener('click', (event) => this.presenter.insertNode(config[button].id, event));
-        div.addEventListener('dragstart', (event) => this.presenter.insertNode(config[button].id, event));
+        div.addEventListener('click', (event) => this.presenter.insertNode(config.get()[button].id, event));
+        div.addEventListener('dragstart', (event) => this.presenter.insertNode(config.get()[button].id, event));
         div.addEventListener('dragend', () => this.presenter.resetDrop());
         let spanText = document.createElement('span');
-        spanText.appendChild(document.createTextNode(config[button].text));
+        spanText.appendChild(document.createTextNode(config.get()[button].text));
         let divIcon = document.createElement('div');
-        divIcon.classList.add(config[button].icon, 'buttonLogo');
+        divIcon.classList.add(config.get()[button].icon, 'buttonLogo');
 
         div.append(divIcon);
         div.append(spanText);
@@ -125,7 +175,7 @@ export class Structogram {
                 container.id = subTree.id;
             }
             container.classList.add('vcontainer', 'frameTopLeft', 'columnAuto');
-            container.style.backgroundColor = config[subTree.type].color;
+            container.style.backgroundColor = config.get()[subTree.type].color;
             //container.style.margin = '0 .75px';
             //const element = document.createElement('div');
             //element.classList.add('column', 'vcontainer', 'frameTop');
@@ -415,8 +465,8 @@ export class Structogram {
     resetButtons() {
         // remove color of buttons
         for (const button of this.buttonList) {
-            if (config[button].use) {
-                document.getElementById(config[button].id).classList.remove('btn-primary');
+            if (config.get()[button].use) {
+                document.getElementById(config.get()[button].id).classList.remove('boldText');
             }
         }
     }
@@ -485,6 +535,91 @@ export class Structogram {
     }
 
 
+    openCaseOptions(uid) {
+        const content = document.getElementById('modal-content')
+        const footer = document.getElementById('modal-footer')
+        while (content.hasChildNodes()) {
+            content.removeChild(content.lastChild)
+        }
+        while (footer.hasChildNodes()) {
+            footer.removeChild(footer.lastChild)
+        }
+        const element = this.presenter.getElementByUid(uid);
+
+        const title = document.createElement('strong');
+        title.appendChild(document.createTextNode("Einstellungen der " + config.get().CaseNode.text + ": "));
+        content.appendChild(title);
+        const elementText = document.createElement('div');
+        elementText.classList.add('caseTitle', 'boldText');
+        elementText.appendChild(document.createTextNode(element.text));
+        content.appendChild(elementText);
+
+        const list = document.createElement('dl');
+        list.classList.add('container');
+        content.appendChild(list);
+        const caseNumberTitle = document.createElement('dt')
+        caseNumberTitle.classList.add('dtItem');
+        caseNumberTitle.appendChild(document.createTextNode("Anzahl der Fälle:"));
+        list.appendChild(caseNumberTitle);
+        const caseNumber = document.createElement('dd');
+        caseNumber.classList.add('ddItem', 'container');
+        list.appendChild(caseNumber);
+        const caseNr = document.createElement('div');
+        caseNr.classList.add('text-center', 'shortenOnMobile');
+        caseNr.appendChild(document.createTextNode(element.cases.length));
+        caseNumber.appendChild(caseNr);
+        const addCase = document.createElement('div');
+        addCase.classList.add('addCaseIcon', 'hand', 'caseOptionsIcons', 'tooltip', 'tooltip-bottom');
+        addCase.addEventListener('click', () => {
+            this.presenter.addCase(uid);
+            this.openCaseOptions(uid);
+        });
+        addCase.setAttribute('data-tooltip', 'Fall hinzufügen');
+        caseNumber.appendChild(addCase);
+
+        const defaultOnTitle = document.createElement('dt');
+        defaultOnTitle.classList.add('dtItem');
+        defaultOnTitle.appendChild(document.createTextNode("Sonst Zweig einschalten:"));
+        list.appendChild(defaultOnTitle);
+        const defaultOn = document.createElement('dd');
+        defaultOn.classList.add('ddItem', 'container');
+        defaultOn.addEventListener('click', () => {
+            this.presenter.switchDefaultState(uid);
+            this.openCaseOptions(uid);
+        });
+        list.appendChild(defaultOn);
+        const defaultNo = document.createElement('div');
+        defaultNo.classList.add('text-center', 'shortenOnMobile');
+        defaultNo.setAttribute('data-abbr', 'N');
+        defaultOn.appendChild(defaultNo);
+        const defaultNoText = document.createElement('span');
+        defaultNoText.appendChild(document.createTextNode("Nein"));
+        defaultNo.appendChild(defaultNoText);
+        const switchDefault = document.createElement('div');
+        switchDefault.classList.add('hand', 'caseOptionsIcons');
+        if (element.defaultOn) {
+            switchDefault.classList.add('switchOn');
+        } else {
+            switchDefault.classList.add('switchOff');
+        }
+        defaultOn.appendChild(switchDefault);
+        const defaultYes = document.createElement('div');
+        defaultYes.classList.add('text-center', 'shortenOnMobile');
+        defaultYes.setAttribute('data-abbr', 'J');
+        defaultOn.appendChild(defaultYes);
+        const defaultYesText = document.createElement('span');
+        defaultYesText.appendChild(document.createTextNode("Ja"));
+        defaultYes.appendChild(defaultYesText);
+
+        const cancelButton = document.createElement('div');
+        cancelButton.classList.add('modal-buttons', 'hand');
+        cancelButton.appendChild(document.createTextNode("Schließen"));
+        cancelButton.addEventListener('click', () => document.getElementById('IEModal').classList.remove('active'));
+        footer.appendChild(cancelButton);
+
+        document.getElementById('IEModal').classList.add('active');
+    }
+
     /**
      * Create option elements and add them to the displayed element
      *
@@ -497,29 +632,13 @@ export class Structogram {
         let optionDiv = document.createElement('div');
         optionDiv.classList.add('optionContainer');
 
-        // case nodes have two additional options
+        // case nodes have additional options
         if (type == 'CaseNode') {
-            // add another new case
-            let addingCase = document.createElement('div');
-            addingCase.classList.add('addCaseIcon');
-            addingCase.classList.add('optionIcon');
-            addingCase.classList.add('hand');
-            addingCase.classList.add('tooltip');
-            addingCase.classList.add('tooltip-bottoml');
-            addingCase.setAttribute('data-tooltip', 'Fall hinzufügen');
-            addingCase.addEventListener('click', () => this.presenter.addCase(uid));
-            optionDiv.appendChild(addingCase);
-
-            // switch the default state option
-            let switchDefault = document.createElement('div');
-            switchDefault.classList.add('switchDefaultCaseIcon');
-            switchDefault.classList.add('optionIcon');
-            switchDefault.classList.add('hand');
-            switchDefault.classList.add('tooltip');
-            switchDefault.classList.add('tooltip-bottoml');
-            switchDefault.setAttribute('data-tooltip', 'Sonst-Zweig schalten');
-            switchDefault.addEventListener('click', () => this.presenter.switchDefaultState(uid));
-            optionDiv.appendChild(switchDefault);
+            const caseOptions = document.createElement('div');
+            caseOptions.classList.add('gearIcon', 'optionIcon', 'hand', 'tooltip', 'tooltip-bottoml');
+            caseOptions.setAttribute('data-tooltip', 'Einstellung');
+            caseOptions.addEventListener('click', () => this.openCaseOptions(uid));
+            optionDiv.appendChild(caseOptions);
         }
 
         // all elements can be moved, except InsertCases they are bind to the case node
@@ -565,11 +684,7 @@ export class Structogram {
 
         // this div contains the hidden inputfield
         let editDiv = document.createElement('div');
-        //editDiv.classList.add('column');
-        //editDiv.classList.add('col-12');
-        editDiv.classList.add('input-group', 'editField', 'padding');
-        //editDiv.classList.add('input-inline');
-        //editDiv.classList.add('editField');
+        editDiv.classList.add('input-group', 'editField');
         editDiv.style.display = 'none';
 
         if (type == 'FootLoopNode') {
@@ -578,7 +693,6 @@ export class Structogram {
 
         // inputfield with eventlisteners
         let editText = document.createElement('input');
-        //editText.classList.add('form-input');
         editText.type = 'text';
         editText.value = content;
         // TODO: move to presenter
@@ -594,24 +708,11 @@ export class Structogram {
         // add apply button
         let editApply = document.createElement('div');
         editApply.classList.add('acceptIcon', 'hand');
-        //editApply.classList.add('btn-primary');
-        //editApply.classList.add('input-group-btn');
-        //editApply.classList.add('cubic');
-        //let acceptDiv = document.createElement('div');
-        //acceptDiv.classList.add('acceptIcon');
-        //acceptDiv.classList.add('p-centered');
-        //editApply.appendChild(acceptDiv);
         editApply.addEventListener('click', () => this.presenter.editElement(uid, editText.value));
 
         // add dismiss button
         let editDismiss = document.createElement('div');
-        //editDismiss.classList.add('squareButton');
-        //editDismiss.classList.add('input-group-btn');
-        //editDismiss.classList.add('cubic');
-        //let dismissDiv = document.createElement('div');
         editDismiss.classList.add('deleteIcon', 'hand');
-        //dismissDiv.classList.add('p-centered');
-        //editDismiss.appendChild(dismissDiv);
         editDismiss.addEventListener('click', () => this.presenter.renderAllViews());
 
         // some types need additional text or a different position
@@ -636,7 +737,7 @@ export class Structogram {
         if (!(type == 'InsertCase' && content == 'Sonst')) {
             innerTextDiv.classList.add('padding');
             if (!this.presenter.getInsertMode()) {
-                innerTextDiv.classList.add('hand');
+                innerTextDiv.classList.add('hand', 'fullHeight');
             }
             innerTextDiv.addEventListener('click', () => {
                 this.presenter.renderAllViews();

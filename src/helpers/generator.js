@@ -30,7 +30,12 @@ export function generateHtmltree () {
 
     const logoAnker = document.createElement('a')
     logoAnker.classList.add('column', 'container')
-    logoAnker.setAttribute('href', 'index.html')
+    let url = 'index.html';
+    const browserUrl = new URL(window.location.href)
+    if (browserUrl.searchParams.get('config')) {
+        url = url + '?config=' + browserUrl.searchParams.get('config');
+    }
+    logoAnker.setAttribute('href', url)
     logoDiv.appendChild(logoAnker)
 
     const logo = document.createElement('div')
@@ -85,12 +90,11 @@ export function generateHtmltree () {
     modalHeader.classList.add('modal-header')
     modalContainer.appendChild(modalHeader)
 
-    const modalHeaderClose = document.createElement('span')
-    modalHeaderClose.classList.add('close', 'hand')
+    const modalHeaderClose = document.createElement('div')
+    modalHeaderClose.classList.add('close', 'hand', 'cancelIcon')
     modalHeaderClose.addEventListener('click', () => {
         document.getElementById('IEModal').classList.remove('active')
     })
-    modalHeaderClose.appendChild(document.createTextNode('&times;'))
     modalHeader.appendChild(modalHeaderClose)
 
     const modalBody = document.createElement('div')
@@ -121,10 +125,10 @@ export function generateHtmltree () {
     footerDiv.appendChild(footerSpan)
 }
 
-export function generateResetButton(presenter) {
+export function generateResetButton(presenter, domNode) {
     // reset button must be last defined
     let resetButtonDiv = document.createElement('div')
-    resetButtonDiv.classList.add('options-element', 'resetIcon', 'tooltip', 'tooltip-bottom', 'hand')
+    resetButtonDiv.classList.add('struktoOption', 'resetIcon', 'tooltip', 'tooltip-bottom', 'hand')
     resetButtonDiv.setAttribute('data-tooltip', 'Reset')
     resetButtonDiv.addEventListener('click', () => {
         const content = document.getElementById('modal-content')
@@ -147,5 +151,66 @@ export function generateResetButton(presenter) {
 
         document.getElementById('IEModal').classList.add('active')
     })
-    document.getElementById('optionButtons').appendChild(resetButtonDiv)
+    domNode.appendChild(resetButtonDiv)
+}
+
+function infoDlGenerator(data) {
+    const dl = document.createElement('dl');
+    dl.classList.add('infoBox');
+    for (const item of data) {
+        const dt = document.createElement('dt');
+        dt.appendChild(document.createTextNode(item.dt));
+        dl.appendChild(dt);
+        const dd = document.createElement('dd');
+        for (const textItem of item.dd) {
+            const text = document.createElement('span');
+            if (textItem.includes('http')) {
+                const link = document.createElement('a');
+                link.setAttribute('href', textItem);
+                link.setAttribute('target', '_blank');
+                link.appendChild(document.createTextNode("Link"));
+                text.appendChild(link);
+            } else {
+                text.appendChild(document.createTextNode(textItem));
+            }
+            dd.appendChild(text);
+        }
+        dl.appendChild(dd);
+    }
+    return dl
+}
+
+export function generateInfoButton(domNode) {
+    const infoButtonDiv = document.createElement('div');
+    infoButtonDiv.classList.add('options-element', 'infoIcon', 'tooltip', 'tooltip-bottomInfo', 'hand');
+    infoButtonDiv.setAttribute('data-tooltip', 'Informationen');
+    infoButtonDiv.addEventListener('click', () => {
+        const content = document.getElementById('modal-content')
+        const footer = document.getElementById('modal-footer')
+        while (content.hasChildNodes()) {
+            content.removeChild(content.lastChild)
+        }
+        while (footer.hasChildNodes()) {
+            footer.removeChild(footer.lastChild)
+        }
+
+        content.appendChild(infoDlGenerator([
+            {dt: 'Projektname', dd: ['Struktog.']},
+            {dt: 'Autoren', dd: ['Klaus Ramm', 'Thiemo Leonhardt']},
+            {dt: 'Repository', dd: ['https://gitlab.com/ddi-tu-dresden/cs-school-tools/struktog']},
+            {dt: 'Wiki', dd: ['https://gitlab.com/ddi-tu-dresden/cs-school-tools/struktog/-/wikis/home']},
+            {dt: 'Lizenz', dd: [ 'MIT © 2019 Didaktik der Informatik der TU Dresden', 'https://gitlab.com/ddi-tu-dresden/cs-school-tools/struktog/-/blob/master/license.md']},
+            {dt: 'Version', dd: ['1.0']},
+        ]))
+
+        const cancelButton = document.createElement('div');
+        cancelButton.classList.add('modal-buttons', 'hand');
+        cancelButton.appendChild(document.createTextNode("Schließen"));
+        cancelButton.addEventListener('click', () => document.getElementById('IEModal').classList.remove('active'));
+        footer.appendChild(cancelButton);
+
+        document.getElementById('IEModal').classList.add('active')
+    })
+
+    domNode.appendChild(infoButtonDiv);
 }
