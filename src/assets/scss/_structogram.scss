@@ -80,7 +80,7 @@ $main-background-color: rgba(128,212,255, 0.5);
     flex: 48%;
 }
 
-@media screen and (min-width: 486px) {
+@media screen and (min-width: 500px) {
     .columnInput {
         flex-grow: 0;
         flex-basis: 48%;
@@ -163,7 +163,7 @@ $main-background-color: rgba(128,212,255, 0.5);
             display: inline-block;
         }
 
-        @media screen and (min-width: 800px) {
+        @media screen and (min-width: 1200px) {
             display: none;
         }
     }
