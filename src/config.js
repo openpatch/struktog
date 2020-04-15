@@ -70,7 +70,7 @@ class Config {
 
 
         this.alternatives = {
-            1: {
+            'python': {
                 InsertNode: {
                     color: 'rgb(255,255,243)'
                 },
@@ -81,14 +81,14 @@ class Config {
                     color: 'rgb(250, 218, 209)'
                 },
                 InputNode: {
-                    use: false,
+                    use: true,
                     id: 'InputButton',
                     text: 'Eingabe-Feld',
                     icon: 'taskIcon',
                     color: 'rgb(253, 237, 206)'
                 },
                 OutputNode: {
-                    use: false,
+                    use: true,
                     id: 'OutputButton',
                     text: 'Ausgabe-Feld',
                     icon: 'taskIcon',
@@ -130,7 +130,7 @@ class Config {
                     color: 'rgb(250, 218, 209)'
                 },
                 CaseNode: {
-                    use: false,
+                    use: true,
                     id: 'CaseButton',
                     text: 'Fallunterscheidung',
                     icon: 'caseIcon',
