@@ -19,6 +19,12 @@ export class ImportExport {
         importInput.setAttribute('type', 'file');
         importInput.addEventListener('change', (e) => this.presenter.readFile(e));
         importDiv.addEventListener('click', () => importInput.click());
+        const webdriverImportInput = document.createElement('input');
+        webdriverImportInput.classList.add('webdriver-input');
+        webdriverImportInput.setAttribute('type', 'file');
+        webdriverImportInput.addEventListener('change', (e) => this.presenter.readFile(e));
+        webdriverImportInput.style.display = "none"
+        document.getElementById('optionButtons').appendChild(webdriverImportInput);
         document.getElementById('optionButtons').appendChild(importDiv);
 
         const saveDiv = document.createElement('div');
