@@ -325,14 +325,14 @@ export class Presenter {
       case 'HeadLoopNode':
       case 'CountLoopNode':
       case 'FootLoopNode':
-        if (deleteElem.child.followElement.type != 'Placeholder') {
+        if (deleteElem.child.followElement.type !== 'Placeholder') {
           this.prepareRemoveQuestion(uid)
         } else {
           this.removeNodeFromTree(uid)
         }
         break
       case 'BranchNode':
-        if (deleteElem.trueChild.followElement.type != 'Placeholder' || deleteElem.falseChild.followElement.type != 'Placeholder') {
+        if (deleteElem.trueChild.followElement.type !== 'Placeholder' || deleteElem.falseChild.followElement.type !== 'Placeholder') {
           this.prepareRemoveQuestion(uid)
         } else {
           this.removeNodeFromTree(uid)
@@ -341,11 +341,11 @@ export class Presenter {
       case 'CaseNode':
         let check = false
         for (const item of deleteElem.cases) {
-          if (item.followElement.followElement.type != 'Placeholder') {
+          if (item.followElement.followElement.type !== 'Placeholder') {
             check = true
           }
         }
-        if (deleteElem.defaultNode.followElement.followElement.type != 'Placeholder') {
+        if (deleteElem.defaultNode.followElement.followElement.type !== 'Placeholder') {
           check = true
         }
         if (check) {
@@ -355,7 +355,7 @@ export class Presenter {
         }
         break
       case 'InsertCase':
-        if (deleteElem.followElement.followElement.type != 'Placeholder') {
+        if (deleteElem.followElement.followElement.type !== 'Placeholder') {
           this.prepareRemoveQuestion(uid)
         } else {
           this.removeNodeFromTree(uid)
@@ -522,7 +522,7 @@ export class Presenter {
       this.redoList.unshift(this.getStringifiedTree())
       this.model.setTree(JSON.parse(this.undoList[this.undoList.length - 1]))
       this.undoList.pop()
-      if (this.undoList == 0) {
+      if (this.undoList === 0) {
         for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {
           item.classList.add('disableIcon')
         }
@@ -536,9 +536,9 @@ export class Presenter {
   }
 
   checkUndo () {
-    if (this.undoList[this.undoList.length - 1] == this.getStringifiedTree()) {
+    if (this.undoList[this.undoList.length - 1] === this.getStringifiedTree()) {
       this.undoList.pop()
-      if (this.undoList == 0) {
+      if (this.undoList === 0) {
         for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {
           item.classList.add('disableIcon')
         }
@@ -551,7 +551,7 @@ export class Presenter {
       this.undoList.push(this.getStringifiedTree())
       this.model.setTree(JSON.parse(this.redoList[0]))
       this.redoList.shift()
-      if (this.redoList.length == 0) {
+      if (this.redoList.length === 0) {
         for (const item of document.getElementsByClassName('RedoIconButtonOverlay')) {
           item.classList.add('disableIcon')
         }

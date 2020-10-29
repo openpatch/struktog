@@ -121,7 +121,7 @@ export function generateHtmltree () {
   footer.appendChild(footerDiv)
 
   const footerSpan = document.createElement('span')
-  footerSpan.appendChild(document.createTextNode('© 2019 Didaktik der Informatik der TU Dresden'))
+  footerSpan.appendChild(document.createTextNode('Didaktik der Informatik der TU Dresden'))
   footerDiv.appendChild(footerSpan)
 }
 
