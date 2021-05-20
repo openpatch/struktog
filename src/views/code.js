@@ -440,7 +440,7 @@ export class CodeView {
         {
           const loopContent = document.createElement('span')
           loopContent.classList.add('keyword')
-          loopContent.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].FootLoopNode.prepre))
+          loopContent.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].FootLoopNode.pre))
           elemSpan.appendChild(loopContent)
           let loop = [elemSpan]
           if (this.translationMap[lang].leftBracket !== '') {
@@ -584,7 +584,7 @@ export class CodeView {
   prepareTransforming () {
     var lang = document.getElementById('SourcecodeSelect').value
     // start the transformation
-    startTransforming(lang)
+    presenter.startTransforming(lang)
   }
 
   /**

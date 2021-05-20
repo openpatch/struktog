@@ -5,6 +5,7 @@ module.exports = {
     'View': true,
     'Presenter': true,
     'localStorage': true,
-    'FileReader': true
+    'FileReader': true,
+    'presenter': true
   }
 }

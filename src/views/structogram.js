@@ -237,6 +237,19 @@ export class Structogram {
         {
           container.classList.remove('frameTopLeft', 'columnAuto')
           container.classList.add('frameLeft', 'fixedHeight')
+          const divTaskNode = document.createElement('div')
+          divTaskNode.classList.add('fixedHeight', 'container')
+
+          const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          divTaskNode.appendChild(textDiv)
+          divTaskNode.appendChild(optionDiv)
+
+          // container.classList.add('line');
+          container.appendChild(divTaskNode)
+          elemArray.push(container)
+
+          return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
         }
         case 'InputNode':
         case 'OutputNode':
@@ -308,8 +321,8 @@ export class Structogram {
 
           divChildren.appendChild(divTrue)
           divChildren.appendChild(divFalse)
-          div.appendChild(divChildren)
-          container.appendChild(div)
+          divBranchNode.appendChild(divChildren)
+          container.appendChild(divBranchNode)
           elemArray.push(container)
 
           return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))

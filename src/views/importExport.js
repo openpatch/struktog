@@ -84,6 +84,12 @@ export class ImportExport {
           ctx.moveTo(xmax, y)
           ctx.lineTo(xmax, y + this.printHeight)
           ctx.stroke()
+
+          ctx.fillStyle = '#fcedce'
+          ctx.rect(x, y, xmax, this.printHeight)
+          ctx.fill()
+
+          ctx.fillStyle = 'black'
           ctx.beginPath()
           ctx.fillText('E: ' + subTree.text, x + 15, y + defaultMargin)
           ctx.stroke()
@@ -100,6 +106,12 @@ export class ImportExport {
           ctx.moveTo(xmax, y)
           ctx.lineTo(xmax, y + this.printHeight)
           ctx.stroke()
+
+          ctx.fillStyle = '#fcedce'
+          ctx.rect(x, y, xmax, this.printHeight)
+          ctx.fill()
+
+          ctx.fillStyle = 'black'
           ctx.beginPath()
           ctx.fillText('A: ' + subTree.text, x + 15, y + defaultMargin)
           ctx.stroke()
@@ -116,6 +128,12 @@ export class ImportExport {
           ctx.moveTo(xmax, y)
           ctx.lineTo(xmax, y + this.printHeight)
           ctx.stroke()
+
+          ctx.fillStyle = '#fcedce'
+          ctx.rect(x, y, xmax, this.printHeight)
+          ctx.fill()
+
+          ctx.fillStyle = 'black'
           ctx.beginPath()
           ctx.fillText(subTree.text, x + 15, y + defaultMargin)
           ctx.stroke()
@@ -124,7 +142,11 @@ export class ImportExport {
 
         case 'BranchNode':
         {
+          ctx.fillStyle = 'rgb(250, 218, 209)'
+          ctx.beginPath() // to end open paths
           ctx.rect(x, y, xmax - x, 2 * this.printHeight)
+          ctx.fill()
+          ctx.fillStyle = 'black'
           ctx.stroke()
           ctx.beginPath()
           ctx.moveTo(x, y)
@@ -159,6 +181,14 @@ export class ImportExport {
           let childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y + this.printHeight)
           ctx.rect(x, y, xmax - x, childY - y)
           ctx.stroke()
+
+          ctx.beginPath()
+          ctx.fillStyle = 'rgb(220, 239, 231)'
+          ctx.rect(x, y, xmax, this.printHeight - 1)
+          ctx.rect(x, y, (xmax - x) / 12 - 1, childY - y + this.printHeight)
+          ctx.fill()
+
+          ctx.fillStyle = 'black'
           ctx.beginPath()
           ctx.fillText(subTree.text, x + 15, y + defaultMargin)
           ctx.stroke()
@@ -171,6 +201,13 @@ export class ImportExport {
           ctx.rect(x, y, xmax - x, childY - y + this.printHeight)
           ctx.stroke()
           ctx.beginPath()
+          ctx.fillStyle = 'rgb(220, 239, 231)'
+          ctx.rect(x, y, (xmax - x) / 12, childY - y + this.printHeight)
+          ctx.rect(x, childY, xmax, this.printHeight)
+          ctx.fill()
+
+          ctx.fillStyle = 'black'
+          ctx.beginPath()
           ctx.fillText(subTree.text, x + 15, childY + defaultMargin)
           ctx.stroke()
           ctx.beginPath()
@@ -182,7 +219,11 @@ export class ImportExport {
 
         case 'CaseNode':
         {
+          ctx.fillStyle = 'rgb(250, 218, 209)'
+          ctx.beginPath()
           ctx.rect(x, y, xmax - x, 2 * this.printHeight)
+          ctx.fill()
+          ctx.fillStyle = 'black'
           let caseCount = subTree.cases.length
           if (subTree.defaultOn) {
             caseCount = caseCount + 1
