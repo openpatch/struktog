@@ -53,194 +53,171 @@ export class ImportExport {
       switch (subTree.type) {
         case 'InsertNode':
           return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y)
-          break
         case 'Placeholder':
-          {
-            ctx.beginPath()
-            ctx.moveTo(x, y)
-            ctx.lineTo(xmax, y)
-            ctx.moveTo(x, y)
-            ctx.lineTo(x, y + this.printHeight)
-            ctx.moveTo(xmax, y)
-            ctx.lineTo(xmax, y + this.printHeight)
-            ctx.stroke()
-            ctx.beginPath()
-            let centerX = x + (xmax - x) / 2
-            let centerY = y + this.printHeight / 2
-            ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI)
-            ctx.moveTo(centerX - 11, centerY + 11)
-            ctx.lineTo(centerX + 11, centerY - 11)
-            ctx.stroke()
-            return y + this.printHeight
-          }
-          break
-        case 'InputNode':
-          {
-            ctx.beginPath()
-            ctx.moveTo(x, y)
-            ctx.lineTo(xmax, y)
-            ctx.moveTo(x, y)
-            ctx.lineTo(x, y + this.printHeight)
-            ctx.moveTo(xmax, y)
-            ctx.lineTo(xmax, y + this.printHeight)
-            ctx.stroke()
-            ctx.beginPath()
-            ctx.fillText('E: ' + subTree.text, x + 15, y + defaultMargin)
-            ctx.stroke()
-            return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight)
-          }
-          break
-        case 'OutputNode':
-          {
-            ctx.beginPath()
-            ctx.moveTo(x, y)
-            ctx.lineTo(xmax, y)
-            ctx.moveTo(x, y)
-            ctx.lineTo(x, y + this.printHeight)
-            ctx.moveTo(xmax, y)
-            ctx.lineTo(xmax, y + this.printHeight)
-            ctx.stroke()
-            ctx.beginPath()
-            ctx.fillText('A: ' + subTree.text, x + 15, y + defaultMargin)
-            ctx.stroke()
-            return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight)
-          }
-          break
-        case 'TaskNode':
-          {
-            ctx.beginPath()
-            ctx.moveTo(x, y)
-            ctx.lineTo(xmax, y)
-            ctx.moveTo(x, y)
-            ctx.lineTo(x, y + this.printHeight)
-            ctx.moveTo(xmax, y)
-            ctx.lineTo(xmax, y + this.printHeight)
-            ctx.stroke()
-            ctx.beginPath()
-            ctx.fillText(subTree.text, x + 15, y + defaultMargin)
-            ctx.stroke()
-            return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight)
-          }
-          break
-        case 'BranchNode':
-          {
-            ctx.rect(x, y, xmax - x, 2 * this.printHeight)
-            ctx.stroke()
-            ctx.beginPath()
-            ctx.moveTo(x, y)
-            ctx.lineTo(x + (xmax - x) / 2, y + 2 * this.printHeight)
-            ctx.moveTo(xmax, y)
-            ctx.lineTo(x + (xmax - x) / 2, y + 2 * this.printHeight)
-            ctx.stroke()
-            // center the text
-            let textWidth = ctx.measureText(subTree.text)
-            ctx.beginPath()
-            ctx.fillText(subTree.text, x + Math.abs(((xmax - x) - textWidth.width)) / 2, y + defaultMargin)
-            ctx.stroke()
-            ctx.beginPath()
-            ctx.fillText('Wahr', x + 15, y + this.printHeight + defaultMargin)
-            ctx.fillText('Falsch', xmax - 15 - ctx.measureText('Falsch').width, y + this.printHeight + defaultMargin)
-            ctx.stroke()
-            let trueChildY = this.renderTreeAsCanvas(subTree.trueChild, ctx, x, x + (xmax - x) / 2, y + 2 * this.printHeight)
-            let falseChildY = this.renderTreeAsCanvas(subTree.falseChild, ctx, x + (xmax - x) / 2, xmax, y + 2 * this.printHeight)
-
-            // determine which child sub tree is deeper y wise
-            if (trueChildY < falseChildY) {
-              trueChildY = falseChildY
-            }
-            ctx.rect(x, y, xmax - x, trueChildY - y)
-            ctx.stroke()
-            return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, trueChildY)
-          }
-          break
-        case 'CountLoopNode':
-        case 'HeadLoopNode':
-          {
-            let childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y + this.printHeight)
-            ctx.rect(x, y, xmax - x, childY - y)
-            ctx.stroke()
-            ctx.beginPath()
-            ctx.fillText(subTree.text, x + 15, y + defaultMargin)
-            ctx.stroke()
-            return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, childY)
-          }
-          break
-        case 'FootLoopNode':
-          {
-            let childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y)
-            ctx.rect(x, y, xmax - x, childY - y + this.printHeight)
-            ctx.stroke()
-            ctx.beginPath()
-            ctx.fillText(subTree.text, x + 15, childY + defaultMargin)
-            ctx.stroke()
-            ctx.beginPath()
-            ctx.moveTo(x + ((xmax - x) / 12), childY)
-            ctx.lineTo(xmax, childY)
-            ctx.stroke()
-            return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, childY + this.printHeight)
-          }
-          break
-        case 'CaseNode':
-          {
-            ctx.rect(x, y, xmax - x, 2 * this.printHeight)
-            let caseCount = subTree.cases.length
-            if (subTree.defaultOn) {
-              caseCount = caseCount + 1
-            }
-            // calculate the x and y distance between each case
-            // yStep ist used for the positioning of the vertical lines on the diagonal line
-            let xStep = (xmax - x) / caseCount
-            let yStep = (this.printHeight) / subTree.cases.length
-            ctx.stroke()
-            ctx.beginPath()
-            ctx.moveTo(x, y)
-            if (subTree.defaultOn) {
-              ctx.lineTo(xmax - xStep, y + this.printHeight)
-              ctx.lineTo(xmax, y)
-              ctx.moveTo(xmax - xStep, y + this.printHeight)
-              ctx.lineTo(xmax - xStep, y + 2 * this.printHeight)
-            } else {
-              ctx.lineTo(xmax, y + this.printHeight)
-            }
-            ctx.stroke()
-            let textWidth = ctx.measureText(subTree.text)
-            ctx.beginPath()
-            ctx.fillText(subTree.text, xmax - xStep - (textWidth.width / 2), y + defaultMargin)
-            ctx.stroke()
-            let xPos = x
-            // determine the deepest tree by the y coordinate
-            let yFinally = y + 3 * this.printHeight
-            for (const element of subTree.cases) {
-              let childY = this.renderTreeAsCanvas(element, ctx, xPos, xPos + xStep, y + this.printHeight)
-              if (childY > yFinally) {
-                yFinally = childY
-              }
-              xPos = xPos + xStep
-            }
-            if (subTree.defaultOn) {
-              let childY = this.renderTreeAsCanvas(subTree.defaultNode, ctx, xPos, xmax, y + this.printHeight)
-              if (childY > yFinally) {
-                yFinally = childY
-              }
-            }
-            // draw the vertical lines
-            for (let i = 1; i <= subTree.cases.length; i++) {
-              ctx.beginPath()
-              ctx.moveTo(x + i * xStep, y + i * yStep)
-              ctx.lineTo(x + i * xStep, yFinally)
-              ctx.stroke()
-            }
-            return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, yFinally)
-          }
-          break
-        case 'InsertCase':
         {
+          ctx.beginPath()
+          ctx.moveTo(x, y)
+          ctx.lineTo(xmax, y)
+          ctx.moveTo(x, y)
+          ctx.lineTo(x, y + this.printHeight)
+          ctx.moveTo(xmax, y)
+          ctx.lineTo(xmax, y + this.printHeight)
+          ctx.stroke()
+          ctx.beginPath()
+          let centerX = x + (xmax - x) / 2
+          let centerY = y + this.printHeight / 2
+          ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI)
+          ctx.moveTo(centerX - 11, centerY + 11)
+          ctx.lineTo(centerX + 11, centerY - 11)
+          ctx.stroke()
+          return y + this.printHeight
+        }
+        case 'InputNode':
+
+          ctx.beginPath()
+          ctx.moveTo(x, y)
+          ctx.lineTo(xmax, y)
+          ctx.moveTo(x, y)
+          ctx.lineTo(x, y + this.printHeight)
+          ctx.moveTo(xmax, y)
+          ctx.lineTo(xmax, y + this.printHeight)
+          ctx.stroke()
+          ctx.beginPath()
+          ctx.fillText('E: ' + subTree.text, x + 15, y + defaultMargin)
+          ctx.stroke()
+          return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight)
+        case 'OutputNode':
+          ctx.beginPath()
+          ctx.moveTo(x, y)
+          ctx.lineTo(xmax, y)
+          ctx.moveTo(x, y)
+          ctx.lineTo(x, y + this.printHeight)
+          ctx.moveTo(xmax, y)
+          ctx.lineTo(xmax, y + this.printHeight)
+          ctx.stroke()
+          ctx.beginPath()
+          ctx.fillText('A: ' + subTree.text, x + 15, y + defaultMargin)
+          ctx.stroke()
+          return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight)
+        case 'TaskNode':
+          ctx.beginPath()
+          ctx.moveTo(x, y)
+          ctx.lineTo(xmax, y)
+          ctx.moveTo(x, y)
+          ctx.lineTo(x, y + this.printHeight)
+          ctx.moveTo(xmax, y)
+          ctx.lineTo(xmax, y + this.printHeight)
+          ctx.stroke()
+          ctx.beginPath()
+          ctx.fillText(subTree.text, x + 15, y + defaultMargin)
+          ctx.stroke()
+          return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight)
+        case 'BranchNode':
+          ctx.rect(x, y, xmax - x, 2 * this.printHeight)
+          ctx.stroke()
+          ctx.beginPath()
+          ctx.moveTo(x, y)
+          ctx.lineTo(x + (xmax - x) / 2, y + 2 * this.printHeight)
+          ctx.moveTo(xmax, y)
+          ctx.lineTo(x + (xmax - x) / 2, y + 2 * this.printHeight)
+          ctx.stroke()
+          // center the text
           let textWidth = ctx.measureText(subTree.text)
           ctx.beginPath()
           ctx.fillText(subTree.text, x + Math.abs(((xmax - x) - textWidth.width)) / 2, y + defaultMargin)
           ctx.stroke()
+          ctx.beginPath()
+          ctx.fillText('Wahr', x + 15, y + this.printHeight + defaultMargin)
+          ctx.fillText('Falsch', xmax - 15 - ctx.measureText('Falsch').width, y + this.printHeight + defaultMargin)
+          ctx.stroke()
+          let trueChildY = this.renderTreeAsCanvas(subTree.trueChild, ctx, x, x + (xmax - x) / 2, y + 2 * this.printHeight)
+          let falseChildY = this.renderTreeAsCanvas(subTree.falseChild, ctx, x + (xmax - x) / 2, xmax, y + 2 * this.printHeight)
+
+          // determine which child sub tree is deeper y wise
+          if (trueChildY < falseChildY) {
+            trueChildY = falseChildY
+          }
+          ctx.rect(x, y, xmax - x, trueChildY - y)
+          ctx.stroke()
+          return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, trueChildY)
+
+        case 'CountLoopNode':
+        case 'HeadLoopNode':
+          let childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y + this.printHeight)
+          ctx.rect(x, y, xmax - x, childY - y)
+          ctx.stroke()
+          ctx.beginPath()
+          ctx.fillText(subTree.text, x + 15, y + defaultMargin)
+          ctx.stroke()
+          return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, childY)
+        case 'FootLoopNode':
+          let _childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y)
+          ctx.rect(x, y, xmax - x, _childY - y + this.printHeight)
+          ctx.stroke()
+          ctx.beginPath()
+          ctx.fillText(subTree.text, x + 15, _childY + defaultMargin)
+          ctx.stroke()
+          ctx.beginPath()
+          ctx.moveTo(x + ((xmax - x) / 12), _childY)
+          ctx.lineTo(xmax, _childY)
+          ctx.stroke()
+          return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, _childY + this.printHeight)
+        case 'CaseNode':
+          ctx.rect(x, y, xmax - x, 2 * this.printHeight)
+          let caseCount = subTree.cases.length
+          if (subTree.defaultOn) {
+            caseCount = caseCount + 1
+          }
+          // calculate the x and y distance between each case
+          // yStep ist used for the positioning of the vertical lines on the diagonal line
+          let xStep = (xmax - x) / caseCount
+          let yStep = (this.printHeight) / subTree.cases.length
+          ctx.stroke()
+          ctx.beginPath()
+          ctx.moveTo(x, y)
+          if (subTree.defaultOn) {
+            ctx.lineTo(xmax - xStep, y + this.printHeight)
+            ctx.lineTo(xmax, y)
+            ctx.moveTo(xmax - xStep, y + this.printHeight)
+            ctx.lineTo(xmax - xStep, y + 2 * this.printHeight)
+          } else {
+            ctx.lineTo(xmax, y + this.printHeight)
+          }
+          ctx.stroke()
+          let _textWidth = ctx.measureText(subTree.text)
+          ctx.beginPath()
+          ctx.fillText(subTree.text, xmax - xStep - (_textWidth.width / 2), y + defaultMargin)
+          ctx.stroke()
+          let xPos = x
+          // determine the deepest tree by the y coordinate
+          let yFinally = y + 3 * this.printHeight
+          for (const element of subTree.cases) {
+            let childY = this.renderTreeAsCanvas(element, ctx, xPos, xPos + xStep, y + this.printHeight)
+            if (childY > yFinally) {
+              yFinally = childY
+            }
+            xPos = xPos + xStep
+          }
+          if (subTree.defaultOn) {
+            let childY = this.renderTreeAsCanvas(subTree.defaultNode, ctx, xPos, xmax, y + this.printHeight)
+            if (childY > yFinally) {
+              yFinally = childY
+            }
+          }
+          // draw the vertical lines
+          for (let i = 1; i <= subTree.cases.length; i++) {
+            ctx.beginPath()
+            ctx.moveTo(x + i * xStep, y + i * yStep)
+            ctx.lineTo(x + i * xStep, yFinally)
+            ctx.stroke()
+          }
+          return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, yFinally)
+        case 'InsertCase':
+          let __textWidth = ctx.measureText(subTree.text)
+          ctx.beginPath()
+          ctx.fillText(subTree.text, x + Math.abs(((xmax - x) - __textWidth.width)) / 2, y + defaultMargin)
+          ctx.stroke()
           return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight)
-        }
       }
     }
   }
