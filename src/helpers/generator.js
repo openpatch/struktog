@@ -185,31 +185,7 @@ export function generateInfoButton (domNode) {
   infoButtonDiv.classList.add('options-element', 'infoIcon', 'tooltip', 'tooltip-bottomInfo', 'hand')
   infoButtonDiv.setAttribute('data-tooltip', 'Informationen')
   infoButtonDiv.addEventListener('click', () => {
-    const content = document.getElementById('modal-content')
-    const footer = document.getElementById('modal-footer')
-    while (content.hasChildNodes()) {
-      content.removeChild(content.lastChild)
-    }
-    while (footer.hasChildNodes()) {
-      footer.removeChild(footer.lastChild)
-    }
-
-    content.appendChild(infoDlGenerator([
-      { dt: 'Projektname', dd: ['Struktog.'] },
-      { dt: 'Autoren', dd: ['Klaus Ramm', 'Thiemo Leonhardt'] },
-      { dt: 'Repository', dd: ['https://gitlab.com/ddi-tu-dresden/cs-school-tools/struktog'] },
-      { dt: 'Wiki', dd: ['https://gitlab.com/ddi-tu-dresden/cs-school-tools/struktog/-/wikis/home'] },
-      { dt: 'Lizenz', dd: ['MIT', 'https://gitlab.com/ddi-tu-dresden/cs-school-tools/struktog/-/blob/master/license.md'] },
-      { dt: 'Version', dd: ['1.0'] }
-    ]))
-
-    const cancelButton = document.createElement('div')
-    cancelButton.classList.add('modal-buttons', 'hand')
-    cancelButton.appendChild(document.createTextNode('Schließen'))
-    cancelButton.addEventListener('click', () => document.getElementById('IEModal').classList.remove('active'))
-    footer.appendChild(cancelButton)
-
-    document.getElementById('IEModal').classList.add('active')
+    window.open('https://gitlab.com/ddi-tu-dresden/cs-school-tools/struktog', '_blank')
   })
 
   domNode.appendChild(infoButtonDiv)
