@@ -15,6 +15,8 @@ Aufgaben können über Templates geladen werden.
 {domain}/?template=1
 ```
 
+# Download
+https://dditools.inf.tu-dresden.de/releases/struktog/struktog.tar.gz
 
 # Installation
 ```bash
