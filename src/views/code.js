@@ -139,9 +139,17 @@ export class CodeView {
       sourcecodeSelect.appendChild(langDiv)
     }
 
+    let sourcecodeCopy = document.createElement('div')
+    sourcecodeCopy.setAttribute('data-tooltip', 'Kopiere Code')
+    sourcecodeCopy.classList.add('center', 'copyIcon', 'struktoOption', 'sourcecodeHeader', 'hand', 'tooltip')
+    sourcecode.addEventListener('click', function (event) {
+      navigator.clipboard.writeText(localStorage.getItem('struktog_code'))
+    })
+
     sourcecodeForm.appendChild(sourcecodeSelect)
     sourcecodeHeader.appendChild(sourcecodeTitle)
     sourcecodeHeader.appendChild(sourcecodeForm)
+    sourcecodeHeader.appendChild(sourcecodeCopy)
 
     let sourcecodeWorkingArea = document.createElement('div')
     sourcecodeWorkingArea.classList.add('columnAuto')
@@ -192,14 +200,17 @@ export class CodeView {
       let codeBlock = document.createElement('code')
 
       // start appending the translated elements
+      let codeText = ''
       if (!isTranslatable) {
         let content = this.transformToCode(model, 0, this.lang)
         content.forEach(function (i) {
           codeBlock.appendChild(i)
+          codeText = codeText + i.textContent
         })
       } else {
         codeBlock.appendChild(document.createTextNode('Das Struktogramm enthält Elemente, \nwelche in der Programmiersprache \nnicht zur Verfügung stehen.'))
       }
+      localStorage.setItem('struktog_code', codeText)
 
       preBlock.appendChild(codeBlock)
       this.domRoot.appendChild(preBlock)
