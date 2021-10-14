@@ -11,14 +11,14 @@ packen:
     - npm install
     - webpack --mode production
     - cd build
-    #- if [ "${CI_COMMIT_TAG}" != "" ]; then TAG="-${CI_COMMIT_TAG}"; else TAG=""; fi
-    #- tar -czf ${CI_PROJECT_NAME}${TAG}.tar.gz *
-    #- mv ./${CI_PROJECT_NAME}${TAG}.tar.gz ..
+    - if [ "${CI_COMMIT_TAG}" != "" ]; then TAG="-${CI_COMMIT_TAG}"; else TAG=""; fi
+    - if [ "${CI_COMMIT_TAG}" != "" ]; then tar -czf ${CI_PROJECT_NAME}${TAG}.tar.gz *; fi
+    - if [ "${CI_COMMIT_TAG}" != "" ]; then mv ./${CI_PROJECT_NAME}${TAG}.tar.gz ..; fi
     - cd ..
   artifacts:
     paths:
       - ./build
-      #- ${CI_PROJECT_NAME}${TAG}.tar.gz
+      - ${CI_PROJECT_NAME}${TAG}.tar.gz
   only:
     - master
     - development
@@ -32,6 +32,7 @@ deploy:
     - export SSHPASS=${PASS}
     - sshpass -e ssh -o stricthostkeychecking=no -p 44 deploy@dditools.inf.tu-dresden.de "rm -rf ./dditools/struktog/*"
     - sshpass -e scp -o stricthostkeychecking=no -P 44 -r ./build/* deploy@dditools.inf.tu-dresden.de:dditools/struktog
+    - if [ "${CI_COMMIT_TAG}" != "" ]; then sshpass -e scp -o stricthostkeychecking=no -P 44 ${CI_PROJECT_NAME}${TAG}.tar.gz deploy@dditools.inf.tu-dresden.de:dditools/releases/struktog; fi
   variables:
     GIT_STRATEGY: none
   only:
