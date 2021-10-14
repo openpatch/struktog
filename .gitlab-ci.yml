@@ -4,7 +4,7 @@ stages:
   - deploydev
 
 packen:
-  image: node:latest
+  image: node:erbium
   stage: build
   script:
     - PATH="./node_modules/.bin:$PATH"

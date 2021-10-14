@@ -163,7 +163,7 @@ export class Structogram {
     if (subTree === null) {
       return elemArray
     } else {
-      if (!(this.presenter.getMoveId() === null) && subTree.id == this.presenter.getMoveId()) {
+      if (!(this.presenter.getMoveId() === null) && subTree.id === this.presenter.getMoveId()) {
         parentIsMoving = true
         noInsert = true
       }
@@ -181,92 +181,97 @@ export class Structogram {
 
       switch (subTree.type) {
         case 'InsertNode':
-          {
-            if (parentIsMoving) {
-              return this.renderElement(subTree.followElement, false, false)
+
+          if (parentIsMoving) {
+            return this.renderElement(subTree.followElement, false, false)
+          } else {
+            if (noInsert) {
+              return this.renderElement(subTree.followElement, false, true)
             } else {
-              if (noInsert) {
-                return this.renderElement(subTree.followElement, false, true)
-              } else {
-                if (this.presenter.getInsertMode()) {
-                  // container.classList.add('line');
-                  const div = document.createElement('div')
-                  div.classList.add('container', 'fixedHalfHeight', 'symbol', 'hand', 'text-center')
-                  container.addEventListener('dragover', function (event) {
-                    event.preventDefault()
-                  })
-                  container.addEventListener('drop', (event) => {
-                    event.preventDefault()
-                    this.presenter.appendElement(subTree.id)
-                  })
-                  container.addEventListener('click', () => this.presenter.appendElement(subTree.id))
+              if (this.presenter.getInsertMode()) {
+                // container.classList.add('line');
+                const div = document.createElement('div')
+                div.classList.add('container', 'fixedHalfHeight', 'symbol', 'hand', 'text-center')
+                container.addEventListener('dragover', function (event) {
+                  event.preventDefault()
+                })
+                container.addEventListener('drop', (event) => {
+                  event.preventDefault()
+                  this.presenter.appendElement(subTree.id)
+                })
+                container.addEventListener('click', () => this.presenter.appendElement(subTree.id))
 
-                  if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id == this.presenter.getMoveId()) {
-                    const bold = document.createElement('strong')
-                    bold.classList.add('moveText')
-                    bold.appendChild(document.createTextNode('Verschieben abbrechen'))
-                    div.appendChild(bold)
-                  } else {
-                    const symbol = document.createElement('div')
-                    symbol.classList.add('insertIcon', 'symbolHeight')
-                    div.appendChild(symbol)
-                  }
-                  container.appendChild(div)
-                  elemArray.push(container)
-
-                  if (subTree.followElement === null || subTree.followElement.type == 'Placeholder') {
-                    return elemArray
-                  } else {
-                    return elemArray.concat(this.renderElement(subTree.followElement, false, noInsert))
-                  }
+                if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id === this.presenter.getMoveId()) {
+                  const bold = document.createElement('strong')
+                  bold.classList.add('moveText')
+                  bold.appendChild(document.createTextNode('Verschieben abbrechen'))
+                  div.appendChild(bold)
                 } else {
-                  return this.renderElement(subTree.followElement, parentIsMoving, noInsert)
+                  const symbol = document.createElement('div')
+                  symbol.classList.add('insertIcon', 'symbolHeight')
+                  div.appendChild(symbol)
                 }
+                container.appendChild(div)
+                elemArray.push(container)
+
+                if (subTree.followElement === null || subTree.followElement.type === 'Placeholder') {
+                  return elemArray
+                } else {
+                  return elemArray.concat(this.renderElement(subTree.followElement, false, noInsert))
+                }
+              } else {
+                return this.renderElement(subTree.followElement, parentIsMoving, noInsert)
               }
             }
           }
-          break
         case 'Placeholder':
-          {
-            const div = document.createElement('div')
-            div.classList.add('container', 'fixedHeight')
-            const symbol = document.createElement('div')
-            symbol.classList.add('placeholder', 'symbolHeight', 'symbol')
-            div.appendChild(symbol)
-            container.appendChild(div)
-            elemArray.push(container)
-            return elemArray
-          }
-          break
+          const div = document.createElement('div')
+          div.classList.add('container', 'fixedHeight')
+          const symbol = document.createElement('div')
+          symbol.classList.add('placeholder', 'symbolHeight', 'symbol')
+          div.appendChild(symbol)
+          container.appendChild(div)
+          elemArray.push(container)
+          return elemArray
         case 'InsertCase':
         {
           container.classList.remove('frameTopLeft', 'columnAuto')
           container.classList.add('frameLeft', 'fixedHeight')
+          const divTaskNode = document.createElement('div')
+          divTaskNode.classList.add('fixedHeight', 'container')
+
+          const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          divTaskNode.appendChild(textDiv)
+          divTaskNode.appendChild(optionDiv)
+
+          // container.classList.add('line');
+          container.appendChild(divTaskNode)
+          elemArray.push(container)
+
+          return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
         }
         case 'InputNode':
         case 'OutputNode':
         case 'TaskNode':
-          {
-            const div = document.createElement('div')
-            div.classList.add('fixedHeight', 'container')
+          const divTaskNode = document.createElement('div')
+          divTaskNode.classList.add('fixedHeight', 'container')
 
-            const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-            const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
-            div.appendChild(textDiv)
-            div.appendChild(optionDiv)
+          const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          divTaskNode.appendChild(textDiv)
+          divTaskNode.appendChild(optionDiv)
 
-            // container.classList.add('line');
-            container.appendChild(div)
-            elemArray.push(container)
+          // container.classList.add('line');
+          container.appendChild(divTaskNode)
+          elemArray.push(container)
 
-            return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
-          }
-          break
+          return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
         case 'BranchNode':
         {
           // //container.classList.add('fix');
-          const div = document.createElement('div')
-          div.classList.add('columnAuto', 'vcontainer')
+          const divBranchNode = document.createElement('div')
+          divBranchNode.classList.add('columnAuto', 'vcontainer')
 
           const divHead = document.createElement('div')
           divHead.classList.add('branchSplit', 'vcontainer', 'fixedDoubleHeight')
@@ -295,7 +300,7 @@ export class Structogram {
 
           divHead.appendChild(divHeadTop)
           divHead.appendChild(divHeadBottom)
-          div.appendChild(divHead)
+          divBranchNode.appendChild(divHead)
 
           const divChildren = document.createElement('div')
           divChildren.classList.add('columnAuto', 'branchCenter', 'container')
@@ -316,8 +321,8 @@ export class Structogram {
 
           divChildren.appendChild(divTrue)
           divChildren.appendChild(divFalse)
-          div.appendChild(divChildren)
-          container.appendChild(div)
+          divBranchNode.appendChild(divChildren)
+          container.appendChild(divBranchNode)
           elemArray.push(container)
 
           return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
@@ -626,7 +631,7 @@ export class Structogram {
     optionDiv.classList.add('optionContainer')
 
     // case nodes have additional options
-    if (type == 'CaseNode') {
+    if (type === 'CaseNode') {
       const caseOptions = document.createElement('div')
       caseOptions.classList.add('gearIcon', 'optionIcon', 'hand', 'tooltip', 'tooltip-bottoml')
       caseOptions.setAttribute('data-tooltip', 'Einstellung')
@@ -635,7 +640,7 @@ export class Structogram {
     }
 
     // all elements can be moved, except InsertCases they are bind to the case node
-    if (type != 'InsertCase') {
+    if (type !== 'InsertCase') {
       let moveElem = document.createElement('div')
       moveElem.classList.add('moveIcon')
       moveElem.classList.add('optionIcon')
@@ -679,7 +684,7 @@ export class Structogram {
     editDiv.classList.add('input-group', 'editField')
     editDiv.style.display = 'none'
 
-    if (type == 'FootLoopNode') {
+    if (type === 'FootLoopNode') {
       editDiv.classList.add(uid)
     }
 
@@ -689,10 +694,10 @@ export class Structogram {
     editText.value = content
     // TODO: move to presenter
     editText.addEventListener('keyup', event => {
-      if (event.keyCode == 13) {
+      if (event.keyCode === 13) {
         this.presenter.editElement(uid, editText.value)
       }
-      if (event.keyCode == 27) {
+      if (event.keyCode === 27) {
         this.presenter.renderAllViews()
       }
     })
@@ -726,7 +731,7 @@ export class Structogram {
     // innerTextDiv.classList.add('column');
     // innerTextDiv.classList.add('col-12');
     // special handling for the default case of case nodes
-    if (!(type == 'InsertCase' && content == 'Sonst')) {
+    if (!(type === 'InsertCase' && content === 'Sonst')) {
       innerTextDiv.classList.add('padding')
       if (!this.presenter.getInsertMode()) {
         innerTextDiv.classList.add('hand', 'fullHeight')
@@ -739,7 +744,7 @@ export class Structogram {
 
     // insert text
     const textSpan = document.createElement('span')
-    if (type == 'CaseNode') {
+    if (type === 'CaseNode') {
       textSpan.style.marginLeft = 'calc(' + (nrCases / (nrCases + 1)) * 100 + '% - 2em)'
     }
     let text = document.createTextNode(content)
@@ -796,7 +801,7 @@ export class Structogram {
      */
   prepareRenderTree (subTree, parentIsMoving, noInsert) {
     // end of recursion
-    if (subTree === null || subTree.type == 'InsertNode' && subTree.followElement === null && !this.presenter.getInsertMode()) {
+    if (subTree === null || (subTree.type === 'InsertNode' && subTree.followElement === null && !this.presenter.getInsertMode())) {
       return document.createTextNode('')
     } else {
       // create outlining structure
@@ -806,7 +811,7 @@ export class Structogram {
 
       let box = document.createElement('div')
       box.classList.add('columns')
-      if (subTree.type != 'InsertCase') {
+      if (subTree.type !== 'InsertCase') {
         box.classList.add('lineTop')
       }
       // render every element and append it to the outlining structure
@@ -831,303 +836,290 @@ export class Structogram {
     if (subTree === null) {
       return []
     } else {
-      if (!(this.presenter.getMoveId() === null) && subTree.id == this.presenter.getMoveId()) {
+      if (!(this.presenter.getMoveId() === null) && subTree.id === this.presenter.getMoveId()) {
         parentIsMoving = true
         noInsert = true
       }
       switch (subTree.type) {
         case 'InsertNode':
-          {
-            if (parentIsMoving) {
-              return this.renderTree(subTree.followElement, false, false)
+
+          if (parentIsMoving) {
+            return this.renderTree(subTree.followElement, false, false)
+          } else {
+            if (noInsert) {
+              return this.renderTree(subTree.followElement, false, true)
             } else {
-              if (noInsert) {
-                return this.renderTree(subTree.followElement, false, true)
-              } else {
-                if (this.presenter.getInsertMode()) {
-                  let div = document.createElement('div')
-                  div.id = subTree.id
-                  // div.classList.add('c-hand');
-                  // div.classList.add('text-center');
-                  div.addEventListener('dragover', function (event) {
-                    event.preventDefault()
-                  })
-                  div.addEventListener('drop', () => this.presenter.appendElement(subTree.id))
-                  div.addEventListener('click', () => this.presenter.appendElement(subTree.id))
-                  let text = document.createElement('div')
-                  if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id == this.presenter.getMoveId()) {
-                    let bold = document.createElement('strong')
-                    bold.appendChild(document.createTextNode('Verschieben abbrechen'))
-                    text.appendChild(bold)
-                  } else {
-                    text.classList.add('insertIcon')
-                  }
-                  // text.classList.add('p-centered');
-                  div.appendChild(text)
-                  if (subTree.followElement === null || subTree.followElement.type == 'Placeholder') {
-                    return [this.addCssWrapper(div, true, parentIsMoving)]
-                  } else {
-                    return [this.addCssWrapper(div, true, parentIsMoving), this.prepareRenderTree(subTree.followElement, false, noInsert)]
-                  }
+              if (this.presenter.getInsertMode()) {
+                let div = document.createElement('div')
+                div.id = subTree.id
+                // div.classList.add('c-hand');
+                // div.classList.add('text-center');
+                div.addEventListener('dragover', function (event) {
+                  event.preventDefault()
+                })
+                div.addEventListener('drop', () => this.presenter.appendElement(subTree.id))
+                div.addEventListener('click', () => this.presenter.appendElement(subTree.id))
+                let text = document.createElement('div')
+                if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id === this.presenter.getMoveId()) {
+                  let bold = document.createElement('strong')
+                  bold.appendChild(document.createTextNode('Verschieben abbrechen'))
+                  text.appendChild(bold)
                 } else {
-                  return this.renderTree(subTree.followElement, parentIsMoving, noInsert)
+                  text.classList.add('insertIcon')
                 }
+                // text.classList.add('p-centered');
+                div.appendChild(text)
+                if (subTree.followElement === null || subTree.followElement.type === 'Placeholder') {
+                  return [this.addCssWrapper(div, true, parentIsMoving)]
+                } else {
+                  return [this.addCssWrapper(div, true, parentIsMoving), this.prepareRenderTree(subTree.followElement, false, noInsert)]
+                }
+              } else {
+                return this.renderTree(subTree.followElement, parentIsMoving, noInsert)
               }
             }
           }
-          break
-
         case 'Placeholder':
-          {
-            if (this.presenter.getInsertMode()) {
-              return []
-            } else {
-              let div = document.createElement('div')
-              div.classList.add('text-center')
-              let text = document.createElement('div')
-              text.classList.add('emptyStateIcon')
-              text.classList.add('p-centered')
-              div.appendChild(text)
-              return [div]
-            }
+
+          if (this.presenter.getInsertMode()) {
+            return []
+          } else {
+            let div = document.createElement('div')
+            div.classList.add('text-center')
+            let text = document.createElement('div')
+            text.classList.add('emptyStateIcon')
+            text.classList.add('p-centered')
+            div.appendChild(text)
+            return [div]
           }
-          break
 
         case 'InputNode':
         case 'OutputNode':
         case 'TaskNode':
-          {
-            let div = document.createElement('div')
-            div.id = subTree.id
-            div.classList.add('columns')
-            div.classList.add('element')
+          let div = document.createElement('div')
+          div.id = subTree.id
+          div.classList.add('columns')
+          div.classList.add('element')
 
-            let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-            let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
-            div.appendChild(textDiv)
-            div.appendChild(optionDiv)
+          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          div.appendChild(textDiv)
+          div.appendChild(optionDiv)
 
-            return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
-          }
-          break
+          return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
 
         case 'BranchNode':
-          {
-            let div = document.createElement('div')
-            div.id = subTree.id
+        {
+          let div = document.createElement('div')
+          div.id = subTree.id
 
-            let divHead = document.createElement('div')
-            divHead.classList.add('columns')
-            divHead.classList.add('element')
-            divHead.classList.add('stBranch')
+          let divHead = document.createElement('div')
+          divHead.classList.add('columns')
+          divHead.classList.add('element')
+          divHead.classList.add('stBranch')
 
-            let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-            let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
 
-            let bufferDiv = document.createElement('div')
-            bufferDiv.classList.add('column')
-            bufferDiv.classList.add('col-1')
+          let bufferDiv = document.createElement('div')
+          bufferDiv.classList.add('column')
+          bufferDiv.classList.add('col-1')
 
-            divHead.appendChild(bufferDiv)
-            divHead.appendChild(textDiv)
-            divHead.appendChild(optionDiv)
+          divHead.appendChild(bufferDiv)
+          divHead.appendChild(textDiv)
+          divHead.appendChild(optionDiv)
 
-            let divPreSubHeader = document.createElement('div')
-            divPreSubHeader.classList.add('column')
-            divPreSubHeader.classList.add('col-12')
+          let divPreSubHeader = document.createElement('div')
+          divPreSubHeader.classList.add('column')
+          divPreSubHeader.classList.add('col-12')
 
-            let divSubHeader = document.createElement('div')
-            divSubHeader.classList.add('columns')
+          let divSubHeader = document.createElement('div')
+          divSubHeader.classList.add('columns')
 
-            let divSubHeaderTrue = document.createElement('div')
-            divSubHeaderTrue.classList.add('column')
-            divSubHeaderTrue.classList.add('col-6')
-            divSubHeaderTrue.appendChild(document.createTextNode('Wahr'))
+          let divSubHeaderTrue = document.createElement('div')
+          divSubHeaderTrue.classList.add('column')
+          divSubHeaderTrue.classList.add('col-6')
+          divSubHeaderTrue.appendChild(document.createTextNode('Wahr'))
 
-            let divSubHeaderFalse = document.createElement('div')
-            divSubHeaderFalse.classList.add('column')
-            divSubHeaderFalse.classList.add('col-6')
-            divSubHeaderFalse.classList.add('text-right')
-            divSubHeaderFalse.appendChild(document.createTextNode('Falsch'))
+          let divSubHeaderFalse = document.createElement('div')
+          divSubHeaderFalse.classList.add('column')
+          divSubHeaderFalse.classList.add('col-6')
+          divSubHeaderFalse.classList.add('text-right')
+          divSubHeaderFalse.appendChild(document.createTextNode('Falsch'))
 
-            divSubHeader.appendChild(divSubHeaderTrue)
-            divSubHeader.appendChild(divSubHeaderFalse)
-            divPreSubHeader.appendChild(divSubHeader)
-            divHead.appendChild(divPreSubHeader)
+          divSubHeader.appendChild(divSubHeaderTrue)
+          divSubHeader.appendChild(divSubHeaderFalse)
+          divPreSubHeader.appendChild(divSubHeader)
+          divHead.appendChild(divPreSubHeader)
 
-            let divTrue = document.createElement('div')
-            divTrue.classList.add('column')
-            divTrue.classList.add('col-6')
-            divTrue.appendChild(this.prepareRenderTree(subTree.trueChild, false, noInsert))
+          let divTrue = document.createElement('div')
+          divTrue.classList.add('column')
+          divTrue.classList.add('col-6')
+          divTrue.appendChild(this.prepareRenderTree(subTree.trueChild, false, noInsert))
 
-            let divFalse = document.createElement('div')
-            divFalse.classList.add('column')
-            divFalse.classList.add('col-6')
-            divFalse.appendChild(this.prepareRenderTree(subTree.falseChild, false, noInsert))
+          let divFalse = document.createElement('div')
+          divFalse.classList.add('column')
+          divFalse.classList.add('col-6')
+          divFalse.appendChild(this.prepareRenderTree(subTree.falseChild, false, noInsert))
 
-            let divChildren = document.createElement('div')
-            divChildren.classList.add('columns')
-            divChildren.classList.add('middleBranch')
-            divChildren.appendChild(divTrue)
-            divChildren.appendChild(divFalse)
+          let divChildren = document.createElement('div')
+          divChildren.classList.add('columns')
+          divChildren.classList.add('middleBranch')
+          divChildren.appendChild(divTrue)
+          divChildren.appendChild(divFalse)
 
-            div.appendChild(divHead)
-            div.appendChild(divChildren)
+          div.appendChild(divHead)
+          div.appendChild(divChildren)
 
-            return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
-          }
-          break
+          return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
+        }
 
         case 'HeadLoopNode':
         case 'CountLoopNode':
-          {
-            let div = document.createElement('div')
-            div.id = subTree.id
+        {
+          let div = document.createElement('div')
+          div.id = subTree.id
 
-            let divHead = document.createElement('div')
-            divHead.classList.add('columns')
-            divHead.classList.add('element')
+          let divHead = document.createElement('div')
+          divHead.classList.add('columns')
+          divHead.classList.add('element')
 
-            let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-            let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
-            divHead.appendChild(textDiv)
-            divHead.appendChild(optionDiv)
+          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          divHead.appendChild(textDiv)
+          divHead.appendChild(optionDiv)
 
-            let divLoopSubSub = document.createElement('div')
-            divLoopSubSub.classList.add('column')
-            divLoopSubSub.classList.add('col-12')
-            divLoopSubSub.appendChild(this.prepareRenderTree(subTree.child, false, noInsert))
-            let divLoopSub = document.createElement('div')
-            divLoopSub.classList.add('columns')
-            divLoopSub.appendChild(divLoopSubSub)
+          let divLoopSubSub = document.createElement('div')
+          divLoopSubSub.classList.add('column')
+          divLoopSubSub.classList.add('col-12')
+          divLoopSubSub.appendChild(this.prepareRenderTree(subTree.child, false, noInsert))
+          let divLoopSub = document.createElement('div')
+          divLoopSub.classList.add('columns')
+          divLoopSub.appendChild(divLoopSubSub)
 
-            let divLoop = document.createElement('div')
-            divLoop.classList.add('column')
-            divLoop.classList.add('col-11')
-            divLoop.classList.add('col-ml-auto')
-            divLoop.classList.add('lineLeft')
-            divLoop.appendChild(divLoopSub)
+          let divLoop = document.createElement('div')
+          divLoop.classList.add('column')
+          divLoop.classList.add('col-11')
+          divLoop.classList.add('col-ml-auto')
+          divLoop.classList.add('lineLeft')
+          divLoop.appendChild(divLoopSub)
 
-            let divChild = document.createElement('div')
-            divChild.classList.add('columns')
-            divChild.appendChild(divLoop)
+          let divChild = document.createElement('div')
+          divChild.classList.add('columns')
+          divChild.appendChild(divLoop)
 
-            div.appendChild(divHead)
-            div.appendChild(divChild)
+          div.appendChild(divHead)
+          div.appendChild(divChild)
 
-            return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
-          }
-          break
+          return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
+        }
 
         case 'FootLoopNode':
-          {
-            let div = document.createElement('div')
-            div.id = subTree.id
+        {
+          let div = document.createElement('div')
+          div.id = subTree.id
 
-            let divFoot = document.createElement('div')
-            divFoot.classList.add('columns')
-            divFoot.classList.add('element')
-            divFoot.classList.add('lineTopFootLoop')
+          let divFoot = document.createElement('div')
+          divFoot.classList.add('columns')
+          divFoot.classList.add('element')
+          divFoot.classList.add('lineTopFootLoop')
 
-            let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-            let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
-            divFoot.appendChild(textDiv)
-            divFoot.appendChild(optionDiv)
+          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          divFoot.appendChild(textDiv)
+          divFoot.appendChild(optionDiv)
 
-            let divLoop = document.createElement('div')
-            divLoop.classList.add('column')
-            divLoop.classList.add('col-11')
-            divLoop.classList.add('col-ml-auto')
-            divLoop.classList.add('lineLeft')
-            divLoop.appendChild(this.prepareRenderTree(subTree.child, false, noInsert))
+          let divLoop = document.createElement('div')
+          divLoop.classList.add('column')
+          divLoop.classList.add('col-11')
+          divLoop.classList.add('col-ml-auto')
+          divLoop.classList.add('lineLeft')
+          divLoop.appendChild(this.prepareRenderTree(subTree.child, false, noInsert))
 
-            let divChild = document.createElement('div')
-            divChild.classList.add('columns')
-            divChild.appendChild(divLoop)
+          let divChild = document.createElement('div')
+          divChild.classList.add('columns')
+          divChild.appendChild(divLoop)
 
-            div.appendChild(divChild)
-            div.appendChild(divFoot)
+          div.appendChild(divChild)
+          div.appendChild(divFoot)
 
-            return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
-          }
-          break
+          return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
+        }
 
         case 'CaseNode':
-          {
-            let div = document.createElement('div')
-            div.id = subTree.id
+        {
+          let div = document.createElement('div')
+          div.id = subTree.id
 
-            let divHead = document.createElement('div')
-            divHead.classList.add('columns')
-            divHead.classList.add('element')
-            if (subTree.defaultOn) {
-              divHead.classList.add('caseHead-' + subTree.cases.length)
-            } else {
-              divHead.classList.add('caseHead-noDefault-' + subTree.cases.length)
-            }
-
-            let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-            let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
-
-            let bufferDiv = document.createElement('div')
-            bufferDiv.classList.add('column')
-            bufferDiv.classList.add('col-1')
-
-            divHead.appendChild(bufferDiv)
-            divHead.appendChild(textDiv)
-            divHead.appendChild(optionDiv)
-
-            let divPreSubHeader = document.createElement('div')
-            divPreSubHeader.classList.add('column')
-            divPreSubHeader.classList.add('col-12')
-
-            let divChildren = document.createElement('div')
-            divChildren.classList.add('columns')
-            if (subTree.defaultOn) {
-              divChildren.classList.add('caseBody-' + subTree.cases.length)
-            } else {
-              let level = subTree.cases.length - 1
-              divChildren.classList.add('caseBody-' + level)
-            }
-            for (const caseElem of subTree.cases) {
-              let divCase = document.createElement('div')
-              divCase.classList.add('column')
-              divCase.appendChild(this.prepareRenderTree(caseElem, false, noInsert))
-              divChildren.appendChild(divCase)
-            }
-
-            if (subTree.defaultOn) {
-              let divCase = document.createElement('div')
-              divCase.classList.add('column')
-              divCase.appendChild(this.prepareRenderTree(subTree.defaultNode, false, noInsert))
-              divChildren.appendChild(divCase)
-            }
-
-            div.appendChild(divHead)
-            div.appendChild(divChildren)
-
-            return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
+          let divHead = document.createElement('div')
+          divHead.classList.add('columns')
+          divHead.classList.add('element')
+          if (subTree.defaultOn) {
+            divHead.classList.add('caseHead-' + subTree.cases.length)
+          } else {
+            divHead.classList.add('caseHead-noDefault-' + subTree.cases.length)
           }
-          break
+
+          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+
+          let bufferDiv = document.createElement('div')
+          bufferDiv.classList.add('column')
+          bufferDiv.classList.add('col-1')
+
+          divHead.appendChild(bufferDiv)
+          divHead.appendChild(textDiv)
+          divHead.appendChild(optionDiv)
+
+          let divPreSubHeader = document.createElement('div')
+          divPreSubHeader.classList.add('column')
+          divPreSubHeader.classList.add('col-12')
+
+          let divChildren = document.createElement('div')
+          divChildren.classList.add('columns')
+          if (subTree.defaultOn) {
+            divChildren.classList.add('caseBody-' + subTree.cases.length)
+          } else {
+            let level = subTree.cases.length - 1
+            divChildren.classList.add('caseBody-' + level)
+          }
+          for (const caseElem of subTree.cases) {
+            let divCase = document.createElement('div')
+            divCase.classList.add('column')
+            divCase.appendChild(this.prepareRenderTree(caseElem, false, noInsert))
+            divChildren.appendChild(divCase)
+          }
+
+          if (subTree.defaultOn) {
+            let divCase = document.createElement('div')
+            divCase.classList.add('column')
+            divCase.appendChild(this.prepareRenderTree(subTree.defaultNode, false, noInsert))
+            divChildren.appendChild(divCase)
+          }
+
+          div.appendChild(divHead)
+          div.appendChild(divChildren)
+
+          return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
+        }
 
         case 'InsertCase':
-          {
-            let div = document.createElement('div')
-            div.id = subTree.id
-            div.classList.add('columns')
-            div.classList.add('element')
+        {
+          let div = document.createElement('div')
+          div.id = subTree.id
+          div.classList.add('columns')
+          div.classList.add('element')
 
-            let bufferDiv = document.createElement('div')
-            bufferDiv.classList.add('column')
-            bufferDiv.classList.add('col-1')
-            let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-            let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
-            div.appendChild(bufferDiv)
-            div.appendChild(textDiv)
-            div.appendChild(optionDiv)
-            return [div, this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
-          }
-          break
+          let bufferDiv = document.createElement('div')
+          bufferDiv.classList.add('column')
+          bufferDiv.classList.add('col-1')
+          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          div.appendChild(bufferDiv)
+          div.appendChild(textDiv)
+          div.appendChild(optionDiv)
+          return [div, this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
+        }
 
         default:
           return this.renderTree(subTree.followElement, parentIsMoving, noInsert)

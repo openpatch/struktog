@@ -17,6 +17,12 @@ export class ImportExport {
     importInput.setAttribute('type', 'file')
     importInput.addEventListener('change', (e) => this.presenter.readFile(e))
     importDiv.addEventListener('click', () => importInput.click())
+    const webdriverImportInput = document.createElement('input')
+    webdriverImportInput.classList.add('webdriver-input')
+    webdriverImportInput.setAttribute('type', 'file')
+    webdriverImportInput.addEventListener('change', (e) => this.presenter.readFile(e))
+    webdriverImportInput.style.display = 'none'
+    document.getElementById('optionButtons').appendChild(webdriverImportInput)
     document.getElementById('optionButtons').appendChild(importDiv)
 
     const saveDiv = document.createElement('div')
@@ -53,6 +59,7 @@ export class ImportExport {
       switch (subTree.type) {
         case 'InsertNode':
           return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y)
+
         case 'Placeholder':
         {
           ctx.beginPath()
@@ -72,8 +79,9 @@ export class ImportExport {
           ctx.stroke()
           return y + this.printHeight
         }
-        case 'InputNode':
 
+        case 'InputNode':
+        {
           ctx.beginPath()
           ctx.moveTo(x, y)
           ctx.lineTo(xmax, y)
@@ -82,11 +90,20 @@ export class ImportExport {
           ctx.moveTo(xmax, y)
           ctx.lineTo(xmax, y + this.printHeight)
           ctx.stroke()
+
+          ctx.fillStyle = '#fcedce'
+          ctx.rect(x, y, xmax, this.printHeight)
+          ctx.fill()
+
+          ctx.fillStyle = 'black'
           ctx.beginPath()
           ctx.fillText('E: ' + subTree.text, x + 15, y + defaultMargin)
           ctx.stroke()
           return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight)
+        }
+
         case 'OutputNode':
+        {
           ctx.beginPath()
           ctx.moveTo(x, y)
           ctx.lineTo(xmax, y)
@@ -95,11 +112,20 @@ export class ImportExport {
           ctx.moveTo(xmax, y)
           ctx.lineTo(xmax, y + this.printHeight)
           ctx.stroke()
+
+          ctx.fillStyle = '#fcedce'
+          ctx.rect(x, y, xmax, this.printHeight)
+          ctx.fill()
+
+          ctx.fillStyle = 'black'
           ctx.beginPath()
           ctx.fillText('A: ' + subTree.text, x + 15, y + defaultMargin)
           ctx.stroke()
           return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight)
+        }
+
         case 'TaskNode':
+        {
           ctx.beginPath()
           ctx.moveTo(x, y)
           ctx.lineTo(xmax, y)
@@ -108,12 +134,25 @@ export class ImportExport {
           ctx.moveTo(xmax, y)
           ctx.lineTo(xmax, y + this.printHeight)
           ctx.stroke()
+
+          ctx.fillStyle = '#fcedce'
+          ctx.rect(x, y, xmax, this.printHeight)
+          ctx.fill()
+
+          ctx.fillStyle = 'black'
           ctx.beginPath()
           ctx.fillText(subTree.text, x + 15, y + defaultMargin)
           ctx.stroke()
           return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight)
+        }
+
         case 'BranchNode':
+        {
+          ctx.fillStyle = 'rgb(250, 218, 209)'
+          ctx.beginPath() // to end open paths
           ctx.rect(x, y, xmax - x, 2 * this.printHeight)
+          ctx.fill()
+          ctx.fillStyle = 'black'
           ctx.stroke()
           ctx.beginPath()
           ctx.moveTo(x, y)
@@ -140,30 +179,57 @@ export class ImportExport {
           ctx.rect(x, y, xmax - x, trueChildY - y)
           ctx.stroke()
           return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, trueChildY)
+        }
 
         case 'CountLoopNode':
         case 'HeadLoopNode':
+        {
           let childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y + this.printHeight)
           ctx.rect(x, y, xmax - x, childY - y)
           ctx.stroke()
+
+          ctx.beginPath()
+          ctx.fillStyle = 'rgb(220, 239, 231)'
+          ctx.rect(x, y, xmax, this.printHeight - 1)
+          ctx.rect(x, y, (xmax - x) / 12 - 1, childY - y + this.printHeight)
+          ctx.fill()
+
+          ctx.fillStyle = 'black'
           ctx.beginPath()
           ctx.fillText(subTree.text, x + 15, y + defaultMargin)
           ctx.stroke()
           return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, childY)
+        }
+
         case 'FootLoopNode':
-          let _childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y)
-          ctx.rect(x, y, xmax - x, _childY - y + this.printHeight)
+        {
+          let childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y)
+          ctx.rect(x, y, xmax - x, childY - y + this.printHeight)
           ctx.stroke()
           ctx.beginPath()
-          ctx.fillText(subTree.text, x + 15, _childY + defaultMargin)
+          ctx.fillStyle = 'rgb(220, 239, 231)'
+          ctx.rect(x, y, (xmax - x) / 12, childY - y + this.printHeight)
+          ctx.rect(x, childY, xmax, this.printHeight)
+          ctx.fill()
+
+          ctx.fillStyle = 'black'
+          ctx.beginPath()
+          ctx.fillText(subTree.text, x + 15, childY + defaultMargin)
           ctx.stroke()
           ctx.beginPath()
-          ctx.moveTo(x + ((xmax - x) / 12), _childY)
-          ctx.lineTo(xmax, _childY)
+          ctx.moveTo(x + ((xmax - x) / 12), childY)
+          ctx.lineTo(xmax, childY)
           ctx.stroke()
-          return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, _childY + this.printHeight)
+          return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, childY + this.printHeight)
+        }
+
         case 'CaseNode':
+        {
+          ctx.fillStyle = 'rgb(250, 218, 209)'
+          ctx.beginPath()
           ctx.rect(x, y, xmax - x, 2 * this.printHeight)
+          ctx.fill()
+          ctx.fillStyle = 'black'
           let caseCount = subTree.cases.length
           if (subTree.defaultOn) {
             caseCount = caseCount + 1
@@ -184,9 +250,9 @@ export class ImportExport {
             ctx.lineTo(xmax, y + this.printHeight)
           }
           ctx.stroke()
-          let _textWidth = ctx.measureText(subTree.text)
+          let textWidth = ctx.measureText(subTree.text)
           ctx.beginPath()
-          ctx.fillText(subTree.text, xmax - xStep - (_textWidth.width / 2), y + defaultMargin)
+          ctx.fillText(subTree.text, xmax - xStep - (textWidth.width / 2), y + defaultMargin)
           ctx.stroke()
           let xPos = x
           // determine the deepest tree by the y coordinate
@@ -212,12 +278,16 @@ export class ImportExport {
             ctx.stroke()
           }
           return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, yFinally)
+        }
+
         case 'InsertCase':
-          let __textWidth = ctx.measureText(subTree.text)
+        {
+          let textWidth = ctx.measureText(subTree.text)
           ctx.beginPath()
-          ctx.fillText(subTree.text, x + Math.abs(((xmax - x) - __textWidth.width)) / 2, y + defaultMargin)
+          ctx.fillText(subTree.text, x + Math.abs(((xmax - x) - textWidth.width)) / 2, y + defaultMargin)
           ctx.stroke()
           return this.renderTreeAsCanvas(subTree.followElement, ctx, x, xmax, y + this.printHeight)
+        }
       }
     }
   }

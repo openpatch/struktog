@@ -46,7 +46,7 @@ class Model {
      */
   findAndAlterElement (uid, subTree, alterFunction, hasRealParent, text) {
     // end the recursion
-    if (subTree === null || subTree.type == 'Placeholder') {
+    if (subTree === null || subTree.type === 'Placeholder') {
       return subTree
     } else {
       if (subTree.id === uid) {
@@ -63,14 +63,12 @@ class Model {
           case 'InsertNode':
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, hasRealParent, text)
             return subTree
-            break
 
           case 'InputNode':
           case 'OutputNode':
           case 'TaskNode':
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, true, text)
             return subTree
-            break
 
           case 'HeadLoopNode':
           case 'FootLoopNode':
@@ -78,14 +76,12 @@ class Model {
             subTree.child = this.findAndAlterElement(uid, subTree.child, alterFunction, false, text)
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, true, text)
             return subTree
-            break
 
           case 'BranchNode':
             subTree.trueChild = this.findAndAlterElement(uid, subTree.trueChild, alterFunction, false, text)
             subTree.falseChild = this.findAndAlterElement(uid, subTree.falseChild, alterFunction, false, text)
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, true, text)
             return subTree
-            break
 
           case 'CaseNode':
             let nodes = []
@@ -107,11 +103,10 @@ class Model {
 
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, true, text)
             return subTree
-            break
+
           case 'InsertCase':
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, hasRealParent, text)
             return subTree
-            break
         }
       }
     }
@@ -127,7 +122,7 @@ class Model {
      */
   removeNode (subTree, hasRealParent, text) {
     // InsertCases are just completly removed, they do not have follow elements
-    if (subTree.type == 'InsertCase') {
+    if (subTree.type === 'InsertCase') {
       return null
     }
     // remove a node, but check if the parent is a container and a placeholder must be inserted
@@ -162,7 +157,7 @@ class Model {
   insertElement (subTree, hasRealParent, text) {
     let element = this.presenter.getNextInsertElement()
     // check for children
-    if (!(subTree.followElement === null || subTree.followElement.type == 'Placeholder')) {
+    if (!(subTree.followElement === null || subTree.followElement.type === 'Placeholder')) {
       // connect children with the element to insert
       element.followElement.followElement = subTree.followElement
     }
@@ -222,7 +217,7 @@ class Model {
      */
   getElementInTree (uid, subTree) {
     // stop recursion if the end of a sub tree is reached
-    if (subTree === null || subTree.type == 'Placeholder') {
+    if (subTree === null || subTree.type === 'Placeholder') {
       return null
     } else {
       if (subTree.id === uid) {
@@ -236,60 +231,59 @@ class Model {
           case 'TaskNode':
           case 'InsertCase':
             return this.getElementInTree(uid, subTree.followElement)
-            break
+
           case 'HeadLoopNode':
           case 'CountLoopNode':
           case 'FootLoopNode':
-            {
-              // follow children first, then the follow node
-              let node = this.getElementInTree(uid, subTree.child)
+          {
+            // follow children first, then the follow node
+            let node = this.getElementInTree(uid, subTree.child)
+            if (node === null) {
+              return this.getElementInTree(uid, subTree.followElement)
+            } else {
+              return node
+            }
+          }
+
+          case 'BranchNode':
+          {
+            // follow both children first, then the follow node
+            let node = this.getElementInTree(uid, subTree.trueChild)
+            if (node === null) {
+              node = this.getElementInTree(uid, subTree.falseChild)
               if (node === null) {
                 return this.getElementInTree(uid, subTree.followElement)
               } else {
                 return node
               }
+            } else {
+              return node
             }
-            break
-          case 'BranchNode':
-            {
-              // follow both children first, then the follow node
-              let node = this.getElementInTree(uid, subTree.trueChild)
-              if (node === null) {
-                node = this.getElementInTree(uid, subTree.falseChild)
-                if (node === null) {
-                  return this.getElementInTree(uid, subTree.followElement)
-                } else {
-                  return node
-                }
-              } else {
-                return node
-              }
-            }
-            break
+          }
+
           case 'CaseNode':
-            {
-              // follow every case first
-              let node = null
-              for (const element of subTree.cases) {
-                let caseNode = this.getElementInTree(uid, element)
-                if (caseNode != null) {
-                  node = caseNode
-                }
+          {
+            // follow every case first
+            let node = null
+            for (const element of subTree.cases) {
+              let caseNode = this.getElementInTree(uid, element)
+              if (caseNode != null) {
+                node = caseNode
               }
-              // then the default case
+            }
+            // then the default case
+            if (node === null) {
+              node = this.getElementInTree(uid, subTree.defaultNode)
               if (node === null) {
-                node = this.getElementInTree(uid, subTree.defaultNode)
-                if (node === null) {
-                  // then the follow element
-                  return this.getElementInTree(uid, subTree.followElement)
-                } else {
-                  return node
-                }
+                // then the follow element
+                return this.getElementInTree(uid, subTree.followElement)
               } else {
                 return node
               }
+            } else {
+              return node
             }
-            break
+          }
         }
       }
     }

@@ -1,8 +1,6 @@
 # Struktogrammeditor
 
-Webprogramm zur Erstellung von Struktogrammen / PAP sowie zur Umwandlung dessen in Code (Python, PHP, Javascript)
-
-[Datenfluss-Diagramm](https://drive.google.com/file/d/1BqLCW7vIB3DXViDjjPmEk6r4qjEnT8jv/view?usp=sharing)
+Webprogramm zur Erstellung von Struktogrammen sowie zur Umwandlung dessen in Code (Python, PHP, Javascript)
 
 # Konfiguration
 Über URL-Parameter können einerseits verschiedene Konfigurationen und andererseits vorgefertigte Aufgaben geladen werden.
@@ -21,8 +19,8 @@ Aufgaben können über Templates geladen werden.
 # Installation
 ```bash
 npm install
+nvm use lts/erbium
 ```
-
 
 # Deployment
 ```bash
