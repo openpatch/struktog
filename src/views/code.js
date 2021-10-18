@@ -24,6 +24,38 @@ export class CodeView {
         'HeadLoopNode': { 'pre': 'while ',
           'post': ':\n'
         },
+        'CaseNode': { 'pre': 'if ',
+          'post': ':\n'
+        },
+        'InsertCase': { 'preNormal': 'elif ',
+          'preDefault': 'default',
+          'post': ':\n',
+          'postpost': '\n'
+        },
+        'leftBracket': '',
+        'rightBracket': '',
+        'pseudoSwitch': true
+      },
+      'Python ab v3.10': { 'untranslatable': ['FootLoopNode'],
+        'InputNode': { 'pre': '',
+          'post': ' = input("Eingabe")\n'
+        },
+        'OutputNode': { 'pre': 'print(',
+          'post': ')\n'
+        },
+        'TaskNode': { 'pre': '',
+          'post': '\n'
+        },
+        'BranchNode': { 'pre': 'if ',
+          'post': ':\n',
+          'between': 'else:\n'
+        },
+        'CountLoopNode': { 'pre': 'for ',
+          'post': ':\n'
+        },
+        'HeadLoopNode': { 'pre': 'while ',
+          'post': ':\n'
+        },
         'CaseNode': { 'pre': 'match ',
           'post': ':\n'
         },
