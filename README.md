@@ -9,14 +9,14 @@ Für Python: config=python
 ```bash
 {domain}/?config=python
 ```
-Aufgaben können über Templates geladen werden.
 
+Aufgaben können über Templates geladen werden.
 ```bash
 {domain}/?template=1
 ```
 
 # Download
-https://dditools.inf.tu-dresden.de/releases/struktog/struktog.tar.gz
+https://dditools.inf.tu-dresden.de/releases/struktog/struktog-latest.tar.gz
 
 # Installation
 ```bash
