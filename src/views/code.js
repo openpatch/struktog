@@ -208,7 +208,7 @@ export class CodeView {
           codeText = codeText + i.textContent
         })
       } else {
-        codeBlock.appendChild(document.createTextNode('Das Struktogramm enthält Elemente, \nwelche in der Programmiersprache \nnicht zur Verfügung stehen.'))
+        codeBlock.appendChild(document.createTextNode('Das Struktogramm enthält Elemente, \nwelche in der gewählten Programmiersprache \nnicht direkt zur Verfügung stehen.\nDeshalb bitte manuell in Code überführen.'))
       }
       localStorage.setItem('struktog_code', codeText)
 
