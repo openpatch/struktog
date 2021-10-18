@@ -24,17 +24,17 @@ export class CodeView {
         'HeadLoopNode': { 'pre': 'while ',
           'post': ':\n'
         },
-        'CaseNode': { 'pre': 'if ',
+        'CaseNode': { 'pre': 'match ',
           'post': ':\n'
         },
-        'InsertCase': { 'preNormal': 'elif ',
-          'preDefault': 'else',
+        'InsertCase': { 'preNormal': 'case ',
+          'preDefault': 'case _',
           'post': ':\n',
           'postpost': '\n'
         },
         'leftBracket': '',
         'rightBracket': '',
-        'pseudoSwitch': true
+        'pseudoSwitch': false
       },
       'PHP': { 'untranslatable': [],
         'InputNode': { 'pre': '',
@@ -275,7 +275,7 @@ export class CodeView {
     if (subTree.type === 'Placeholder' || (subTree.type === 'InsertNode' && subTree.followElement === null)) {
       return false
     } else {
-      // compare the types
+      // compare the types1
       if (subTree.type === nodeType) {
         return true
       } else {
@@ -292,6 +292,13 @@ export class CodeView {
           case 'HeadLoopNode':
           case 'FootLoopNode':
             return false || this.checkForUntranslatable(subTree.child, nodeType) || this.checkForUntranslatable(subTree.followElement, nodeType)
+          case 'CaseNode':
+            let state = false
+            for (let i = 0; i < subTree.length; i++) {
+              state = state || this.checkForUntranslatable(subTree.cases[i], nodeType)
+            }
+            state = state || this.checkForUntranslatable(subTree.defaultNode, nodeType)
+            return state || this.checkForUntranslatable(subTree.followElement, nodeType)
         }
       }
     }
