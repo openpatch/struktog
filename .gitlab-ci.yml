@@ -32,6 +32,7 @@ deploy:
     - apk add --no-cache sshpass
     - apk add --no-cache openssh
     - export SSHPASS=${PASS}
+    - ls
     - sshpass -e ssh -o stricthostkeychecking=no -p 44 deploy@dditools.inf.tu-dresden.de "rm -rf ./dditools/struktog/*"
     - sshpass -e scp -o stricthostkeychecking=no -P 44 -r ./build/* deploy@dditools.inf.tu-dresden.de:dditools/struktog
     - sshpass -e scp -o stricthostkeychecking=no -P 44 ${CI_PROJECT_NAME}-latest.tar.gz deploy@dditools.inf.tu-dresden.de:dditools/releases/struktog
