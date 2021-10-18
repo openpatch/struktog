@@ -41,6 +41,8 @@ deploy:
     - master
 
 ontags:
+  image: alpine:latest
+  stage: ontags
   script:
     - apk add --no-cache sshpass
     - apk add --no-cache openssh
