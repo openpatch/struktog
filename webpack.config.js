@@ -7,17 +7,17 @@ const WebpackShellPluginNext = require('webpack-shell-plugin-next')
 const gameRoot = process.cwd()
 
 // the path(s) that should be cleaned
-let pathsToClean = [
+const pathsToClean = [
   'build'
 ]
 
 // the clean options to use
-let cleanOptions = {
+const cleanOptions = {
   verbose: true,
   dry: false
 }
 
-var config = {
+const config = {
   // bundle javascript
   entry: `${gameRoot}/src/index.js`,
   output: {
@@ -64,7 +64,11 @@ var config = {
   },
   plugins: [
     new WebpackShellPluginNext({
-      onBuildStart: ['node build_tools/prepareSvg.js']
+      onBuildStart: {
+        scripts: ['node ./build_tools/prepareSvg.js'],
+        blocking: true,
+        parallel: false
+      }
     }),
     new CleanWebpackPlugin({ pathsToClean, cleanOptions }),
     new MiniCssExtractPlugin({
@@ -74,7 +78,8 @@ var config = {
     new HtmlWebpackPlugin({
       title: 'Struktog.',
       template: './src/index.html',
-      meta: { viewport: 'width=device-width, initial-scale=1, user-scalable=no',
+      meta: {
+        viewport: 'width=device-width, initial-scale=1, user-scalable=no',
         'msapplication-TileColor': '#2d89ef',
         'theme-color': '#ffffff'
       }
