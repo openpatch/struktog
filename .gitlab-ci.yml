@@ -5,7 +5,7 @@ stages:
   - ontags
 
 packen:
-  image: node:erbium
+  image: node:fermium
   stage: build
   script:
     - PATH="./node_modules/.bin:$PATH"
