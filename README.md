@@ -1,20 +1,54 @@
-# draftToCode
+# Struktogrammeditor
 
-Webprogramm zur Erstellung von Struktogrammen sowie zur Umwandlung dessen in Code (Python, PHP, Javascript)
+Freies offenes Webprogramm zur Erstellung von Struktogrammen sowie zur Umwandlung dessen in Code (Python, PHP, Javascript).
+Online nutzbar unter [https://dditools.inf.tu-dresden.de/struktog/](https://dditools.inf.tu-dresden.de/struktog/) oder als [Download](#download) einfach die index.html öffnen.
+Freie Software lebt von [Mitarbeit](#entwicklung). Gerne Kontakt aufnehmen und mithelfen.
 
-[Datenfluss-Diagramm](https://drive.google.com/file/d/1BqLCW7vIB3DXViDjjPmEk6r4qjEnT8jv/view?usp=sharing)
+## Konfiguration
+Der Editor kann über verschiedene URL-Parameter angepasst werden. Dabei ist es möglich die Konfiguration zu ändern, um z.B. verschiedene Elemente auszublenden oder schon vorgefertigte Templates für Aufgaben geladen werden.
 
+### Beispiel Konfiguration
+Für Python:
 
-# Installation
+```bash
+{domain}/?config=python
+```
+### Beispiel Templates
+Aufgaben können über Templates geladen werden:
 
+```bash
+{domain}/?template=1
+```
+
+# Download
+- [Last-Build](https://dditools.inf.tu-dresden.de/releases/struktog/struktog-latest.tar.gz)
+- [Last-Release](https://dditools.inf.tu-dresden.de/releases/struktog/struktog-v.1.1.2.tar.gz)
+
+# Contributors
+Klaus Ramm,
+Thiemo Leonhardt
+
+# Lizenz
+MIT
+
+# Entwicklung
+Die Entwicklung basiert auf den Paketen aus npm und läuft momentan auf NodeJS erbium.
+
+## Installation
+```bash
 npm install
 nvm use lts/erbium
+```
+## Development
+Startet einen lokalen Webserver und aktualisiert Inhalte während der Entwicklung.
 
-# Deployment
-
-npm run build
-
-
-# Development
-
+```bash
 npm run watch
+```
+
+## Deployment
+Der fertige Build wird in dem Unterordner './build ' abgelegt.
+
+```bash
+npm run build
+```

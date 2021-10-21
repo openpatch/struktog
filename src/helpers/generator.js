@@ -121,7 +121,7 @@ export function generateHtmltree () {
   footer.appendChild(footerDiv)
 
   const footerSpan = document.createElement('span')
-  footerSpan.appendChild(document.createTextNode('© 2019 Didaktik der Informatik der TU Dresden'))
+  footerSpan.appendChild(document.createTextNode('v1.1 Didaktik der Informatik der TU Dresden'))
   footerDiv.appendChild(footerSpan)
 }
 
@@ -183,7 +183,7 @@ function infoDlGenerator (data) {
 export function generateInfoButton (domNode) {
   const infoButtonDiv = document.createElement('div')
   infoButtonDiv.classList.add('options-element', 'infoIcon', 'tooltip', 'tooltip-bottomInfo', 'hand')
-  infoButtonDiv.setAttribute('data-tooltip', 'Informationen')
+  infoButtonDiv.setAttribute('data-tooltip', 'Gitlab Repository')
   infoButtonDiv.addEventListener('click', () => {
     window.open('https://gitlab.com/ddi-tu-dresden/cs-school-tools/struktog', '_blank')
   })

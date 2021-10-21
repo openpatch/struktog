@@ -28,13 +28,45 @@ export class CodeView {
           'post': ':\n'
         },
         'InsertCase': { 'preNormal': 'elif ',
-          'preDefault': 'else',
+          'preDefault': 'default',
           'post': ':\n',
           'postpost': '\n'
         },
         'leftBracket': '',
         'rightBracket': '',
         'pseudoSwitch': true
+      },
+      'Python ab v3.10': { 'untranslatable': ['FootLoopNode'],
+        'InputNode': { 'pre': '',
+          'post': ' = input("Eingabe")\n'
+        },
+        'OutputNode': { 'pre': 'print(',
+          'post': ')\n'
+        },
+        'TaskNode': { 'pre': '',
+          'post': '\n'
+        },
+        'BranchNode': { 'pre': 'if ',
+          'post': ':\n',
+          'between': 'else:\n'
+        },
+        'CountLoopNode': { 'pre': 'for ',
+          'post': ':\n'
+        },
+        'HeadLoopNode': { 'pre': 'while ',
+          'post': ':\n'
+        },
+        'CaseNode': { 'pre': 'match ',
+          'post': ':\n'
+        },
+        'InsertCase': { 'preNormal': 'case ',
+          'preDefault': 'case _',
+          'post': ':\n',
+          'postpost': '\n'
+        },
+        'leftBracket': '',
+        'rightBracket': '',
+        'pseudoSwitch': false
       },
       'PHP': { 'untranslatable': [],
         'InputNode': { 'pre': '',
@@ -208,7 +240,7 @@ export class CodeView {
           codeText = codeText + i.textContent
         })
       } else {
-        codeBlock.appendChild(document.createTextNode('Das Struktogramm enthält Elemente, \nwelche in der Programmiersprache \nnicht zur Verfügung stehen.'))
+        codeBlock.appendChild(document.createTextNode('Das Struktogramm enthält Elemente, \nwelche in der gewählten Programmiersprache \nnicht direkt zur Verfügung stehen.\nDeshalb bitte manuell in Code überführen.'))
       }
       localStorage.setItem('struktog_code', codeText)
 
@@ -275,7 +307,7 @@ export class CodeView {
     if (subTree.type === 'Placeholder' || (subTree.type === 'InsertNode' && subTree.followElement === null)) {
       return false
     } else {
-      // compare the types
+      // compare the types1
       if (subTree.type === nodeType) {
         return true
       } else {
@@ -292,6 +324,13 @@ export class CodeView {
           case 'HeadLoopNode':
           case 'FootLoopNode':
             return false || this.checkForUntranslatable(subTree.child, nodeType) || this.checkForUntranslatable(subTree.followElement, nodeType)
+          case 'CaseNode':
+            let state = false
+            for (let i = 0; i < subTree.length; i++) {
+              state = state || this.checkForUntranslatable(subTree.cases[i], nodeType)
+            }
+            state = state || this.checkForUntranslatable(subTree.defaultNode, nodeType)
+            return state || this.checkForUntranslatable(subTree.followElement, nodeType)
         }
       }
     }
