@@ -3,7 +3,7 @@
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const WebpackShellPlugin = require('webpack-shell-plugin')
+const WebpackShellPluginNext = require('webpack-shell-plugin-next')
 const gameRoot = process.cwd()
 
 // the path(s) that should be cleaned
@@ -63,7 +63,7 @@ var config = {
     ]
   },
   plugins: [
-    new WebpackShellPlugin({
+    new WebpackShellPluginNext({
       onBuildStart: ['node build_tools/prepareSvg.js']
     }),
     new CleanWebpackPlugin({ pathsToClean, cleanOptions }),

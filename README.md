@@ -32,23 +32,23 @@ Thiemo Leonhardt
 MIT
 
 # Entwicklung
-Die Entwicklung basiert auf den Paketen aus npm und läuft momentan auf NodeJS erbium.
+Die Entwicklung basiert auf den Paketen aus npm mit yarn und läuft momentan auf NodeJS Fermium.
 
 ## Installation
 ```bash
-npm install
-nvm use lts/erbium
+yarn
 ```
+
 ## Development
 Startet einen lokalen Webserver und aktualisiert Inhalte während der Entwicklung.
 
 ```bash
-npm run watch
+yarn run watch
 ```
 
 ## Deployment
 Der fertige Build wird in dem Unterordner './build ' abgelegt.
 
 ```bash
-npm run build
+yarn run build
 ```
