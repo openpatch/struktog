@@ -73,6 +73,7 @@ class Model {
           case 'HeadLoopNode':
           case 'FootLoopNode':
           case 'CountLoopNode':
+          case 'FunctionNode':
             subTree.child = this.findAndAlterElement(uid, subTree.child, alterFunction, false, text)
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, true, text)
             return subTree
@@ -142,7 +143,31 @@ class Model {
      * @return   subTree         altered subTree object (with changed text)
      */
   editElement (subTree, hasRealParent, text) {
-    subTree.text = text
+    // if subtree is a function node, update also the function parameters
+    if (subTree.type === 'FunctionNode') {
+      const words = text.split('|')
+      if (words[0] === 'funcname') {
+        subTree.text = words[1]
+      } else {
+        // update function parameters (var names) in the tree model
+        if (subTree.parameters.length !== 0) {
+          let index = 0
+          for (const par of subTree.parameters) {
+            if (words[0] === par.pos) {
+              // update existing entry
+              subTree.parameters[index].parName = words[1]
+              return subTree
+            }
+            index += 1
+          }
+        }
+        // parameter does not exist in model, create a new entry
+        subTree.parameters.push({ pos: words[0], parName: words[1] })
+      }
+    } else {
+      subTree.text = text
+    }
+
     return subTree
   }
 
@@ -235,6 +260,7 @@ class Model {
           case 'HeadLoopNode':
           case 'CountLoopNode':
           case 'FootLoopNode':
+          case 'FunctionNode':
           {
             // follow children first, then the follow node
             let node = this.getElementInTree(uid, subTree.child)

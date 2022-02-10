@@ -269,3 +269,19 @@ $main-background-color: rgba(128,212,255, 0.5);
     }
   }
 }
+
+.func-header-text-div {
+  border: solid 1px transparent;
+  cursor: pointer;
+}
+
+.func-header-text-div:hover {
+  border: solid 1px #d3d3d3;
+  cursor: pointer;
+}
+
+.func-header-input {
+  border-radius: 0.15em;
+  border: 0.15em solid #264040;
+  font-size: 100%;
+}

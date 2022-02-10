@@ -4,6 +4,7 @@ export class Presenter {
   constructor (model) {
     this.model = model
     this.insertMode = false
+    this.settingFunctionMode = false // if the user is setting a function block then true
     this.views = []
     this.moveId = null
     this.nextInsertElement = null
@@ -18,6 +19,10 @@ export class Presenter {
 
   getInsertMode () {
     return this.insertMode
+  }
+
+  getSettingFunctionMode () {
+    return this.settingFunctionMode
   }
 
   getModelTree () {
@@ -37,6 +42,7 @@ export class Presenter {
   reset () {
     // reset the model fields connected to inserting
     this.insertMode = false
+    this.settingFunctionMode = false
     this.nextInsertElement = null
     this.moveId = null
   }
@@ -226,6 +232,22 @@ export class Presenter {
           }
         }
         break
+      case 'FunctionButton':
+        this.nextInsertElement = { 'id': guidGenerator(),
+          'type': 'FunctionNode',
+          'text': '',
+          'parameters' : [],
+          'followElement': { 'id': guidGenerator(),
+            'type': 'InsertNode',
+            'followElement': null
+          },
+          'child': { 'id': guidGenerator(),
+            'type': 'InsertNode',
+            'followElement': { 'type': 'Placeholder' }
+          }
+        }
+        this.settingFunctionMode = true
+        break
       case 'FootLoopButton':
         this.nextInsertElement = { 'id': guidGenerator(),
           'type': 'FootLoopNode',
@@ -325,6 +347,7 @@ export class Presenter {
       case 'HeadLoopNode':
       case 'CountLoopNode':
       case 'FootLoopNode':
+      case 'FunctionNode':
         if (deleteElem.child.followElement.type !== 'Placeholder') {
           this.prepareRemoveQuestion(uid)
         } else {
@@ -412,9 +435,10 @@ export class Presenter {
     this.renderAllViews()
   }
 
-  editElement (uid, textValue) {
+  // textType: only used for the distinction of function name and function parameters
+  editElement (uid, textValue, textType = '') {
     this.updateUndo()
-    this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.editElement, false, textValue))
+    this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.editElement, false, textType + textValue))
     this.checkUndo()
     this.updateBrowserStore()
     this.renderAllViews()
@@ -458,17 +482,25 @@ export class Presenter {
      */
   switchEditState (uid) {
     let elem = document.getElementById(uid)
-    // get the input field and display it
-    // work around for FootLoopNodes, duo to HTML structure, the last element has to be found and edited
-    if (elem.getElementsByClassName('input-group editField ' + uid).length) {
-      elem = elem.getElementsByClassName('input-group editField ' + uid)[0]
+
+    // element is a function node
+    if (elem.children[0].children[0].classList.contains('func-box-header')) {
+      const funcNameTextNode = elem.children[0].children[0].children[1].children[0]
+      // trigger click event to show input field
+      funcNameTextNode.click()
     } else {
-      elem = elem.getElementsByClassName('input-group editField')[0]
+      // get the input field and display it
+      // work around for FootLoopNodes, duo to HTML structure, the last element has to be found and edited
+      if (elem.getElementsByClassName('input-group editField ' + uid).length) {
+        elem = elem.getElementsByClassName('input-group editField ' + uid)[0]
+      } else {
+        elem = elem.getElementsByClassName('input-group editField')[0]
+      }
+      elem.previousSibling.style.display = 'none'
+      elem.style.display = 'inline-flex'
+      // automatic set focus on the input
+      elem.getElementsByTagName('input')[0].select()
     }
-    elem.previousSibling.style.display = 'none'
-    elem.style.display = 'inline-flex'
-    // automatic set focus on the input
-    elem.getElementsByTagName('input')[0].select()
   }
 
   getStringifiedTree () {
