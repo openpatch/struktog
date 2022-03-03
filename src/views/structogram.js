@@ -291,9 +291,10 @@ export class Structogram {
 
     // box header containing all elements describing the function header
     const functionBoxHeaderDiv = document.createElement('div')
-    functionBoxHeaderDiv.classList.add('input-group', 'fixedHeight', 'func-box-header')
+    functionBoxHeaderDiv.classList.add('input-group', 'fixedHeight', 'func-box-header', 'padding')
     functionBoxHeaderDiv.style.display = 'flex'
     functionBoxHeaderDiv.style.flexDirection = 'row'
+    functionBoxHeaderDiv.style.paddingTop = '6.5px'
 
     // header containing all param elements
     const paramDiv = document.createElement('div')
@@ -376,7 +377,6 @@ export class Structogram {
               // inserting any other object instead of a function block
               if (this.presenter.getInsertMode()) {
                 if (!this.presenter.getSettingFunctionMode()) {
-                  // container.classList.add('line');
                   const div = document.createElement('div')
                   div.classList.add('container', 'fixedHalfHeight', 'symbol', 'hand', 'text-center')
                   container.addEventListener('dragover', function (event) {
@@ -610,15 +610,30 @@ export class Structogram {
           divChild.appendChild(divFunctionBody)
 
           const divFuncFoot = document.createElement('div')
-          divFuncFoot.classList.add('container', 'fixedHeight')
+          divFuncFoot.classList.add('container', 'fixedHeight', 'padding')
+
+          const textNode = document.createElement('div')
+          textNode.classList.add('symbol')
+          textNode.appendChild(document.createTextNode('}'))
+          divFuncFoot.appendChild(textNode)
 
           const vertLine = document.createElement('div')
           vertLine.classList.add('frameLeftBottom')
           vertLine.style.flex = '0 0 3px'
 
+          // container for the vertical line to indent it correctly
+          const vertLineContainer = document.createElement('div')
+          vertLineContainer.classList.add('container', 'columnAuto', 'loopShift')
+
+          const vertLine2 = document.createElement('div')
+          vertLine2.classList.add('loopWidth', 'vcontainer')
+
+          vertLine2.appendChild(vertLine)
+          vertLineContainer.appendChild(vertLine2)
+
           innerDiv.appendChild(divFunctionHeader)
           innerDiv.appendChild(divChild)
-          innerDiv.appendChild(vertLine)
+          innerDiv.appendChild(vertLineContainer)
           innerDiv.appendChild(divFuncFoot)
           container.appendChild(innerDiv)
           elemArray.push(container)

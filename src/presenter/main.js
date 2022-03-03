@@ -478,16 +478,25 @@ export class Presenter {
   /**
      * Switch an element in the struktogramm to the editing state
      *
-     * @param   uid   id of the desired element in the struktogramm
+     * @param   uid         id of the desired element in the struktogramm
+     * @param   paramIndex  index (position) of the function parameter
      */
-  switchEditState (uid) {
+  switchEditState (uid, paramIndex = null) {
     let elem = document.getElementById(uid)
 
     // element is a function node
     if (elem.children[0].children[0].classList.contains('func-box-header')) {
-      const funcNameTextNode = elem.children[0].children[0].children[1].children[0]
-      // trigger click event to show input field
-      funcNameTextNode.click()
+      let funcTextNode = null
+      // click function name
+      if (paramIndex === null) {
+        funcTextNode = elem.children[0].children[0].children[1].children[0]
+        // trigger click event to show input field
+      } else {
+        funcTextNode = elem.children[0].children[0].children[2].children[paramIndex].children[0]
+      }
+      if (funcTextNode) {
+        funcTextNode.click()
+      }
     } else {
       // get the input field and display it
       // work around for FootLoopNodes, duo to HTML structure, the last element has to be found and edited

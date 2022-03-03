@@ -566,6 +566,9 @@ export class CodeView {
               elemSpan.appendChild(this.createHighlightedSpan(', '))
             }
             const paramName = this.createHighlightedSpan(par.parName)
+            paramName.classList.add('hand')
+            // mapping the stored positions (0, 3, 6, ...) to new positions (0, 2, 4, ...)
+            paramName.addEventListener('click', () => this.presenter.switchEditState(subTree.id, (par.pos / 3 * 2)))
             elemSpan.appendChild(paramName)
             parCount += 1
           }
