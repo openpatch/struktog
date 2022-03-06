@@ -164,7 +164,7 @@ export class Structogram {
    * @param    pos                  position in the function header-div
    * @param    fieldSize            size of the input field (only int values)
    * @param    uid                  id of the function node inside the model
-   * @param    content              id of the function node inside the model
+   * @param    content              text of the param element
    * @returns  HTMLElement (Input Field)
    */
   createFunctionHeaderTextEl (divContainer, pos, fieldSize, placeHolder, uid, content = null) {
@@ -180,7 +180,27 @@ export class Structogram {
 
     const textNodeDiv = document.createElement('div')
     textNodeDiv.classList.add('function-elem')
+    textNodeDiv.style.display = 'flex'
+    textNodeDiv.style.flexDirection = 'row'
     textNodeDiv.appendChild(textNodeSpan)
+
+    // delete option for parameters
+    if (!divContainer.classList.contains('func-box-header')) {
+      const removeParamBtn = document.createElement('button')
+      removeParamBtn.classList.add('trashcan', 'optionIcon', 'hand', 'tooltip', 'tooltip-bottoml')
+      removeParamBtn.setAttribute('data-tooltip', 'Entfernen')
+      removeParamBtn.addEventListener('click', () => {
+        this.presenter.removeParamFromParameters(pos)
+      })
+
+      textNodeSpan.addEventListener('mouseover', () => {
+        textNodeSpan.parentElement.appendChild(removeParamBtn)
+      })
+
+      textNodeSpan.parentElement.addEventListener('mouseleave', () => {
+        removeParamBtn.remove()
+      })
+    }
 
     // text can be clicked and afterwards can be changed
     textNodeSpan.addEventListener('click', () => {

@@ -507,7 +507,7 @@ export class CodeView {
         {
           const loopContent = document.createElement('span')
           loopContent.classList.add('keyword')
-          loopContent.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].FootLoopNode.pre))
+          loopContent.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].FootLoopNode.prepre))
           elemSpan.appendChild(loopContent)
           let loop = [elemSpan]
           if (this.translationMap[lang].leftBracket !== '') {

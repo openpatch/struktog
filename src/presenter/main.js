@@ -421,6 +421,54 @@ export class Presenter {
   }
 
   /**
+   * removes a parameter from the function parameters
+   *
+   * @param delPos   pos of the param in the dom list
+   */
+  removeParamFromParameters (delPos) {
+    let editedTree = this.model.getTree()
+    console.log("old Tree: ", editedTree)
+    // search for the function box tree
+    const followingElements = []
+    while (editedTree.type !== 'FunctionNode') {
+      followingElements.push(editedTree)
+      editedTree = editedTree.followElement
+    }
+    console.log("elements: ", followingElements)
+
+    // find the respective parameter to remove it from the model
+    const params = editedTree.parameters
+    for (const param of params) {
+      const actPos = parseInt(param.pos)
+      if (actPos === delPos) {
+        let listIndex = actPos / 3 // convert the element position in the dom into the position in the array
+        params.splice(listIndex, 1)
+
+        // update all pos-values of the following param elements
+        while (listIndex < params.length) {
+          params[listIndex].pos -= 3
+          listIndex += 1
+        }
+        editedTree.parameters = params
+
+        // set up the whole tree
+        let index = followingElements.length - 1
+        while (index > -1) {
+          const subTree = followingElements[index]
+          subTree.followElement = editedTree
+          editedTree = subTree
+          index -= 1
+        }
+        console.log("Edited Tree: ", editedTree)
+        this.model.setTree(editedTree)
+        this.updateBrowserStore()
+        this.renderAllViews()
+        return
+      }
+    }
+  }
+
+  /**
      * Prepare moving of an element of the struktogramm
      *
      * @param   uid   id of the clicked element in the struktogramm
