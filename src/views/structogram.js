@@ -339,12 +339,12 @@ export class Structogram {
       this.renderParam(countParam, paramDiv, spacingSize, fpSize, uid)
     })
 
-    // adding events on the parameters div to interact with
-    paramDiv.addEventListener('mouseover', () => {
+    // show adding-parameters-button when hovering
+    functionBoxHeaderDiv.addEventListener('mouseover', () => {
       paramDiv.appendChild(addParamBtn)
     })
 
-    paramDiv.addEventListener('mouseleave', () => {
+    functionBoxHeaderDiv.addEventListener('mouseleave', () => {
       addParamBtn.remove()
     })
 
