@@ -65,6 +65,13 @@ class Config {
         text: 'Fallunterscheidung',
         icon: 'caseIcon',
         color: 'rgb(250, 218, 209)'
+      },
+      FunctionNode: {
+        use: true,
+        id: 'FunctionButton',
+        text: 'Funktionsblock',
+        icon: 'caseIcon',
+        color: 'rgb(255, 255, 255)'
       }
     }
 
@@ -134,6 +141,13 @@ class Config {
           text: 'Fallunterscheidung',
           icon: 'caseIcon',
           color: 'rgb(250, 218, 209)'
+        },
+        FunctionNode: {
+          use: true,
+          id: 'FunctionButton',
+          text: 'Funktionsblock',
+          icon: 'caseIcon',
+          color: 'rgb(255, 255, 255)'
         }
       },
       2: {
@@ -201,6 +215,13 @@ class Config {
           text: 'Fallunterscheidung',
           icon: 'caseIcon',
           color: 'rgb(250, 218, 209)'
+        },
+        FunctionNode: {
+          use: true,
+          id: 'FunctionButton',
+          text: 'Funktionsblock',
+          icon: 'caseIcon',
+          color: 'rgb(255, 255, 255)'
         }
       }
     }

@@ -24,6 +24,10 @@ export class CodeView {
         'HeadLoopNode': { 'pre': 'while ',
           'post': ':\n'
         },
+        'FunctionNode': { 'pre': 'def ',
+          'between': '(',
+          'post': '):\n'
+        },
         'CaseNode': { 'pre': 'if ',
           'post': ':\n'
         },
@@ -55,6 +59,10 @@ export class CodeView {
         },
         'HeadLoopNode': { 'pre': 'while ',
           'post': ':\n'
+        },
+        'FunctionNode': { 'pre': 'def ',
+          'between': '(',
+          'post': '):\n'
         },
         'CaseNode': { 'pre': 'match ',
           'post': ':\n'
@@ -92,6 +100,10 @@ export class CodeView {
           'pre': 'while (',
           'post': ');\n'
         },
+        'FunctionNode': { 'pre': 'def ',
+          'between': '(',
+          'post': '):\n'
+        },
         'CaseNode': { 'pre': 'switch (',
           'post': ')\n'
         },
@@ -127,6 +139,10 @@ export class CodeView {
         'FootLoopNode': { 'prepre': 'do\n',
           'pre': 'while (',
           'post': ');\n'
+        },
+        'FunctionNode': { 'pre': 'public void ',
+          'between': '(',
+          'post': ')\n'
         },
         'CaseNode': { 'pre': 'switch (',
           'post': ')\n'
@@ -323,6 +339,7 @@ export class CodeView {
           case 'CountLoopNode':
           case 'HeadLoopNode':
           case 'FootLoopNode':
+          case 'FunctionNode':
             return false || this.checkForUntranslatable(subTree.child, nodeType) || this.checkForUntranslatable(subTree.followElement, nodeType)
           case 'CaseNode':
             let state = false
@@ -490,7 +507,7 @@ export class CodeView {
         {
           const loopContent = document.createElement('span')
           loopContent.classList.add('keyword')
-          loopContent.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].FootLoopNode.pre))
+          loopContent.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].FootLoopNode.prepre))
           elemSpan.appendChild(loopContent)
           let loop = [elemSpan]
           if (this.translationMap[lang].leftBracket !== '') {
@@ -527,6 +544,51 @@ export class CodeView {
           })
           loop.push(subContent)
 
+          return loop.concat(this.transformToCode(subTree.followElement, indentLevel, lang))
+        }
+        case 'FunctionNode':
+        {
+          const functionContent = document.createElement('span')
+          functionContent.classList.add('keyword')
+          functionContent.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].FunctionNode.pre))
+          elemSpan.appendChild(functionContent)
+          elemSpan.appendChild(text)
+          const funcHeaderBetween = document.createElement('span')
+          funcHeaderBetween.classList.add('keyword')
+          funcHeaderBetween.appendChild(document.createTextNode(this.translationMap[lang].FunctionNode.between))
+          elemSpan.appendChild(funcHeaderBetween)
+
+          // add parameters
+          const params = subTree.parameters
+          let parCount = 0
+          for (const par of params) {
+            if (parCount !== 0) {
+              elemSpan.appendChild(this.createHighlightedSpan(', '))
+            }
+            const paramName = this.createHighlightedSpan(par.parName)
+            paramName.classList.add('hand')
+            // mapping the stored positions (0, 3, 6, ...) to new positions (0, 2, 4, ...)
+            paramName.addEventListener('click', () => this.presenter.switchEditState(subTree.id, (par.pos / 3 * 2)))
+            elemSpan.appendChild(paramName)
+            parCount += 1
+          }
+
+          const funcHeaderPost = document.createElement('span')
+          funcHeaderPost.classList.add('keyword')
+          funcHeaderPost.appendChild(document.createTextNode(this.translationMap[lang].FunctionNode.post))
+          elemSpan.appendChild(funcHeaderPost)
+          let loop = [elemSpan]
+          if (this.translationMap[lang].leftBracket !== '') {
+            let leftBracket = document.createElement('span')
+            leftBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].leftBracket + '\n'))
+            loop.push(leftBracket)
+          }
+          loop = loop.concat(this.transformToCode(subTree.child, indentLevel + 1, lang))
+          if (this.translationMap[lang].rightBracket !== '') {
+            let rightBracket = document.createElement('span')
+            rightBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].rightBracket + '\n'))
+            loop.push(rightBracket)
+          }
           return loop.concat(this.transformToCode(subTree.followElement, indentLevel, lang))
         }
         case 'CaseNode':
