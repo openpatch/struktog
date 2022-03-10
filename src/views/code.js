@@ -1,3 +1,5 @@
+import { newElement } from '../helpers/domBuilding'
+
 export class CodeView {
   constructor (presenter, domRoot) {
     this.presenter = presenter
@@ -17,6 +19,10 @@ export class CodeView {
         'BranchNode': { 'pre': 'if ',
           'post': ':\n',
           'between': 'else:\n'
+        },
+        'TryCatchNode': { 'pre': 'try:\n',
+          'between': 'except',
+          'post': ':\n'
         },
         'CountLoopNode': { 'pre': 'for ',
           'post': ':\n'
@@ -50,6 +56,10 @@ export class CodeView {
           'post': ':\n',
           'between': 'else:\n'
         },
+        'TryCatchNode': { 'pre': 'try:\n',
+          'between': 'except',
+          'post': ':\n'
+        },
         'CountLoopNode': { 'pre': 'for ',
           'post': ':\n'
         },
@@ -81,6 +91,10 @@ export class CodeView {
         'BranchNode': { 'pre': 'if (',
           'post': ')\n',
           'between': '} else {\n'
+        },
+        'TryCatchNode': { 'pre': 'try\n',
+          'between': 'catch (',
+          'post': ')\n'
         },
         'CountLoopNode': { 'pre': 'for (',
           'post': ')\n'
@@ -117,6 +131,10 @@ export class CodeView {
         'BranchNode': { 'pre': 'if (',
           'post': ')\n',
           'between': '} else {\n'
+        },
+        'TryCatchNode': { 'pre': 'try\n',
+          'between': 'catch (',
+          'post': ')\n'
         },
         'CountLoopNode': { 'pre': 'for (',
           'post': ')\n'
@@ -320,6 +338,8 @@ export class CodeView {
             return false || this.checkForUntranslatable(subTree.followElement, nodeType)
           case 'BranchNode':
             return false || this.checkForUntranslatable(subTree.trueChild, nodeType) || this.checkForUntranslatable(subTree.falseChild, nodeType) || this.checkForUntranslatable(subTree.followElement, nodeType)
+          case 'TryCatchNode':
+            return false || this.checkForUntranslatable(subTree.tryChild, nodeType) || this.checkForUntranslatable(subTree.catchChild, nodeType) || this.checkForUntranslatable(subTree.followElement, nodeType)
           case 'CountLoopNode':
           case 'HeadLoopNode':
           case 'FootLoopNode':
@@ -435,6 +455,50 @@ export class CodeView {
             branch.push(rightBracket)
           }
           return branch.concat(this.transformToCode(subTree.followElement, indentLevel, lang))
+        }
+        case 'TryCatchNode':
+        {
+          const tryHeaderPre = newElement('span', ['keyword'], elemSpan)
+          tryHeaderPre.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].TryCatchNode.pre))
+          let trycatch = [elemSpan]
+          if (this.translationMap[lang].leftBracket !== '') {
+            const leftBracket = document.createElement('span')
+            leftBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].leftBracket + '\n'))
+            trycatch.push(leftBracket)
+          }
+          const tryContent = this.transformToCode(subTree.tryChild, indentLevel + 1, lang) // try Content
+          trycatch = trycatch.concat(tryContent)
+
+          if (this.translationMap[lang].rightBracket !== '') {
+            const rightBracket = document.createElement('span')
+            rightBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].rightBracket + '\n'))
+            trycatch.push(rightBracket)
+          }
+
+          const catchBetween = newElement('span', ['keyword'])
+          catchBetween.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].TryCatchNode.between))
+          // only insert space if a parameter is set for the catch block
+          if (text.innerText !== '' && (lang.includes('Python'))) {
+            catchBetween.appendChild(document.createTextNode(' '))
+          }
+          catchBetween.appendChild(text)
+          trycatch.push(catchBetween)
+          const catchBetweenPost = newElement('span', ['keyword'])
+          catchBetweenPost.appendChild(document.createTextNode(this.translationMap[lang].TryCatchNode.post))
+          trycatch.push(catchBetweenPost)
+          const catchContent = this.transformToCode(subTree.catchChild, indentLevel + 1, lang) // catch content
+          if (this.translationMap[lang].leftBracket !== '') {
+            const leftBracket = document.createElement('span')
+            leftBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].leftBracket + '\n'))
+            trycatch.push(leftBracket)
+          }
+          trycatch = trycatch.concat(catchContent)
+          if (this.translationMap[lang].rightBracket !== '') {
+            const rightBracket = document.createElement('span')
+            rightBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].rightBracket + '\n'))
+            trycatch.push(rightBracket)
+          }
+          return trycatch.concat(this.transformToCode(subTree.followElement, indentLevel, lang))
         }
         case 'CountLoopNode':
         {
