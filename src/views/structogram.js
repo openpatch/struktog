@@ -175,9 +175,7 @@ export class Structogram {
         container.id = subTree.id
       }
       container.classList.add('vcontainer', 'frameTopLeft', 'columnAuto')
-      console.log("Subtree.type: ", subTree.type)
       container.style.backgroundColor = config.get()[subTree.type].color
-      console.log("hier2")
       // container.style.margin = '0 .75px';
       // const element = document.createElement('div');
       // element.classList.add('column', 'vcontainer', 'frameTop');
