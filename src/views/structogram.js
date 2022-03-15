@@ -1,5 +1,6 @@
 import { config } from '../config.js'
 import { generateResetButton } from '../helpers/generator'
+import { newElement } from '../helpers/domBuilding'
 
 export class Structogram {
   constructor (presenter, domRoot) {
@@ -15,7 +16,7 @@ export class Structogram {
       'FootLoopNode',
       'BranchNode',
       'CaseNode',
-      'FunctionNode'
+      'TryCatchNode'
     ]
 
     this.preRender()
@@ -566,6 +567,46 @@ export class Structogram {
           divChildren.appendChild(divFalse)
           divBranchNode.appendChild(divChildren)
           container.appendChild(divBranchNode)
+          elemArray.push(container)
+
+          return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
+        }
+        case 'TryCatchNode':
+        {
+          const divTryCatchNode = newElement('div', ['columnAuto', 'vcontainer', 'tryCatchNode'], container)
+          const divTry = newElement('div', ['container', 'fixedHeight', 'padding'], divTryCatchNode)
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          divTry.appendChild(optionDiv)
+          const textTry = newElement('div', ['symbol'], divTry)
+          textTry.appendChild(document.createTextNode('Try'))
+
+          const divTryContent = newElement('div', ['columnAuto', 'container', 'loopShift'], divTryCatchNode)
+          const divTryContentBody = newElement('div', ['loopWidth', 'frameLeft', 'vcontainer'], divTryContent)
+          for (const elem of this.renderElement(subTree.tryChild, false, noInsert)) {
+            this.applyCodeEventListeners(elem)
+            divTryContentBody.appendChild(elem)
+          }
+
+          // container for the vertical line to indent it correctly
+          const vertLineContainer = newElement('div', ['container', 'columnAuto', 'loopShift'], divTryCatchNode)
+          const vertLine2 = newElement('div', ['loopWidth', 'vcontainer'], vertLineContainer)
+          const vertLine = newElement('div', ['frameLeftBottom'], vertLine2)
+          vertLine.style.flex = '0 0 3px'
+
+          const divCatch = newElement('div', ['container', 'fixedHeight', 'padding', 'tryCatchNode'], divTryCatchNode)
+          const textCatch = newElement('div', ['symbol'], divCatch)
+          textCatch.appendChild(document.createTextNode('Catch'))
+
+          const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          divCatch.appendChild(textDiv)
+
+          const divCatchContent = newElement('div', ['columnAuto', 'container', 'loopShift'], divTryCatchNode)
+          const divCatchContentBody = newElement('div', ['loopWidth', 'frameLeft', 'vcontainer'], divCatchContent)
+          for (const elem of this.renderElement(subTree.catchChild, false, noInsert)) {
+            this.applyCodeEventListeners(elem)
+            divCatchContentBody.appendChild(elem)
+          }
+
           elemArray.push(container)
 
           return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))

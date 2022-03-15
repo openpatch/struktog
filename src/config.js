@@ -66,10 +66,10 @@ class Config {
         icon: 'caseIcon',
         color: 'rgb(250, 218, 209)'
       },
-      FunctionNode: {
+      TryCatchNode: {
         use: true,
-        id: 'FunctionButton',
-        text: 'Funktionsblock',
+        id: 'TryCatchButton',
+        text: 'Try-Catch-Block',
         icon: 'caseIcon',
         color: 'rgb(255, 255, 255)'
       }
@@ -142,10 +142,10 @@ class Config {
           icon: 'caseIcon',
           color: 'rgb(250, 218, 209)'
         },
-        FunctionNode: {
+        TryCatchNode: {
           use: true,
-          id: 'FunctionButton',
-          text: 'Funktionsblock',
+          id: 'TryCatchButton',
+          text: 'Try-Catch-Block',
           icon: 'caseIcon',
           color: 'rgb(255, 255, 255)'
         }
@@ -216,10 +216,10 @@ class Config {
           icon: 'caseIcon',
           color: 'rgb(250, 218, 209)'
         },
-        FunctionNode: {
+        TryCatchNode: {
           use: true,
-          id: 'FunctionButton',
-          text: 'Funktionsblock',
+          id: 'TryCatchButton',
+          text: 'Try-Catch-Block',
           icon: 'caseIcon',
           color: 'rgb(255, 255, 255)'
         }

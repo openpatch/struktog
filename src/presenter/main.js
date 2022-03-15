@@ -262,6 +262,24 @@ export class Presenter {
           }
         }
         break
+      case 'TryCatchButton':
+        this.nextInsertElement = { 'id': guidGenerator(),
+          'type': 'TryCatchNode',
+          'text': '',
+          'followElement': { 'id': guidGenerator(),
+            'type': 'InsertNode',
+            'followElement': null
+          },
+          'tryChild': { 'id': guidGenerator(),
+          'type': 'InsertNode',
+          'followElement': { 'type': 'Placeholder' }
+          },
+          'catchChild': { 'id': guidGenerator(),
+            'type': 'InsertNode',
+            'followElement': { 'type': 'Placeholder' }
+          }
+        }
+        break
     }
     if (event.dataTransfer !== undefined) {
       event.dataTransfer.effectAllowed = 'move'
@@ -356,6 +374,13 @@ export class Presenter {
         break
       case 'BranchNode':
         if (deleteElem.trueChild.followElement.type !== 'Placeholder' || deleteElem.falseChild.followElement.type !== 'Placeholder') {
+          this.prepareRemoveQuestion(uid)
+        } else {
+          this.removeNodeFromTree(uid)
+        }
+        break
+      case 'TryCatchNode':
+        if (deleteElem.tryChild.followElement.type !== 'Placeholder' || deleteElem.catchChild.followElement.type !== 'Placeholder') {
           this.prepareRemoveQuestion(uid)
         } else {
           this.removeNodeFromTree(uid)
@@ -518,7 +543,8 @@ export class Presenter {
     this.updateBrowserStore()
     this.renderAllViews()
     // on new inserted elements start the editing mode of the element
-    if (!moveState) {
+    // start no editing mode for try catch blocks
+    if (!moveState && (this.getElementByUid(elemId).type !== 'TryCatchNode')) {
       this.switchEditState(elemId)
     }
   }
@@ -546,17 +572,12 @@ export class Presenter {
         funcTextNode.click()
       }
     } else {
-      // get the input field and display it
-      // work around for FootLoopNodes, duo to HTML structure, the last element has to be found and edited
-      if (elem.getElementsByClassName('input-group editField ' + uid).length) {
-        elem = elem.getElementsByClassName('input-group editField ' + uid)[0]
+      // in try catch block the input field of the catch block has not to be the first input field (if the try block has child nodes)
+      if (elem.children[0].classList.contains('tryCatchNode')) {
+        elem = elem.getElementsByClassName('tryCatchNode')[1].children[1].children[1]
       } else {
         elem = elem.getElementsByClassName('input-group editField')[0]
       }
-      elem.previousSibling.style.display = 'none'
-      elem.style.display = 'inline-flex'
-      // automatic set focus on the input
-      elem.getElementsByTagName('input')[0].select()
     }
   }
 
