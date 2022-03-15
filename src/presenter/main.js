@@ -4,6 +4,7 @@ export class Presenter {
   constructor (model) {
     this.model = model
     this.insertMode = false
+    this.settingFunctionMode = false // if the user is setting a function block then true
     this.views = []
     this.moveId = null
     this.nextInsertElement = null
@@ -18,6 +19,10 @@ export class Presenter {
 
   getInsertMode () {
     return this.insertMode
+  }
+
+  getSettingFunctionMode () {
+    return this.settingFunctionMode
   }
 
   getModelTree () {
@@ -37,6 +42,7 @@ export class Presenter {
   reset () {
     // reset the model fields connected to inserting
     this.insertMode = false
+    this.settingFunctionMode = false
     this.nextInsertElement = null
     this.moveId = null
   }
@@ -226,6 +232,22 @@ export class Presenter {
           }
         }
         break
+      case 'FunctionButton':
+        this.nextInsertElement = { 'id': guidGenerator(),
+          'type': 'FunctionNode',
+          'text': '',
+          'parameters' : [],
+          'followElement': { 'id': guidGenerator(),
+            'type': 'InsertNode',
+            'followElement': null
+          },
+          'child': { 'id': guidGenerator(),
+            'type': 'InsertNode',
+            'followElement': { 'type': 'Placeholder' }
+          }
+        }
+        this.settingFunctionMode = true
+        break
       case 'FootLoopButton':
         this.nextInsertElement = { 'id': guidGenerator(),
           'type': 'FootLoopNode',
@@ -235,6 +257,24 @@ export class Presenter {
             'followElement': null
           },
           'child': { 'id': guidGenerator(),
+            'type': 'InsertNode',
+            'followElement': { 'type': 'Placeholder' }
+          }
+        }
+        break
+      case 'TryCatchButton':
+        this.nextInsertElement = { 'id': guidGenerator(),
+          'type': 'TryCatchNode',
+          'text': '',
+          'followElement': { 'id': guidGenerator(),
+            'type': 'InsertNode',
+            'followElement': null
+          },
+          'tryChild': { 'id': guidGenerator(),
+          'type': 'InsertNode',
+          'followElement': { 'type': 'Placeholder' }
+          },
+          'catchChild': { 'id': guidGenerator(),
             'type': 'InsertNode',
             'followElement': { 'type': 'Placeholder' }
           }
@@ -325,6 +365,7 @@ export class Presenter {
       case 'HeadLoopNode':
       case 'CountLoopNode':
       case 'FootLoopNode':
+      case 'FunctionNode':
         if (deleteElem.child.followElement.type !== 'Placeholder') {
           this.prepareRemoveQuestion(uid)
         } else {
@@ -333,6 +374,13 @@ export class Presenter {
         break
       case 'BranchNode':
         if (deleteElem.trueChild.followElement.type !== 'Placeholder' || deleteElem.falseChild.followElement.type !== 'Placeholder') {
+          this.prepareRemoveQuestion(uid)
+        } else {
+          this.removeNodeFromTree(uid)
+        }
+        break
+      case 'TryCatchNode':
+        if (deleteElem.tryChild.followElement.type !== 'Placeholder' || deleteElem.catchChild.followElement.type !== 'Placeholder') {
           this.prepareRemoveQuestion(uid)
         } else {
           this.removeNodeFromTree(uid)
@@ -398,6 +446,54 @@ export class Presenter {
   }
 
   /**
+   * removes a parameter from the function parameters
+   *
+   * @param delPos   pos of the param in the dom list
+   */
+  removeParamFromParameters (delPos) {
+    let editedTree = this.model.getTree()
+    console.log("old Tree: ", editedTree)
+    // search for the function box tree
+    const followingElements = []
+    while (editedTree.type !== 'FunctionNode') {
+      followingElements.push(editedTree)
+      editedTree = editedTree.followElement
+    }
+    console.log("elements: ", followingElements)
+
+    // find the respective parameter to remove it from the model
+    const params = editedTree.parameters
+    for (const param of params) {
+      const actPos = parseInt(param.pos)
+      if (actPos === delPos) {
+        let listIndex = actPos / 3 // convert the element position in the dom into the position in the array
+        params.splice(listIndex, 1)
+
+        // update all pos-values of the following param elements
+        while (listIndex < params.length) {
+          params[listIndex].pos -= 3
+          listIndex += 1
+        }
+        editedTree.parameters = params
+
+        // set up the whole tree
+        let index = followingElements.length - 1
+        while (index > -1) {
+          const subTree = followingElements[index]
+          subTree.followElement = editedTree
+          editedTree = subTree
+          index -= 1
+        }
+        console.log("Edited Tree: ", editedTree)
+        this.model.setTree(editedTree)
+        this.updateBrowserStore()
+        this.renderAllViews()
+        return
+      }
+    }
+  }
+
+  /**
      * Prepare moving of an element of the struktogramm
      *
      * @param   uid   id of the clicked element in the struktogramm
@@ -412,9 +508,10 @@ export class Presenter {
     this.renderAllViews()
   }
 
-  editElement (uid, textValue) {
+  // textType: only used for the distinction of function name and function parameters
+  editElement (uid, textValue, textType = '') {
     this.updateUndo()
-    this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.editElement, false, textValue))
+    this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.editElement, false, textType + textValue))
     this.checkUndo()
     this.updateBrowserStore()
     this.renderAllViews()
@@ -446,7 +543,8 @@ export class Presenter {
     this.updateBrowserStore()
     this.renderAllViews()
     // on new inserted elements start the editing mode of the element
-    if (!moveState) {
+    // start no editing mode for try catch blocks
+    if (!moveState && (this.getElementByUid(elemId).type !== 'TryCatchNode')) {
       this.switchEditState(elemId)
     }
   }
@@ -454,21 +552,33 @@ export class Presenter {
   /**
      * Switch an element in the struktogramm to the editing state
      *
-     * @param   uid   id of the desired element in the struktogramm
+     * @param   uid         id of the desired element in the struktogramm
+     * @param   paramIndex  index (position) of the function parameter
      */
-  switchEditState (uid) {
+  switchEditState (uid, paramIndex = null) {
     let elem = document.getElementById(uid)
-    // get the input field and display it
-    // work around for FootLoopNodes, duo to HTML structure, the last element has to be found and edited
-    if (elem.getElementsByClassName('input-group editField ' + uid).length) {
-      elem = elem.getElementsByClassName('input-group editField ' + uid)[0]
+
+    // element is a function node
+    if (elem.children[0].children[0].classList.contains('func-box-header')) {
+      let funcTextNode = null
+      // click function name
+      if (paramIndex === null) {
+        funcTextNode = elem.children[0].children[0].children[1].children[0]
+        // trigger click event to show input field
+      } else {
+        funcTextNode = elem.children[0].children[0].children[2].children[paramIndex].children[0]
+      }
+      if (funcTextNode) {
+        funcTextNode.click()
+      }
     } else {
-      elem = elem.getElementsByClassName('input-group editField')[0]
+      // in try catch block the input field of the catch block has not to be the first input field (if the try block has child nodes)
+      if (elem.children[0].classList.contains('tryCatchNode')) {
+        elem = elem.getElementsByClassName('tryCatchNode')[1].children[1].children[1]
+      } else {
+        elem = elem.getElementsByClassName('input-group editField')[0]
+      }
     }
-    elem.previousSibling.style.display = 'none'
-    elem.style.display = 'inline-flex'
-    // automatic set focus on the input
-    elem.getElementsByTagName('input')[0].select()
   }
 
   getStringifiedTree () {

@@ -73,6 +73,7 @@ class Model {
           case 'HeadLoopNode':
           case 'FootLoopNode':
           case 'CountLoopNode':
+          case 'FunctionNode':
             subTree.child = this.findAndAlterElement(uid, subTree.child, alterFunction, false, text)
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, true, text)
             return subTree
@@ -82,7 +83,11 @@ class Model {
             subTree.falseChild = this.findAndAlterElement(uid, subTree.falseChild, alterFunction, false, text)
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, true, text)
             return subTree
-
+          case 'TryCatchNode':
+            subTree.tryChild = this.findAndAlterElement(uid, subTree.tryChild, alterFunction, false, text)
+            subTree.catchChild = this.findAndAlterElement(uid, subTree.catchChild, alterFunction, false, text)
+            subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, true, text)
+            return subTree
           case 'CaseNode':
             let nodes = []
             for (const element of subTree.cases) {
@@ -142,7 +147,31 @@ class Model {
      * @return   subTree         altered subTree object (with changed text)
      */
   editElement (subTree, hasRealParent, text) {
-    subTree.text = text
+    // if subtree is a function node, update also the function parameters
+    if (subTree.type === 'FunctionNode') {
+      const words = text.split('|')
+      if (words[0] === 'funcname') {
+        subTree.text = words[1]
+      } else {
+        // update function parameters (var names) in the tree model
+        if (subTree.parameters.length !== 0) {
+          let index = 0
+          for (const par of subTree.parameters) {
+            if (words[0] === par.pos) {
+              // update existing entry
+              subTree.parameters[index].parName = words[1]
+              return subTree
+            }
+            index += 1
+          }
+        }
+        // parameter does not exist in model, create a new entry
+        subTree.parameters.push({ pos: words[0], parName: words[1] })
+      }
+    } else {
+      subTree.text = text
+    }
+
     return subTree
   }
 
@@ -235,6 +264,7 @@ class Model {
           case 'HeadLoopNode':
           case 'CountLoopNode':
           case 'FootLoopNode':
+          case 'FunctionNode':
           {
             // follow children first, then the follow node
             let node = this.getElementInTree(uid, subTree.child)
@@ -251,6 +281,22 @@ class Model {
             let node = this.getElementInTree(uid, subTree.trueChild)
             if (node === null) {
               node = this.getElementInTree(uid, subTree.falseChild)
+              if (node === null) {
+                return this.getElementInTree(uid, subTree.followElement)
+              } else {
+                return node
+              }
+            } else {
+              return node
+            }
+          }
+
+          case 'TryCatchNode':
+          {
+            // follow both children first, then the follow node
+            let node = this.getElementInTree(uid, subTree.tryChild)
+            if (node === null) {
+              node = this.getElementInTree(uid, subTree.catchChild)
               if (node === null) {
                 return this.getElementInTree(uid, subTree.followElement)
               } else {

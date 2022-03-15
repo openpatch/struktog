@@ -26,7 +26,8 @@ Aufgaben können über Templates geladen werden:
 
 # Contributors
 Klaus Ramm,
-Thiemo Leonhardt
+Thiemo Leonhardt,
+Tom-Maurice Schreiber
 
 # Lizenz
 MIT

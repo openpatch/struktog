@@ -1,5 +1,6 @@
 import { config } from '../config.js'
 import { generateResetButton } from '../helpers/generator'
+import { newElement } from '../helpers/domBuilding'
 
 export class Structogram {
   constructor (presenter, domRoot) {
@@ -14,7 +15,8 @@ export class Structogram {
       'HeadLoopNode',
       'FootLoopNode',
       'BranchNode',
-      'CaseNode'
+      'CaseNode',
+      'TryCatchNode'
     ]
 
     this.preRender()
@@ -149,7 +151,7 @@ export class Structogram {
       this.domRoot.removeChild(this.domRoot.lastChild)
     }
     // this.domRoot.appendChild(this.prepareRenderTree(tree, false, false));
-    for (const elem of this.renderElement(tree, false, false)) {
+    for (const elem of this.renderElement(tree, false, false, this.presenter.getSettingFunctionMode())) {
       this.applyCodeEventListeners(elem)
       this.domRoot.appendChild(elem)
     }
@@ -158,7 +160,212 @@ export class Structogram {
     this.domRoot.appendChild(lastLine)
   }
 
-  renderElement (subTree, parentIsMoving, noInsert) {
+  /**
+   * @param    divContainer         div containing the function parameters
+   * @param    pos                  position in the function header-div
+   * @param    fieldSize            size of the input field (only int values)
+   * @param    uid                  id of the function node inside the model
+   * @param    content              text of the param element
+   * @returns  HTMLElement (Input Field)
+   */
+  createFunctionHeaderTextEl (divContainer, pos, fieldSize, placeHolder, uid, content = null) {
+    // add text from input field as span-element to the header-div
+    const textNodeSpan = document.createElement('span')
+    textNodeSpan.classList.add('func-header-text-div')
+
+    if (content === null || content === '') {
+      textNodeSpan.appendChild(document.createTextNode(placeHolder))
+    } else {
+      textNodeSpan.appendChild(document.createTextNode(content))
+    }
+
+    const textNodeDiv = document.createElement('div')
+    textNodeDiv.classList.add('function-elem')
+    textNodeDiv.style.display = 'flex'
+    textNodeDiv.style.flexDirection = 'row'
+    textNodeDiv.appendChild(textNodeSpan)
+
+    // delete option for parameters
+    if (!divContainer.classList.contains('func-box-header')) {
+      const removeParamBtn = document.createElement('button')
+      removeParamBtn.classList.add('trashcan', 'optionIcon', 'hand', 'tooltip', 'tooltip-bottoml')
+      removeParamBtn.setAttribute('data-tooltip', 'Entfernen')
+      removeParamBtn.addEventListener('click', () => {
+        this.presenter.removeParamFromParameters(pos)
+      })
+
+      textNodeSpan.addEventListener('mouseover', () => {
+        textNodeSpan.parentElement.appendChild(removeParamBtn)
+      })
+
+      textNodeSpan.parentElement.addEventListener('mouseleave', () => {
+        removeParamBtn.remove()
+      })
+    }
+
+    // text can be clicked and afterwards can be changed
+    textNodeSpan.addEventListener('click', () => {
+      textNodeDiv.remove()
+
+      // create Input Field
+      const inputElement = document.createElement('input')
+      inputElement.classList.add('function-elem', 'func-header-input')
+      inputElement.contentEditable = true
+      inputElement.style.border = 'solid 1px black'
+      inputElement.style.margin = '0 0 0 0'
+      inputElement.style.width = fieldSize + 'ch'
+      inputElement.size = fieldSize
+      inputElement.type = 'text'
+      inputElement.placeholder = placeHolder
+      inputElement.value = content
+      divContainer.insertBefore(inputElement, divContainer.childNodes[pos])
+
+      // observed events (to change input field size)
+      const events = 'keyup,keypress,focus,blur,change,input'.split(',')
+
+      for (const e of events) {
+        inputElement.addEventListener(e, (event) => {
+          if (event.type === 'keypress') {
+            if (event.code === 'Enter') {
+              // add text from input field as span-element to the header-div
+              const textNodeSpan = document.createElement('span')
+              textNodeSpan.classList.add('func-header-text-div')
+              textNodeSpan.appendChild(document.createTextNode(inputElement.value))
+
+              // update function name and function parameters in the model tree
+              if (divContainer.classList.contains('func-box-header')) {
+                this.presenter.editElement(uid, inputElement.value, 'funcname|')
+              } else {
+                this.presenter.editElement(uid, inputElement.value, String(pos) + '|')
+              }
+
+              // change function name also in the model (tree)
+              this.presenter.renderAllViews()
+              const textNodeDiv = document.createElement('div')
+              textNodeDiv.classList.add('function-elem')
+              textNodeDiv.appendChild(textNodeSpan)
+
+              // text can be clicked and afterwards can be changed
+              textNodeSpan.addEventListener('click', () => {
+                textNodeDiv.remove()
+                divContainer.insertBefore(inputElement, divContainer.childNodes[pos])
+              })
+
+              inputElement.remove()
+              divContainer.insertBefore(textNodeDiv, divContainer.childNodes[pos])
+            }
+          }
+
+          // adjust length of input field to its content
+          if (inputElement.value.length >= fieldSize) {
+            inputElement.style.width = inputElement.value.length + 1 + 'ch'
+          }
+        })
+      }
+    })
+
+    return textNodeDiv
+  }
+
+  /**
+   * Create some spacing
+   */
+  createSpacing (spacingSize) {
+    // spacing between elements
+    const spacing = document.createElement('div')
+    spacing.style.marginRight = spacingSize + 'ch'
+
+    return spacing
+  }
+
+  /**
+   * @param   countParam              count of variables inside the paramter div
+   * @param   fpSize                  size for the input field
+   * @param   paramDiv                div containing the function parameters
+   * @param   spacingSize             spacing div between two DOM-elements
+   * @param   uid                     id of the function node inside the model
+   * create and append a interactable variable to the parameters div
+   */
+  renderParam (countParam, paramDiv, spacingSize, fpSize, uid, content = null) {
+    const paramPos = 3 * countParam
+    // if there is already a function parameter, add some ", " before the next parameter
+    if (countParam !== 0) {
+      paramDiv.appendChild(document.createTextNode(','))
+      paramDiv.appendChild(this.createSpacing(spacingSize))
+    }
+    countParam += 1
+    paramDiv.appendChild(this.createFunctionHeaderTextEl(paramDiv, paramPos, fpSize, 'par ' + countParam, uid, content))
+  }
+
+  /**
+   * @param    uid                id of the function node inside the model (tree)
+   * @param    content            function name given from the model
+   * @param    funcParams         variable names of the function paramers
+   * Return a function header with function name and parameters for editing
+   */
+  renderFunctionBox (uid, content, funcParams) {
+    // field attributes... ff: function name... fp: parameter name
+    // size is field length
+    const ffSize = 15
+    const fpSize = 5
+    const spacingSize = 1
+
+    // box header containing all elements describing the function header
+    const functionBoxHeaderDiv = document.createElement('div')
+    functionBoxHeaderDiv.classList.add('input-group', 'fixedHeight', 'func-box-header', 'padding')
+    functionBoxHeaderDiv.style.display = 'flex'
+    functionBoxHeaderDiv.style.flexDirection = 'row'
+    functionBoxHeaderDiv.style.paddingTop = '6.5px'
+
+    // header containing all param elements
+    const paramDiv = document.createElement('div')
+    paramDiv.classList.add('input-group')
+    paramDiv.style.display = 'flex'
+    paramDiv.style.flexDirection = 'row'
+    paramDiv.style.flex = '0 0 ' + spacingSize + 'ch'
+
+    let countParam = 0
+    for (const param of funcParams) {
+      this.renderParam(countParam, paramDiv, spacingSize, fpSize, uid, param.parName)
+      countParam += 1
+    }
+
+    // append a button for adding new parameters at the end of the param div
+    const addParamBtn = document.createElement('button')
+    addParamBtn.classList.add('add-function-param-btn')
+    addParamBtn.innerHTML = '+'
+    addParamBtn.addEventListener('click', () => {
+      addParamBtn.remove()
+      const countParam = document.getElementsByClassName('function-elem').length - 1
+      this.renderParam(countParam, paramDiv, spacingSize, fpSize, uid)
+    })
+
+    // show adding-parameters-button when hovering
+    functionBoxHeaderDiv.addEventListener('mouseover', () => {
+      paramDiv.appendChild(addParamBtn)
+    })
+
+    functionBoxHeaderDiv.addEventListener('mouseleave', () => {
+      addParamBtn.remove()
+    })
+
+    // add all box header elements
+    functionBoxHeaderDiv.appendChild(document.createTextNode('function'))
+    functionBoxHeaderDiv.appendChild(this.createSpacing(2 * spacingSize))
+    functionBoxHeaderDiv.appendChild(this.createFunctionHeaderTextEl(functionBoxHeaderDiv, 2, ffSize, 'func name', uid, content))
+    functionBoxHeaderDiv.appendChild(document.createTextNode('('))
+    functionBoxHeaderDiv.appendChild(paramDiv)
+    functionBoxHeaderDiv.appendChild(document.createTextNode(')'))
+    functionBoxHeaderDiv.appendChild(this.createSpacing(spacingSize))
+    functionBoxHeaderDiv.appendChild(document.createTextNode('{'))
+    const spacer = document.createElement('div')
+    spacer.style.marginRight = 'auto'
+    functionBoxHeaderDiv.appendChild(spacer)
+
+    return functionBoxHeaderDiv
+  }
+
+  renderElement (subTree, parentIsMoving, noInsert, renderInsertNode = false) {
     let elemArray = []
     if (subTree === null) {
       return elemArray
@@ -188,36 +395,73 @@ export class Structogram {
             if (noInsert) {
               return this.renderElement(subTree.followElement, false, true)
             } else {
+              // inserting any other object instead of a function block
               if (this.presenter.getInsertMode()) {
-                // container.classList.add('line');
-                const div = document.createElement('div')
-                div.classList.add('container', 'fixedHalfHeight', 'symbol', 'hand', 'text-center')
-                container.addEventListener('dragover', function (event) {
-                  event.preventDefault()
-                })
-                container.addEventListener('drop', (event) => {
-                  event.preventDefault()
-                  this.presenter.appendElement(subTree.id)
-                })
-                container.addEventListener('click', () => this.presenter.appendElement(subTree.id))
+                if (!this.presenter.getSettingFunctionMode()) {
+                  const div = document.createElement('div')
+                  div.classList.add('container', 'fixedHalfHeight', 'symbol', 'hand', 'text-center')
+                  container.addEventListener('dragover', function (event) {
+                    event.preventDefault()
+                  })
+                  container.addEventListener('drop', (event) => {
+                    event.preventDefault()
+                    this.presenter.appendElement(subTree.id)
+                  })
+                  container.addEventListener('click', () => this.presenter.appendElement(subTree.id))
 
-                if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id === this.presenter.getMoveId()) {
-                  const bold = document.createElement('strong')
-                  bold.classList.add('moveText')
-                  bold.appendChild(document.createTextNode('Verschieben abbrechen'))
-                  div.appendChild(bold)
-                } else {
-                  const symbol = document.createElement('div')
-                  symbol.classList.add('insertIcon', 'symbolHeight')
-                  div.appendChild(symbol)
-                }
-                container.appendChild(div)
-                elemArray.push(container)
+                  if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id === this.presenter.getMoveId()) {
+                    const bold = document.createElement('strong')
+                    bold.classList.add('moveText')
+                    bold.appendChild(document.createTextNode('Verschieben abbrechen'))
+                    div.appendChild(bold)
+                  } else {
+                    const symbol = document.createElement('div')
+                    symbol.classList.add('insertIcon', 'symbolHeight')
+                    div.appendChild(symbol)
+                  }
+                  container.appendChild(div)
+                  elemArray.push(container)
 
-                if (subTree.followElement === null || subTree.followElement.type === 'Placeholder') {
-                  return elemArray
+                  if (subTree.followElement === null || subTree.followElement.type === 'Placeholder') {
+                    return elemArray
+                  } else {
+                    return elemArray.concat(this.renderElement(subTree.followElement, false, noInsert))
+                  }
                 } else {
-                  return elemArray.concat(this.renderElement(subTree.followElement, false, noInsert))
+                  // container.classList.add('line');
+                  if (renderInsertNode) {
+                    const div = document.createElement('div')
+                    div.classList.add('container', 'fixedHalfHeight', 'symbol', 'hand', 'text-center')
+                    container.addEventListener('dragover', function (event) {
+                      event.preventDefault()
+                    })
+                    container.addEventListener('drop', (event) => {
+                      event.preventDefault()
+                      this.presenter.appendElement(subTree.id)
+                    })
+                    container.addEventListener('click', () => this.presenter.appendElement(subTree.id))
+
+                    if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id === this.presenter.getMoveId()) {
+                      const bold = document.createElement('strong')
+                      bold.classList.add('moveText')
+                      bold.appendChild(document.createTextNode('Verschieben abbrechen'))
+                      div.appendChild(bold)
+                    } else {
+                      const symbol = document.createElement('div')
+                      symbol.classList.add('insertIcon', 'symbolHeight')
+                      div.appendChild(symbol)
+                    }
+                    container.appendChild(div)
+                    elemArray.push(container)
+
+                    if (subTree.followElement === null || subTree.followElement.type === 'Placeholder') {
+                      return elemArray
+                    } else {
+                      return elemArray.concat(this.renderElement(subTree.followElement, false, noInsert))
+                    }
+                  } else {
+                    return this.renderElement(subTree.followElement, false, noInsert)
+                  }
                 }
               } else {
                 return this.renderElement(subTree.followElement, parentIsMoving, noInsert)
@@ -327,6 +571,46 @@ export class Structogram {
 
           return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
         }
+        case 'TryCatchNode':
+        {
+          const divTryCatchNode = newElement('div', ['columnAuto', 'vcontainer', 'tryCatchNode'], container)
+          const divTry = newElement('div', ['container', 'fixedHeight', 'padding'], divTryCatchNode)
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          divTry.appendChild(optionDiv)
+          const textTry = newElement('div', ['symbol'], divTry)
+          textTry.appendChild(document.createTextNode('Try'))
+
+          const divTryContent = newElement('div', ['columnAuto', 'container', 'loopShift'], divTryCatchNode)
+          const divTryContentBody = newElement('div', ['loopWidth', 'frameLeft', 'vcontainer'], divTryContent)
+          for (const elem of this.renderElement(subTree.tryChild, false, noInsert)) {
+            this.applyCodeEventListeners(elem)
+            divTryContentBody.appendChild(elem)
+          }
+
+          // container for the vertical line to indent it correctly
+          const vertLineContainer = newElement('div', ['container', 'columnAuto', 'loopShift'], divTryCatchNode)
+          const vertLine2 = newElement('div', ['loopWidth', 'vcontainer'], vertLineContainer)
+          const vertLine = newElement('div', ['frameLeftBottom'], vertLine2)
+          vertLine.style.flex = '0 0 3px'
+
+          const divCatch = newElement('div', ['container', 'fixedHeight', 'padding', 'tryCatchNode'], divTryCatchNode)
+          const textCatch = newElement('div', ['symbol'], divCatch)
+          textCatch.appendChild(document.createTextNode('Catch'))
+
+          const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          divCatch.appendChild(textDiv)
+
+          const divCatchContent = newElement('div', ['columnAuto', 'container', 'loopShift'], divTryCatchNode)
+          const divCatchContentBody = newElement('div', ['loopWidth', 'frameLeft', 'vcontainer'], divCatchContent)
+          for (const elem of this.renderElement(subTree.catchChild, false, noInsert)) {
+            this.applyCodeEventListeners(elem)
+            divCatchContentBody.appendChild(elem)
+          }
+
+          elemArray.push(container)
+
+          return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
+        }
         case 'HeadLoopNode':
         case 'CountLoopNode':
         {
@@ -360,6 +644,62 @@ export class Structogram {
 
           return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
         }
+        case 'FunctionNode':
+          const innerDiv = document.createElement('div')
+          innerDiv.classList.add('columnAuto', 'vcontainer')
+
+          const divFunctionHeader = this.renderFunctionBox(subTree.id, subTree.text, subTree.parameters)
+
+          const divHead = document.createElement('div')
+          divHead.classList.add('container', 'fixedHeight')
+
+          const funcOptionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          divHead.appendChild(funcOptionDiv)
+          divFunctionHeader.appendChild(divHead)
+
+          const divChild = document.createElement('div')
+          divChild.classList.add('columnAuto', 'container', 'loopShift')
+
+          // creates the inside of the functionf
+          const divFunctionBody = document.createElement('div')
+          divFunctionBody.classList.add('loopWidth', 'frameLeft', 'vcontainer')
+
+          for (const elem of this.renderElement(subTree.child, false, noInsert)) {
+            this.applyCodeEventListeners(elem)
+            divFunctionBody.appendChild(elem)
+          }
+          divChild.appendChild(divFunctionBody)
+
+          const divFuncFoot = document.createElement('div')
+          divFuncFoot.classList.add('container', 'fixedHeight', 'padding')
+
+          const textNode = document.createElement('div')
+          textNode.classList.add('symbol')
+          textNode.appendChild(document.createTextNode('}'))
+          divFuncFoot.appendChild(textNode)
+
+          const vertLine = document.createElement('div')
+          vertLine.classList.add('frameLeftBottom')
+          vertLine.style.flex = '0 0 3px'
+
+          // container for the vertical line to indent it correctly
+          const vertLineContainer = document.createElement('div')
+          vertLineContainer.classList.add('container', 'columnAuto', 'loopShift')
+
+          const vertLine2 = document.createElement('div')
+          vertLine2.classList.add('loopWidth', 'vcontainer')
+
+          vertLine2.appendChild(vertLine)
+          vertLineContainer.appendChild(vertLine2)
+
+          innerDiv.appendChild(divFunctionHeader)
+          innerDiv.appendChild(divChild)
+          innerDiv.appendChild(vertLineContainer)
+          innerDiv.appendChild(divFuncFoot)
+          container.appendChild(innerDiv)
+          elemArray.push(container)
+
+          return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
         case 'FootLoopNode':
         {
           const div = document.createElement('div')
@@ -640,7 +980,7 @@ export class Structogram {
     }
 
     // all elements can be moved, except InsertCases they are bind to the case node
-    if (type !== 'InsertCase') {
+    if (type !== 'InsertCase' && type !== 'FunctionNode') {
       let moveElem = document.createElement('div')
       moveElem.classList.add('moveIcon')
       moveElem.classList.add('optionIcon')
@@ -762,32 +1102,35 @@ export class Structogram {
   }
 
   applyCodeEventListeners (obj) {
-    if (obj.firstChild.firstChild.classList.contains('loopShift')) {
-      obj.firstChild.lastChild.addEventListener('mouseover', function () {
-        const elemSpan = document.getElementById(obj.id + '-codeLine')
-        if (elemSpan) {
-          elemSpan.classList.add('highlight')
-        }
-      })
-      obj.firstChild.lastChild.addEventListener('mouseout', function () {
-        const elemSpan = document.getElementById(obj.id + '-codeLine')
-        if (elemSpan) {
-          elemSpan.classList.remove('highlight')
-        }
-      })
-    } else {
-      obj.firstChild.firstChild.addEventListener('mouseover', function () {
-        const elemSpan = document.getElementById(obj.id + '-codeLine')
-        if (elemSpan) {
-          elemSpan.classList.add('highlight')
-        }
-      })
-      obj.firstChild.firstChild.addEventListener('mouseout', function () {
-        const elemSpan = document.getElementById(obj.id + '-codeLine')
-        if (elemSpan) {
-          elemSpan.classList.remove('highlight')
-        }
-      })
+    // do not apply event listeners if obj is the function block
+    if (!obj.firstChild.classList.contains('func-box-header')) {
+      if (obj.firstChild.firstChild.classList.contains('loopShift')) {
+        obj.firstChild.lastChild.addEventListener('mouseover', function () {
+          const elemSpan = document.getElementById(obj.id + '-codeLine')
+          if (elemSpan) {
+            elemSpan.classList.add('highlight')
+          }
+        })
+        obj.firstChild.lastChild.addEventListener('mouseout', function () {
+          const elemSpan = document.getElementById(obj.id + '-codeLine')
+          if (elemSpan) {
+            elemSpan.classList.remove('highlight')
+          }
+        })
+      } else {
+        obj.firstChild.firstChild.addEventListener('mouseover', function () {
+          const elemSpan = document.getElementById(obj.id + '-codeLine')
+          if (elemSpan) {
+            elemSpan.classList.add('highlight')
+          }
+        })
+        obj.firstChild.firstChild.addEventListener('mouseout', function () {
+          const elemSpan = document.getElementById(obj.id + '-codeLine')
+          if (elemSpan) {
+            elemSpan.classList.remove('highlight')
+          }
+        })
+      }
     }
   }
 
@@ -907,7 +1250,17 @@ export class Structogram {
           div.appendChild(optionDiv)
 
           return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
+        case 'FunctionNode':
+        {
+          const div = document.createElement('div')
+          div.id = subTree.id
+          div.classList.add(['columns', 'element'])
 
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          div.appendChild(optionDiv)
+
+          return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
+        }
         case 'BranchNode':
         {
           let div = document.createElement('div')
