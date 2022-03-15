@@ -42,7 +42,7 @@ export class CodeView {
         'rightBracket': '',
         'pseudoSwitch': true
       },
-      'Python ab v3.10': { 'untranslatable': ['FootLoopNode'],
+      'Python ab v3.10': { 'untranslatable': [],
         'InputNode': { 'pre': '',
           'post': ' = input("Eingabe")\n'
         },
@@ -64,6 +64,10 @@ export class CodeView {
           'post': ':\n'
         },
         'HeadLoopNode': { 'pre': 'while ',
+          'post': ':\n'
+        },
+          'FootLoopNode': { 'prepre': 'while True: ',
+          'pre': 'if ',
           'post': ':\n'
         },
         'CaseNode': { 'pre': 'match ',
@@ -554,7 +558,7 @@ export class CodeView {
         {
           const loopContent = document.createElement('span')
           loopContent.classList.add('keyword')
-          loopContent.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].FootLoopNode.pre))
+          loopContent.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].FootLoopNode.prepre))
           elemSpan.appendChild(loopContent)
           let loop = [elemSpan]
           if (this.translationMap[lang].leftBracket !== '') {
