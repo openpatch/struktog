@@ -6,7 +6,7 @@ export class CodeView {
     this.domRoot = domRoot
     this.lang = '--'
     this.translationMap = {
-      'Python': { 'untranslatable': ['FootLoopNode'],
+      'Python': { 'untranslatable': [],
         'InputNode': { 'pre': '',
           'post': ' = input("Eingabe")\n'
         },
@@ -29,6 +29,10 @@ export class CodeView {
         },
         'HeadLoopNode': { 'pre': 'while ',
           'post': ':\n'
+        },
+        'FootLoopNode': { 'prepre': 'while True:\n',
+          'pre': '    if not ',
+          'post': ':\n        break'
         },
         'CaseNode': { 'pre': 'if ',
           'post': ':\n'
@@ -66,9 +70,9 @@ export class CodeView {
         'HeadLoopNode': { 'pre': 'while ',
           'post': ':\n'
         },
-          'FootLoopNode': { 'prepre': 'while True: ',
-          'pre': 'if ',
-          'post': ':\n'
+        'FootLoopNode': { 'prepre': 'while True:\n',
+          'pre': '    if not ',
+          'post': ':\n        break'
         },
         'CaseNode': { 'pre': 'match ',
           'post': ':\n'
