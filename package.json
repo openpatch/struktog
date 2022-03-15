@@ -42,7 +42,8 @@
     "webpack": "^5.36.1",
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.2",
-    "webpack-shell-plugin-next": "^2.2.2"
+    "webpack-shell-plugin-next": "^2.2.2",
+    "yarn": "^1.22.17"
   },
   "dependencies": {}
 }
