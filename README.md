@@ -34,8 +34,8 @@ Aufgaben können über Templates geladen werden:
 ```
 
 # Download
-- [Last-Build](https://dditools.inf.tu-dresden.de/releases/struktog/struktog-latest.tar.gz)
-- [Last-Release](https://dditools.inf.tu-dresden.de/releases/struktog/struktog-v.1.2.0.tar.gz)
+- [Last-Build](https://dditools.inf.tu-dresden.de/releases/struktog/struktog-latest.zip)
+- [Last-Release](https://dditools.inf.tu-dresden.de/releases/struktog/struktog-v1.2.0.tar.gz)
 
 # Contributors
 Klaus Ramm,
