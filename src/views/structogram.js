@@ -16,25 +16,25 @@ export class Structogram {
       'FootLoopNode',
       'BranchNode',
       'CaseNode',
-      'FunctionNode',
-      'TryCatchNode'
+      'TryCatchNode',
+      'FunctionNode'
     ]
 
     this.preRender()
   }
 
   preRender () {
-    let divInsert = document.createElement('div')
+    const divInsert = document.createElement('div')
     divInsert.classList.add('columnEditorFull')
-    let divHeader = document.createElement('div')
+    const divHeader = document.createElement('div')
     // divHeader.classList.add('elementButtonColumns');
-    let spanHeader = document.createElement('strong')
+    const spanHeader = document.createElement('strong')
     spanHeader.classList.add('margin-small')
     spanHeader.appendChild(document.createTextNode('Element wählen:'))
     divHeader.appendChild(spanHeader)
     divInsert.appendChild(divHeader)
 
-    let divButtons = document.createElement('div')
+    const divButtons = document.createElement('div')
     divButtons.classList.add('container', 'justify-center')
     for (const item of this.buttonList) {
       if (config.get()[item].use) {
@@ -43,9 +43,9 @@ export class Structogram {
     }
     divInsert.appendChild(divButtons)
 
-    let divEditorHeadline = document.createElement('div')
+    const divEditorHeadline = document.createElement('div')
     divEditorHeadline.classList.add('columnEditorFull', 'headerContainer')
-    let editorHeadline = document.createElement('strong')
+    const editorHeadline = document.createElement('strong')
     editorHeadline.classList.add('margin-small', 'floatBottom')
     editorHeadline.appendChild(document.createTextNode('Editor:'))
     divEditorHeadline.appendChild(editorHeadline)
@@ -69,7 +69,7 @@ export class Structogram {
     const divFixRightBorder = document.createElement('div')
     divFixRightBorder.classList.add('borderWidth', 'frameLeft')
 
-    let divWorkingArea = document.createElement('div')
+    const divWorkingArea = document.createElement('div')
     divWorkingArea.classList.add('columnAuto')
     divWorkingArea.id = 'structogram'
 
@@ -128,7 +128,7 @@ export class Structogram {
   }
 
   createButton (button) {
-    let div = document.createElement('div')
+    const div = document.createElement('div')
     div.classList.add('columnInput', 'insertButton', 'hand')
     div.style.backgroundColor = config.get()[button].color
     div.id = config.get()[button].id
@@ -136,9 +136,9 @@ export class Structogram {
     div.addEventListener('click', (event) => this.presenter.insertNode(config.get()[button].id, event))
     div.addEventListener('dragstart', (event) => this.presenter.insertNode(config.get()[button].id, event))
     div.addEventListener('dragend', () => this.presenter.resetDrop())
-    let spanText = document.createElement('span')
+    const spanText = document.createElement('span')
     spanText.appendChild(document.createTextNode(config.get()[button].text))
-    let divIcon = document.createElement('div')
+    const divIcon = document.createElement('div')
     divIcon.classList.add(config.get()[button].icon, 'buttonLogo')
 
     div.append(divIcon)
@@ -367,7 +367,7 @@ export class Structogram {
   }
 
   renderElement (subTree, parentIsMoving, noInsert, renderInsertNode = false) {
-    let elemArray = []
+    const elemArray = []
     if (subTree === null) {
       return elemArray
     } else {
@@ -470,6 +470,7 @@ export class Structogram {
             }
           }
         case 'Placeholder':
+        {
           const div = document.createElement('div')
           div.classList.add('container', 'fixedHeight')
           const symbol = document.createElement('div')
@@ -478,6 +479,7 @@ export class Structogram {
           container.appendChild(div)
           elemArray.push(container)
           return elemArray
+        }
         case 'InsertCase':
         {
           container.classList.remove('frameTopLeft', 'columnAuto')
@@ -499,6 +501,7 @@ export class Structogram {
         case 'InputNode':
         case 'OutputNode':
         case 'TaskNode':
+        {
           const divTaskNode = document.createElement('div')
           divTaskNode.classList.add('fixedHeight', 'container')
 
@@ -512,6 +515,7 @@ export class Structogram {
           elemArray.push(container)
 
           return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
+        }
         case 'BranchNode':
         {
           // //container.classList.add('fix');
@@ -645,7 +649,7 @@ export class Structogram {
 
           return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
         }
-        case 'FunctionNode':
+        case 'FunctionNode': {
           const innerDiv = document.createElement('div')
           innerDiv.classList.add('columnAuto', 'vcontainer')
 
@@ -701,6 +705,7 @@ export class Structogram {
           elemArray.push(container)
 
           return elemArray.concat(this.renderElement(subTree.followElement, parentIsMoving, noInsert))
+        }
         case 'FootLoopNode':
         {
           const div = document.createElement('div')
@@ -772,7 +777,7 @@ export class Structogram {
           }
 
           for (const caseElem of subTree.cases) {
-            let divCase = document.createElement('div')
+            const divCase = document.createElement('div')
             divCase.classList.add('columnAuto', 'vcontainer', 'ov-hidden')
 
             for (const elem of this.renderElement(caseElem, false, noInsert)) {
@@ -783,7 +788,7 @@ export class Structogram {
           }
 
           if (subTree.defaultOn) {
-            let divCase = document.createElement('div')
+            const divCase = document.createElement('div')
             divCase.classList.add('columnAuto', 'vcontainer', 'ov-hidden')
             for (const elem of this.renderElement(subTree.defaultNode, false, noInsert)) {
               this.applyCodeEventListeners(elem)
@@ -820,7 +825,7 @@ export class Structogram {
   increaseSize () {
     // only allow a max size of ten (flexbox)
     if (this.size < 10) {
-      let element = document.getElementById('Sizelimiter')
+      const element = document.getElementById('Sizelimiter')
       element.classList.remove('col-' + this.size)
       this.size = this.size + 1
       element.classList.add('col-' + this.size)
@@ -833,7 +838,7 @@ export class Structogram {
   decreaseSize () {
     // only allow a minimal size of 6 (flexbox)
     if (this.size > 6) {
-      var element = document.getElementById('Sizelimiter')
+      const element = document.getElementById('Sizelimiter')
       element.classList.remove('col-' + this.size)
       this.size = this.size - 1
       element.classList.add('col-' + this.size)
@@ -849,12 +854,12 @@ export class Structogram {
      * @return   div          completly wrapped HTML element
      */
   addCssWrapper (div, inserting, moving) {
-    let innerDiv = document.createElement('div')
+    const innerDiv = document.createElement('div')
     innerDiv.classList.add('column')
     innerDiv.classList.add('col-12')
     innerDiv.classList.add('lineTop')
 
-    let box = document.createElement('div')
+    const box = document.createElement('div')
     box.classList.add('row')
 
     // element is a InsertNode
@@ -968,7 +973,7 @@ export class Structogram {
      */
   createOptionDiv (type, uid) {
     // create the container for all options
-    let optionDiv = document.createElement('div')
+    const optionDiv = document.createElement('div')
     optionDiv.classList.add('optionContainer')
 
     // case nodes have additional options
@@ -982,7 +987,7 @@ export class Structogram {
 
     // all elements can be moved, except InsertCases they are bind to the case node
     if (type !== 'InsertCase' && type !== 'FunctionNode') {
-      let moveElem = document.createElement('div')
+      const moveElem = document.createElement('div')
       moveElem.classList.add('moveIcon')
       moveElem.classList.add('optionIcon')
       moveElem.classList.add('hand')
@@ -994,7 +999,7 @@ export class Structogram {
     }
 
     // every element can be deleted
-    let deleteElem = document.createElement('div')
+    const deleteElem = document.createElement('div')
     deleteElem.classList.add('trashcan')
     deleteElem.classList.add('optionIcon')
     deleteElem.classList.add('hand')
@@ -1017,11 +1022,11 @@ export class Structogram {
      */
   createTextDiv (type, content, uid, nrCases = null) {
     // create the parent container
-    let textDiv = document.createElement('div')
+    const textDiv = document.createElement('div')
     textDiv.classList.add('columnAuto', 'symbol')
 
     // this div contains the hidden inputfield
-    let editDiv = document.createElement('div')
+    const editDiv = document.createElement('div')
     editDiv.classList.add('input-group', 'editField')
     editDiv.style.display = 'none'
 
@@ -1030,7 +1035,7 @@ export class Structogram {
     }
 
     // inputfield with eventlisteners
-    let editText = document.createElement('input')
+    const editText = document.createElement('input')
     editText.type = 'text'
     editText.value = content
     // TODO: move to presenter
@@ -1044,12 +1049,12 @@ export class Structogram {
     })
 
     // add apply button
-    let editApply = document.createElement('div')
+    const editApply = document.createElement('div')
     editApply.classList.add('acceptIcon', 'hand')
     editApply.addEventListener('click', () => this.presenter.editElement(uid, editText.value))
 
     // add dismiss button
-    let editDismiss = document.createElement('div')
+    const editDismiss = document.createElement('div')
     editDismiss.classList.add('deleteIcon', 'hand')
     editDismiss.addEventListener('click', () => this.presenter.renderAllViews())
 
@@ -1068,7 +1073,7 @@ export class Structogram {
     }
 
     // add displayed text when not in editing mode
-    let innerTextDiv = document.createElement('div')
+    const innerTextDiv = document.createElement('div')
     // innerTextDiv.classList.add('column');
     // innerTextDiv.classList.add('col-12');
     // special handling for the default case of case nodes
@@ -1088,7 +1093,7 @@ export class Structogram {
     if (type === 'CaseNode') {
       textSpan.style.marginLeft = 'calc(' + (nrCases / (nrCases + 1)) * 100 + '% - 2em)'
     }
-    let text = document.createTextNode(content)
+    const text = document.createTextNode(content)
 
     editDiv.appendChild(editText)
     editDiv.appendChild(editApply)
@@ -1149,11 +1154,11 @@ export class Structogram {
       return document.createTextNode('')
     } else {
       // create outlining structure
-      let innerDiv = document.createElement('div')
+      const innerDiv = document.createElement('div')
       innerDiv.classList.add('column')
       innerDiv.classList.add('col-12')
 
-      let box = document.createElement('div')
+      const box = document.createElement('div')
       box.classList.add('columns')
       if (subTree.type !== 'InsertCase') {
         box.classList.add('lineTop')
@@ -1194,7 +1199,7 @@ export class Structogram {
               return this.renderTree(subTree.followElement, false, true)
             } else {
               if (this.presenter.getInsertMode()) {
-                let div = document.createElement('div')
+                const div = document.createElement('div')
                 div.id = subTree.id
                 // div.classList.add('c-hand');
                 // div.classList.add('text-center');
@@ -1203,9 +1208,9 @@ export class Structogram {
                 })
                 div.addEventListener('drop', () => this.presenter.appendElement(subTree.id))
                 div.addEventListener('click', () => this.presenter.appendElement(subTree.id))
-                let text = document.createElement('div')
+                const text = document.createElement('div')
                 if (this.presenter.getMoveId() && subTree.followElement && subTree.followElement.id === this.presenter.getMoveId()) {
-                  let bold = document.createElement('strong')
+                  const bold = document.createElement('strong')
                   bold.appendChild(document.createTextNode('Verschieben abbrechen'))
                   text.appendChild(bold)
                 } else {
@@ -1228,9 +1233,9 @@ export class Structogram {
           if (this.presenter.getInsertMode()) {
             return []
           } else {
-            let div = document.createElement('div')
+            const div = document.createElement('div')
             div.classList.add('text-center')
-            let text = document.createElement('div')
+            const text = document.createElement('div')
             text.classList.add('emptyStateIcon')
             text.classList.add('p-centered')
             div.appendChild(text)
@@ -1240,17 +1245,19 @@ export class Structogram {
         case 'InputNode':
         case 'OutputNode':
         case 'TaskNode':
-          let div = document.createElement('div')
+        {
+          const div = document.createElement('div')
           div.id = subTree.id
           div.classList.add('columns')
           div.classList.add('element')
 
-          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
           div.appendChild(textDiv)
           div.appendChild(optionDiv)
 
           return [this.addCssWrapper(div, false, parentIsMoving), this.prepareRenderTree(subTree.followElement, parentIsMoving, noInsert)]
+        }
         case 'FunctionNode':
         {
           const div = document.createElement('div')
@@ -1264,18 +1271,18 @@ export class Structogram {
         }
         case 'BranchNode':
         {
-          let div = document.createElement('div')
+          const div = document.createElement('div')
           div.id = subTree.id
 
-          let divHead = document.createElement('div')
+          const divHead = document.createElement('div')
           divHead.classList.add('columns')
           divHead.classList.add('element')
           divHead.classList.add('stBranch')
 
-          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
 
-          let bufferDiv = document.createElement('div')
+          const bufferDiv = document.createElement('div')
           bufferDiv.classList.add('column')
           bufferDiv.classList.add('col-1')
 
@@ -1283,19 +1290,19 @@ export class Structogram {
           divHead.appendChild(textDiv)
           divHead.appendChild(optionDiv)
 
-          let divPreSubHeader = document.createElement('div')
+          const divPreSubHeader = document.createElement('div')
           divPreSubHeader.classList.add('column')
           divPreSubHeader.classList.add('col-12')
 
-          let divSubHeader = document.createElement('div')
+          const divSubHeader = document.createElement('div')
           divSubHeader.classList.add('columns')
 
-          let divSubHeaderTrue = document.createElement('div')
+          const divSubHeaderTrue = document.createElement('div')
           divSubHeaderTrue.classList.add('column')
           divSubHeaderTrue.classList.add('col-6')
           divSubHeaderTrue.appendChild(document.createTextNode('Wahr'))
 
-          let divSubHeaderFalse = document.createElement('div')
+          const divSubHeaderFalse = document.createElement('div')
           divSubHeaderFalse.classList.add('column')
           divSubHeaderFalse.classList.add('col-6')
           divSubHeaderFalse.classList.add('text-right')
@@ -1306,17 +1313,17 @@ export class Structogram {
           divPreSubHeader.appendChild(divSubHeader)
           divHead.appendChild(divPreSubHeader)
 
-          let divTrue = document.createElement('div')
+          const divTrue = document.createElement('div')
           divTrue.classList.add('column')
           divTrue.classList.add('col-6')
           divTrue.appendChild(this.prepareRenderTree(subTree.trueChild, false, noInsert))
 
-          let divFalse = document.createElement('div')
+          const divFalse = document.createElement('div')
           divFalse.classList.add('column')
           divFalse.classList.add('col-6')
           divFalse.appendChild(this.prepareRenderTree(subTree.falseChild, false, noInsert))
 
-          let divChildren = document.createElement('div')
+          const divChildren = document.createElement('div')
           divChildren.classList.add('columns')
           divChildren.classList.add('middleBranch')
           divChildren.appendChild(divTrue)
@@ -1331,34 +1338,34 @@ export class Structogram {
         case 'HeadLoopNode':
         case 'CountLoopNode':
         {
-          let div = document.createElement('div')
+          const div = document.createElement('div')
           div.id = subTree.id
 
-          let divHead = document.createElement('div')
+          const divHead = document.createElement('div')
           divHead.classList.add('columns')
           divHead.classList.add('element')
 
-          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
           divHead.appendChild(textDiv)
           divHead.appendChild(optionDiv)
 
-          let divLoopSubSub = document.createElement('div')
+          const divLoopSubSub = document.createElement('div')
           divLoopSubSub.classList.add('column')
           divLoopSubSub.classList.add('col-12')
           divLoopSubSub.appendChild(this.prepareRenderTree(subTree.child, false, noInsert))
-          let divLoopSub = document.createElement('div')
+          const divLoopSub = document.createElement('div')
           divLoopSub.classList.add('columns')
           divLoopSub.appendChild(divLoopSubSub)
 
-          let divLoop = document.createElement('div')
+          const divLoop = document.createElement('div')
           divLoop.classList.add('column')
           divLoop.classList.add('col-11')
           divLoop.classList.add('col-ml-auto')
           divLoop.classList.add('lineLeft')
           divLoop.appendChild(divLoopSub)
 
-          let divChild = document.createElement('div')
+          const divChild = document.createElement('div')
           divChild.classList.add('columns')
           divChild.appendChild(divLoop)
 
@@ -1370,27 +1377,27 @@ export class Structogram {
 
         case 'FootLoopNode':
         {
-          let div = document.createElement('div')
+          const div = document.createElement('div')
           div.id = subTree.id
 
-          let divFoot = document.createElement('div')
+          const divFoot = document.createElement('div')
           divFoot.classList.add('columns')
           divFoot.classList.add('element')
           divFoot.classList.add('lineTopFootLoop')
 
-          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
           divFoot.appendChild(textDiv)
           divFoot.appendChild(optionDiv)
 
-          let divLoop = document.createElement('div')
+          const divLoop = document.createElement('div')
           divLoop.classList.add('column')
           divLoop.classList.add('col-11')
           divLoop.classList.add('col-ml-auto')
           divLoop.classList.add('lineLeft')
           divLoop.appendChild(this.prepareRenderTree(subTree.child, false, noInsert))
 
-          let divChild = document.createElement('div')
+          const divChild = document.createElement('div')
           divChild.classList.add('columns')
           divChild.appendChild(divLoop)
 
@@ -1402,10 +1409,10 @@ export class Structogram {
 
         case 'CaseNode':
         {
-          let div = document.createElement('div')
+          const div = document.createElement('div')
           div.id = subTree.id
 
-          let divHead = document.createElement('div')
+          const divHead = document.createElement('div')
           divHead.classList.add('columns')
           divHead.classList.add('element')
           if (subTree.defaultOn) {
@@ -1414,10 +1421,10 @@ export class Structogram {
             divHead.classList.add('caseHead-noDefault-' + subTree.cases.length)
           }
 
-          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
 
-          let bufferDiv = document.createElement('div')
+          const bufferDiv = document.createElement('div')
           bufferDiv.classList.add('column')
           bufferDiv.classList.add('col-1')
 
@@ -1425,27 +1432,27 @@ export class Structogram {
           divHead.appendChild(textDiv)
           divHead.appendChild(optionDiv)
 
-          let divPreSubHeader = document.createElement('div')
+          const divPreSubHeader = document.createElement('div')
           divPreSubHeader.classList.add('column')
           divPreSubHeader.classList.add('col-12')
 
-          let divChildren = document.createElement('div')
+          const divChildren = document.createElement('div')
           divChildren.classList.add('columns')
           if (subTree.defaultOn) {
             divChildren.classList.add('caseBody-' + subTree.cases.length)
           } else {
-            let level = subTree.cases.length - 1
+            const level = subTree.cases.length - 1
             divChildren.classList.add('caseBody-' + level)
           }
           for (const caseElem of subTree.cases) {
-            let divCase = document.createElement('div')
+            const divCase = document.createElement('div')
             divCase.classList.add('column')
             divCase.appendChild(this.prepareRenderTree(caseElem, false, noInsert))
             divChildren.appendChild(divCase)
           }
 
           if (subTree.defaultOn) {
-            let divCase = document.createElement('div')
+            const divCase = document.createElement('div')
             divCase.classList.add('column')
             divCase.appendChild(this.prepareRenderTree(subTree.defaultNode, false, noInsert))
             divChildren.appendChild(divCase)
@@ -1459,16 +1466,16 @@ export class Structogram {
 
         case 'InsertCase':
         {
-          let div = document.createElement('div')
+          const div = document.createElement('div')
           div.id = subTree.id
           div.classList.add('columns')
           div.classList.add('element')
 
-          let bufferDiv = document.createElement('div')
+          const bufferDiv = document.createElement('div')
           bufferDiv.classList.add('column')
           bufferDiv.classList.add('col-1')
-          let textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
-          let optionDiv = this.createOptionDiv(subTree.type, subTree.id)
+          const textDiv = this.createTextDiv(subTree.type, subTree.text, subTree.id)
+          const optionDiv = this.createOptionDiv(subTree.type, subTree.id)
           div.appendChild(bufferDiv)
           div.appendChild(textDiv)
           div.appendChild(optionDiv)

@@ -70,20 +70,20 @@ class Config {
         use: true,
         id: 'FunctionButton',
         text: 'Funktionsblock',
-        icon: 'caseIcon',
+        icon: 'funcIcon',
         color: 'rgb(255, 255, 255)'
       },
       TryCatchNode: {
         use: true,
         id: 'TryCatchButton',
         text: 'Try-Catch-Block',
-        icon: 'caseIcon',
-        color: 'rgb(255, 255, 255)'
+        icon: 'tryCatchIcon',
+        color: 'rgb(250, 218, 209)'
       }
     }
 
     this.alternatives = {
-      'python': {
+      python: {
         InsertNode: {
           color: 'rgb(255,255,243)'
         },
