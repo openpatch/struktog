@@ -452,14 +452,12 @@ export class Presenter {
    */
   removeParamFromParameters (delPos) {
     let editedTree = this.model.getTree()
-    console.log("old Tree: ", editedTree)
     // search for the function box tree
     const followingElements = []
     while (editedTree.type !== 'FunctionNode') {
       followingElements.push(editedTree)
       editedTree = editedTree.followElement
     }
-    console.log("elements: ", followingElements)
 
     // find the respective parameter to remove it from the model
     const params = editedTree.parameters
@@ -484,7 +482,6 @@ export class Presenter {
           editedTree = subTree
           index -= 1
         }
-        console.log("Edited Tree: ", editedTree)
         this.model.setTree(editedTree)
         this.updateBrowserStore()
         this.renderAllViews()
@@ -572,12 +569,26 @@ export class Presenter {
         funcTextNode.click()
       }
     } else {
-      // in try catch block the input field of the catch block has not to be the first input field (if the try block has child nodes)
-      if (elem.children[0].classList.contains('tryCatchNode')) {
-        elem = elem.getElementsByClassName('tryCatchNode')[1].children[1].children[1]
+      // get the input field and display it
+      // work around for FootLoopNodes, duo to HTML structure, the last element has to be found and edited
+      if (elem.getElementsByClassName('input-group editField ' + uid).length) {
+        if (elem.childNodes[0].classList.contains('tryCatchNode')) {
+          elem = elem.getElementsByClassName('input-group editField ' + uid)[1]
+        } else {
+          elem = elem.getElementsByClassName('input-group editField ' + uid)[0]
+        }
       } else {
-        elem = elem.getElementsByClassName('input-group editField')[0]
+        // in try catch block the input field of the catch block has not to be the first input field (if the try block has child nodes)
+        if (elem.children[0].classList.contains('tryCatchNode')) {
+          elem = elem.getElementsByClassName('tryCatchNode')[1].children[1].children[1]
+        } else {
+          elem = elem.getElementsByClassName('input-group editField')[0]
+        }
       }
+      elem.previousSibling.style.display = 'none'
+      elem.style.display = 'inline-flex'
+      // automatic set focus on the input
+      elem.getElementsByTagName('input')[0].select()
     }
   }
 

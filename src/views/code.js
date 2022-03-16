@@ -30,6 +30,10 @@ export class CodeView {
         'HeadLoopNode': { 'pre': 'while ',
           'post': ':\n'
         },
+        'FunctionNode': { 'pre': 'def ',
+          'between': '(',
+          'post': '):\n'
+        },
         'FootLoopNode': { 'prepre': 'while True:\n',
           'pre': '    if not ',
           'post': ':\n        break'
@@ -69,6 +73,10 @@ export class CodeView {
         },
         'HeadLoopNode': { 'pre': 'while ',
           'post': ':\n'
+        },
+        'FunctionNode': { 'pre': 'def ',
+          'between': '(',
+          'post': '):\n'
         },
         'FootLoopNode': { 'prepre': 'while True:\n',
           'pre': '    if not ',

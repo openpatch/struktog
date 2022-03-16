@@ -16,6 +16,7 @@ export class Structogram {
       'FootLoopNode',
       'BranchNode',
       'CaseNode',
+      'FunctionNode',
       'TryCatchNode'
     ]
 
