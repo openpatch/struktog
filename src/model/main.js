@@ -1,9 +1,10 @@
 import { guidGenerator } from '../helpers/generator'
 
 class Model {
-  constructor (tree = { 'id': guidGenerator(),
-    'type': 'InsertNode',
-    'followElement': { 'type': 'Placeholder' }
+  constructor (tree = {
+    id: guidGenerator(),
+    type: 'InsertNode',
+    followElement: { type: 'Placeholder' }
   }) {
     this.tree = tree
     this.presenter = null
@@ -29,9 +30,10 @@ class Model {
   }
 
   reset () {
-    this.tree = { 'id': guidGenerator(),
-      'type': 'InsertNode',
-      'followElement': { 'type': 'Placeholder' }
+    this.tree = {
+      id: guidGenerator(),
+      type: 'InsertNode',
+      followElement: { type: 'Placeholder' }
     }
   }
 
@@ -89,9 +91,10 @@ class Model {
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, true, text)
             return subTree
           case 'CaseNode':
-            let nodes = []
+          {
+            const nodes = []
             for (const element of subTree.cases) {
-              let val = this.findAndAlterElement(uid, element, alterFunction, false, text)
+              const val = this.findAndAlterElement(uid, element, alterFunction, false, text)
               if (!(val === null)) {
                 nodes.push(val)
               }
@@ -99,7 +102,7 @@ class Model {
             if (nodes.length >= 2) {
               subTree.cases = nodes
             }
-            let valDefault = this.findAndAlterElement(uid, subTree.defaultNode, alterFunction, false, text)
+            const valDefault = this.findAndAlterElement(uid, subTree.defaultNode, alterFunction, false, text)
             if (valDefault === null) {
               subTree.defaultOn = false
             } else {
@@ -108,7 +111,7 @@ class Model {
 
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, true, text)
             return subTree
-
+          }
           case 'InsertCase':
             subTree.followElement = this.findAndAlterElement(uid, subTree.followElement, alterFunction, hasRealParent, text)
             return subTree
@@ -132,7 +135,7 @@ class Model {
     }
     // remove a node, but check if the parent is a container and a placeholder must be inserted
     if (subTree.followElement.followElement === null && !hasRealParent) {
-      return { 'type': 'Placeholder' }
+      return { type: 'Placeholder' }
     }
     // alter followElement of the node to the follow element of the next node
     return subTree.followElement.followElement
@@ -184,7 +187,7 @@ class Model {
      * @return   subTree         altered subTree object (with newly inserted element)
      */
   insertElement (subTree, hasRealParent, text) {
-    let element = this.presenter.getNextInsertElement()
+    const element = this.presenter.getNextInsertElement()
     // check for children
     if (!(subTree.followElement === null || subTree.followElement.type === 'Placeholder')) {
       // connect children with the element to insert
@@ -225,12 +228,14 @@ class Model {
     // check for max number of cases, duo to rendering issues
     if (subTree.cases.length < 7) {
       // add a new case
-      subTree.cases.push({ 'id': guidGenerator(),
-        'type': 'InsertCase',
-        'text': 'Fall',
-        'followElement': { 'id': guidGenerator(),
-          'type': 'InsertNode',
-          'followElement': { 'type': 'Placeholder' }
+      subTree.cases.push({
+        id: guidGenerator(),
+        type: 'InsertCase',
+        text: 'Fall',
+        followElement: {
+          id: guidGenerator(),
+          type: 'InsertNode',
+          followElement: { type: 'Placeholder' }
         }
       })
     }
@@ -267,7 +272,7 @@ class Model {
           case 'FunctionNode':
           {
             // follow children first, then the follow node
-            let node = this.getElementInTree(uid, subTree.child)
+            const node = this.getElementInTree(uid, subTree.child)
             if (node === null) {
               return this.getElementInTree(uid, subTree.followElement)
             } else {
@@ -312,7 +317,7 @@ class Model {
             // follow every case first
             let node = null
             for (const element of subTree.cases) {
-              let caseNode = this.getElementInTree(uid, element)
+              const caseNode = this.getElementInTree(uid, element)
               if (caseNode != null) {
                 node = caseNode
               }

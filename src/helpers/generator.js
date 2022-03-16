@@ -121,13 +121,13 @@ export function generateHtmltree () {
   footer.appendChild(footerDiv)
 
   const footerSpan = document.createElement('span')
-  footerSpan.appendChild(document.createTextNode('v1.1 Didaktik der Informatik der TU Dresden'))
+  footerSpan.appendChild(document.createTextNode('v1.2 Didaktik der Informatik der TU Dresden'))
   footerDiv.appendChild(footerSpan)
 }
 
 export function generateResetButton (presenter, domNode) {
   // reset button must be last defined
-  let resetButtonDiv = document.createElement('div')
+  const resetButtonDiv = document.createElement('div')
   resetButtonDiv.classList.add('struktoOption', 'resetIcon', 'tooltip', 'tooltip-bottom', 'hand')
   resetButtonDiv.setAttribute('data-tooltip', 'Reset')
   resetButtonDiv.addEventListener('click', () => {
@@ -152,32 +152,6 @@ export function generateResetButton (presenter, domNode) {
     document.getElementById('IEModal').classList.add('active')
   })
   domNode.appendChild(resetButtonDiv)
-}
-
-function infoDlGenerator (data) {
-  const dl = document.createElement('dl')
-  dl.classList.add('infoBox')
-  for (const item of data) {
-    const dt = document.createElement('dt')
-    dt.appendChild(document.createTextNode(item.dt))
-    dl.appendChild(dt)
-    const dd = document.createElement('dd')
-    for (const textItem of item.dd) {
-      const text = document.createElement('span')
-      if (textItem.includes('http')) {
-        const link = document.createElement('a')
-        link.setAttribute('href', textItem)
-        link.setAttribute('target', '_blank')
-        link.appendChild(document.createTextNode('Link'))
-        text.appendChild(link)
-      } else {
-        text.appendChild(document.createTextNode(textItem))
-      }
-      dd.appendChild(text)
-    }
-    dl.appendChild(dd)
-  }
-  return dl
 }
 
 export function generateInfoButton (domNode) {

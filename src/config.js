@@ -150,21 +150,21 @@ class Config {
           color: 'rgb(250, 218, 209)'
         },
         FunctionNode: {
-          use: true,
+          use: false,
           id: 'FunctionButton',
           text: 'Funktionsblock',
-          icon: 'caseIcon',
+          icon: 'funcIcon',
           color: 'rgb(255, 255, 255)'
         },
         TryCatchNode: {
           use: true,
           id: 'TryCatchButton',
           text: 'Try-Catch-Block',
-          icon: 'caseIcon',
-          color: 'rgb(255, 255, 255)'
+          icon: 'tryCatchIcon',
+          color: 'rgb(250, 218, 209)'
         }
       },
-      2: {
+      python_func: {
         InsertNode: {
           color: 'rgb(255,255,243)'
         },
@@ -175,14 +175,14 @@ class Config {
           color: 'rgb(250, 218, 209)'
         },
         InputNode: {
-          use: false,
+          use: true,
           id: 'InputButton',
           text: 'Eingabe-Feld',
           icon: 'taskIcon',
           color: 'rgb(253, 237, 206)'
         },
         OutputNode: {
-          use: false,
+          use: true,
           id: 'OutputButton',
           text: 'Ausgabe-Feld',
           icon: 'taskIcon',
@@ -210,7 +210,7 @@ class Config {
           color: 'rgb(220, 239, 231)'
         },
         FootLoopNode: {
-          use: false,
+          use: true,
           id: 'FootLoopButton',
           text: 'Fußgesteuerte Schleife',
           icon: 'footLoopIcon',
@@ -234,15 +234,96 @@ class Config {
           use: true,
           id: 'FunctionButton',
           text: 'Funktionsblock',
-          icon: 'caseIcon',
+          icon: 'funcIcon',
           color: 'rgb(255, 255, 255)'
         },
         TryCatchNode: {
           use: true,
           id: 'TryCatchButton',
           text: 'Try-Catch-Block',
+          icon: 'tryCatchIcon',
+          color: 'rgb(250, 218, 209)'
+        }
+      },
+      standard: {
+        InsertNode: {
+          color: 'rgb(255,255,243)'
+        },
+        Placeholder: {
+          color: 'rgb(255,255,243)'
+        },
+        InsertCase: {
+          color: 'rgb(250, 218, 209)'
+        },
+        InputNode: {
+          use: true,
+          id: 'InputButton',
+          text: 'Eingabe-Feld',
+          icon: 'taskIcon',
+          color: 'rgb(253, 237, 206)'
+        },
+        OutputNode: {
+          use: true,
+          id: 'OutputButton',
+          text: 'Ausgabe-Feld',
+          icon: 'taskIcon',
+          color: 'rgb(253, 237, 206)'
+        },
+        TaskNode: {
+          use: true,
+          id: 'TaskButton',
+          text: 'Anweisung',
+          icon: 'taskIcon',
+          color: 'rgb(253, 237, 206)'
+        },
+        CountLoopNode: {
+          use: true,
+          id: 'CountLoopButton',
+          text: 'Zählergesteuerte Schleife',
+          icon: 'countLoopIcon',
+          color: 'rgb(220, 239, 231)'
+        },
+        HeadLoopNode: {
+          use: true,
+          id: 'HeadLoopButton',
+          text: 'Kopfgesteuerte Schleife',
+          icon: 'countLoopIcon',
+          color: 'rgb(220, 239, 231)'
+        },
+        FootLoopNode: {
+          use: true,
+          id: 'FootLoopButton',
+          text: 'Fußgesteuerte Schleife',
+          icon: 'footLoopIcon',
+          color: 'rgb(220, 239, 231)'
+        },
+        BranchNode: {
+          use: true,
+          id: 'BranchButton',
+          text: 'Verzweigung',
+          icon: 'branchIcon',
+          color: 'rgb(250, 218, 209)'
+        },
+        CaseNode: {
+          use: true,
+          id: 'CaseButton',
+          text: 'Fallunterscheidung',
           icon: 'caseIcon',
+          color: 'rgb(250, 218, 209)'
+        },
+        FunctionNode: {
+          use: false,
+          id: 'FunctionButton',
+          text: 'Funktionsblock',
+          icon: 'funcIcon',
           color: 'rgb(255, 255, 255)'
+        },
+        TryCatchNode: {
+          use: false,
+          id: 'TryCatchButton',
+          text: 'Try-Catch-Block',
+          icon: 'tryCatchIcon',
+          color: 'rgb(250, 218, 209)'
         }
       }
     }

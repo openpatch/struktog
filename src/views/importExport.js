@@ -71,8 +71,8 @@ export class ImportExport {
           ctx.lineTo(xmax, y + this.printHeight)
           ctx.stroke()
           ctx.beginPath()
-          let centerX = x + (xmax - x) / 2
-          let centerY = y + this.printHeight / 2
+          const centerX = x + (xmax - x) / 2
+          const centerY = y + this.printHeight / 2
           ctx.arc(centerX, centerY, 8, 0, 2 * Math.PI)
           ctx.moveTo(centerX - 11, centerY + 11)
           ctx.lineTo(centerX + 11, centerY - 11)
@@ -161,7 +161,7 @@ export class ImportExport {
           ctx.lineTo(x + (xmax - x) / 2, y + 2 * this.printHeight)
           ctx.stroke()
           // center the text
-          let textWidth = ctx.measureText(subTree.text)
+          const textWidth = ctx.measureText(subTree.text)
           ctx.beginPath()
           ctx.fillText(subTree.text, x + Math.abs(((xmax - x) - textWidth.width)) / 2, y + defaultMargin)
           ctx.stroke()
@@ -170,7 +170,7 @@ export class ImportExport {
           ctx.fillText('Falsch', xmax - 15 - ctx.measureText('Falsch').width, y + this.printHeight + defaultMargin)
           ctx.stroke()
           let trueChildY = this.renderTreeAsCanvas(subTree.trueChild, ctx, x, x + (xmax - x) / 2, y + 2 * this.printHeight)
-          let falseChildY = this.renderTreeAsCanvas(subTree.falseChild, ctx, x + (xmax - x) / 2, xmax, y + 2 * this.printHeight)
+          const falseChildY = this.renderTreeAsCanvas(subTree.falseChild, ctx, x + (xmax - x) / 2, xmax, y + 2 * this.printHeight)
 
           // determine which child sub tree is deeper y wise
           if (trueChildY < falseChildY) {
@@ -184,7 +184,7 @@ export class ImportExport {
         case 'CountLoopNode':
         case 'HeadLoopNode':
         {
-          let childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y + this.printHeight)
+          const childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y + this.printHeight)
           ctx.rect(x, y, xmax - x, childY - y)
           ctx.stroke()
 
@@ -203,7 +203,7 @@ export class ImportExport {
 
         case 'FootLoopNode':
         {
-          let childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y)
+          const childY = this.renderTreeAsCanvas(subTree.child, ctx, x + ((xmax - x) / 12), xmax, y)
           ctx.rect(x, y, xmax - x, childY - y + this.printHeight)
           ctx.stroke()
           ctx.beginPath()
@@ -236,8 +236,8 @@ export class ImportExport {
           }
           // calculate the x and y distance between each case
           // yStep ist used for the positioning of the vertical lines on the diagonal line
-          let xStep = (xmax - x) / caseCount
-          let yStep = (this.printHeight) / subTree.cases.length
+          const xStep = (xmax - x) / caseCount
+          const yStep = (this.printHeight) / subTree.cases.length
           ctx.stroke()
           ctx.beginPath()
           ctx.moveTo(x, y)
@@ -250,7 +250,7 @@ export class ImportExport {
             ctx.lineTo(xmax, y + this.printHeight)
           }
           ctx.stroke()
-          let textWidth = ctx.measureText(subTree.text)
+          const textWidth = ctx.measureText(subTree.text)
           ctx.beginPath()
           ctx.fillText(subTree.text, xmax - xStep - (textWidth.width / 2), y + defaultMargin)
           ctx.stroke()
@@ -258,14 +258,14 @@ export class ImportExport {
           // determine the deepest tree by the y coordinate
           let yFinally = y + 3 * this.printHeight
           for (const element of subTree.cases) {
-            let childY = this.renderTreeAsCanvas(element, ctx, xPos, xPos + xStep, y + this.printHeight)
+            const childY = this.renderTreeAsCanvas(element, ctx, xPos, xPos + xStep, y + this.printHeight)
             if (childY > yFinally) {
               yFinally = childY
             }
             xPos = xPos + xStep
           }
           if (subTree.defaultOn) {
-            let childY = this.renderTreeAsCanvas(subTree.defaultNode, ctx, xPos, xmax, y + this.printHeight)
+            const childY = this.renderTreeAsCanvas(subTree.defaultNode, ctx, xPos, xmax, y + this.printHeight)
             if (childY > yFinally) {
               yFinally = childY
             }
@@ -282,7 +282,7 @@ export class ImportExport {
 
         case 'InsertCase':
         {
-          let textWidth = ctx.measureText(subTree.text)
+          const textWidth = ctx.measureText(subTree.text)
           ctx.beginPath()
           ctx.fillText(subTree.text, x + Math.abs(((xmax - x) - textWidth.width)) / 2, y + defaultMargin)
           ctx.stroke()

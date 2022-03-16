@@ -122,161 +122,195 @@ export class Presenter {
   insertNode (id, event) {
     switch (id) {
       case 'InputButton':
-        this.nextInsertElement = { 'id': guidGenerator(),
-          'type': 'InputNode',
-          'text': '',
-          'followElement': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': null
+        this.nextInsertElement = {
+          id: guidGenerator(),
+          type: 'InputNode',
+          text: '',
+          followElement: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: null
           }
         }
         break
       case 'OutputButton':
-        this.nextInsertElement = { 'id': guidGenerator(),
-          'type': 'OutputNode',
-          'text': '',
-          'followElement': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': null
+        this.nextInsertElement = {
+          id: guidGenerator(),
+          type: 'OutputNode',
+          text: '',
+          followElement: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: null
           }
         }
         break
       case 'TaskButton':
-        this.nextInsertElement = { 'id': guidGenerator(),
-          'type': 'TaskNode',
-          'text': 'Anweisung',
-          'followElement': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': null
+        this.nextInsertElement = {
+          id: guidGenerator(),
+          type: 'TaskNode',
+          text: 'Anweisung',
+          followElement: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: null
           }
         }
         break
       case 'BranchButton':
-        this.nextInsertElement = { 'id': guidGenerator(),
-          'type': 'BranchNode',
-          'text': 'Bedingung',
-          'followElement': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': null
+        this.nextInsertElement = {
+          id: guidGenerator(),
+          type: 'BranchNode',
+          text: 'Bedingung',
+          followElement: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: null
           },
-          'trueChild': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': { 'type': 'Placeholder' }
+          trueChild: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: { type: 'Placeholder' }
           },
-          'falseChild': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': { 'type': 'Placeholder' }
+          falseChild: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: { type: 'Placeholder' }
           }
         }
         break
       case 'CaseButton':
-        this.nextInsertElement = { 'id': guidGenerator(),
-          'type': 'CaseNode',
-          'text': 'Variable',
-          'followElement': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': null
+        this.nextInsertElement = {
+          id: guidGenerator(),
+          type: 'CaseNode',
+          text: 'Variable',
+          followElement: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: null
           },
-          'defaultOn': true,
-          'defaultNode': { 'id': guidGenerator(),
-            'type': 'InsertCase',
-            'text': 'Sonst',
-            'followElement': { 'id': guidGenerator(),
-              'type': 'InsertNode',
-              'followElement': { 'type': 'Placeholder' }
+          defaultOn: true,
+          defaultNode: {
+            id: guidGenerator(),
+            type: 'InsertCase',
+            text: 'Sonst',
+            followElement: {
+              id: guidGenerator(),
+              type: 'InsertNode',
+              followElement: { type: 'Placeholder' }
             }
           },
-          'cases': [{ 'id': guidGenerator(),
-            'type': 'InsertCase',
-            'text': 'Fall',
-            'followElement': { 'id': guidGenerator(),
-              'type': 'InsertNode',
-              'followElement': { 'type': 'Placeholder' }
+          cases: [{
+            id: guidGenerator(),
+            type: 'InsertCase',
+            text: 'Fall',
+            followElement: {
+              id: guidGenerator(),
+              type: 'InsertNode',
+              followElement: { type: 'Placeholder' }
             }
           },
-          { 'id': guidGenerator(),
-            'type': 'InsertCase',
-            'text': 'Fall',
-            'followElement': { 'id': guidGenerator(),
-              'type': 'InsertNode',
-              'followElement': { 'type': 'Placeholder' }
+          {
+            id: guidGenerator(),
+            type: 'InsertCase',
+            text: 'Fall',
+            followElement: {
+              id: guidGenerator(),
+              type: 'InsertNode',
+              followElement: { type: 'Placeholder' }
             }
           }]
         }
         break
       case 'CountLoopButton':
-        this.nextInsertElement = { 'id': guidGenerator(),
-          'type': 'CountLoopNode',
-          'text': 'Zählbedingung',
-          'followElement': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': null
+        this.nextInsertElement = {
+          id: guidGenerator(),
+          type: 'CountLoopNode',
+          text: 'Zählbedingung',
+          followElement: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: null
           },
-          'child': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': { 'type': 'Placeholder' }
+          child: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: { type: 'Placeholder' }
           }
         }
         break
       case 'HeadLoopButton':
-        this.nextInsertElement = { 'id': guidGenerator(),
-          'type': 'HeadLoopNode',
-          'text': 'Gültigkeitsbedingung',
-          'followElement': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': null
+        this.nextInsertElement = {
+          id: guidGenerator(),
+          type: 'HeadLoopNode',
+          text: 'Gültigkeitsbedingung',
+          followElement: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: null
           },
-          'child': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': { 'type': 'Placeholder' }
+          child: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: { type: 'Placeholder' }
           }
         }
         break
       case 'FunctionButton':
-        this.nextInsertElement = { 'id': guidGenerator(),
-          'type': 'FunctionNode',
-          'text': '',
-          'parameters' : [],
-          'followElement': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': null
+        this.nextInsertElement = {
+          id: guidGenerator(),
+          type: 'FunctionNode',
+          text: '',
+          parameters: [],
+          followElement: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: null
           },
-          'child': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': { 'type': 'Placeholder' }
+          child: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: { type: 'Placeholder' }
           }
         }
         this.settingFunctionMode = true
         break
       case 'FootLoopButton':
-        this.nextInsertElement = { 'id': guidGenerator(),
-          'type': 'FootLoopNode',
-          'text': 'Gültigkeitsbedingung',
-          'followElement': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': null
+        this.nextInsertElement = {
+          id: guidGenerator(),
+          type: 'FootLoopNode',
+          text: 'Gültigkeitsbedingung',
+          followElement: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: null
           },
-          'child': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': { 'type': 'Placeholder' }
+          child: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: { type: 'Placeholder' }
           }
         }
         break
       case 'TryCatchButton':
-        this.nextInsertElement = { 'id': guidGenerator(),
-          'type': 'TryCatchNode',
-          'text': '',
-          'followElement': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': null
+        this.nextInsertElement = {
+          id: guidGenerator(),
+          type: 'TryCatchNode',
+          text: '',
+          followElement: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: null
           },
-          'tryChild': { 'id': guidGenerator(),
-          'type': 'InsertNode',
-          'followElement': { 'type': 'Placeholder' }
+          tryChild: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: { type: 'Placeholder' }
           },
-          'catchChild': { 'id': guidGenerator(),
-            'type': 'InsertNode',
-            'followElement': { 'type': 'Placeholder' }
+          catchChild: {
+            id: guidGenerator(),
+            type: 'InsertNode',
+            followElement: { type: 'Placeholder' }
           }
         }
         break
@@ -285,7 +319,7 @@ export class Presenter {
       event.dataTransfer.effectAllowed = 'move'
       event.dataTransfer.setData('text', id)
     }
-    let button = document.getElementById(id)
+    const button = document.getElementById(id)
     if (button.classList.contains('boldText')) {
       this.resetButtons()
       this.reset()
@@ -387,6 +421,7 @@ export class Presenter {
         }
         break
       case 'CaseNode':
+      {
         let check = false
         for (const item of deleteElem.cases) {
           if (item.followElement.followElement.type !== 'Placeholder') {
@@ -402,6 +437,7 @@ export class Presenter {
           this.removeNodeFromTree(uid)
         }
         break
+      }
       case 'InsertCase':
         if (deleteElem.followElement.followElement.type !== 'Placeholder') {
           this.prepareRemoveQuestion(uid)
@@ -522,12 +558,12 @@ export class Presenter {
   appendElement (uid) {
     this.updateUndo()
     // remove old node, when moving is used
-    let moveState = this.moveId
+    const moveState = this.moveId
     if (moveState) {
       this.model.setTree(this.model.findAndAlterElement(this.moveId, this.model.getTree(), this.model.removeNode, false, ''))
     }
     // insert the new node, on moving, its the removed
-    let elemId = this.nextInsertElement.id
+    const elemId = this.nextInsertElement.id
     this.model.setTree(this.model.findAndAlterElement(uid, this.model.getTree(), this.model.insertElement, false, ''))
     // reset the buttons if moving occured
     if (moveState) {
@@ -602,7 +638,7 @@ export class Presenter {
     // create filename with current date in the name
     const exportFileDefaultName = 'struktog_' + (new Date(Date.now()).toJSON()).substring(0, 10) + '.json'
     // generate the download button element and append it to the node
-    let linkElement = document.createElement('a')
+    const linkElement = document.createElement('a')
     linkElement.setAttribute('href', dataUri)
     linkElement.setAttribute('download', exportFileDefaultName)
     linkElement.click()

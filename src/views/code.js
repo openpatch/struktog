@@ -418,12 +418,14 @@ export class CodeView {
           case 'FunctionNode':
             return false || this.checkForUntranslatable(subTree.child, nodeType) || this.checkForUntranslatable(subTree.followElement, nodeType)
           case 'CaseNode':
+          {
             let state = false
             for (let i = 0; i < subTree.length; i++) {
               state = state || this.checkForUntranslatable(subTree.cases[i], nodeType)
             }
             state = state || this.checkForUntranslatable(subTree.defaultNode, nodeType)
             return state || this.checkForUntranslatable(subTree.followElement, nodeType)
+          }
         }
       }
     }
@@ -464,6 +466,7 @@ export class CodeView {
         case 'InsertNode':
           return this.transformToCode(subTree.followElement, indentLevel, lang)
         case 'InputNode':
+        {
           const inputPre = document.createElement('span')
           inputPre.classList.add('keyword')
           inputPre.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].InputNode.pre))
@@ -474,7 +477,9 @@ export class CodeView {
           inputPost.appendChild(document.createTextNode(this.translationMap[lang].InputNode.post))
           elemSpan.appendChild(inputPost)
           return [elemSpan].concat(this.transformToCode(subTree.followElement, indentLevel, lang))
+        }
         case 'OutputNode':
+        {
           const outputPre = document.createElement('span')
           outputPre.classList.add('keyword')
           outputPre.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].OutputNode.pre))
@@ -485,7 +490,9 @@ export class CodeView {
           outputPost.appendChild(document.createTextNode(this.translationMap[lang].OutputNode.post))
           elemSpan.appendChild(outputPost)
           return [elemSpan].concat(this.transformToCode(subTree.followElement, indentLevel, lang))
+        }
         case 'TaskNode':
+        {
           const taskPre = document.createElement('span')
           taskPre.classList.add('keyword')
           taskPre.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].TaskNode.pre))
@@ -496,6 +503,7 @@ export class CodeView {
           taskPost.appendChild(document.createTextNode(this.translationMap[lang].TaskNode.post))
           elemSpan.appendChild(taskPost)
           return [elemSpan].concat(this.transformToCode(subTree.followElement, indentLevel, lang))
+        }
         case 'BranchNode':
         {
           const branchHeaderPre = document.createElement('span')
