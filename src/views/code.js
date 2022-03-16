@@ -6,181 +6,229 @@ export class CodeView {
     this.domRoot = domRoot
     this.lang = '--'
     this.translationMap = {
-      'Python': { 'untranslatable': [],
-        'InputNode': { 'pre': '',
-          'post': ' = input("Eingabe")\n'
+      Python: {
+        untranslatable: [],
+        InputNode: {
+          pre: '',
+          post: ' = input("Eingabe")\n'
         },
-        'OutputNode': { 'pre': 'print(',
-          'post': ')\n'
+        OutputNode: {
+          pre: 'print(',
+          post: ')\n'
         },
-        'TaskNode': { 'pre': '',
-          'post': '\n'
+        TaskNode: {
+          pre: '',
+          post: '\n'
         },
-        'BranchNode': { 'pre': 'if ',
-          'post': ':\n',
-          'between': 'else:\n'
+        BranchNode: {
+          pre: 'if ',
+          post: ':\n',
+          between: 'else:\n'
         },
-        'TryCatchNode': { 'pre': 'try:\n',
-          'between': 'except',
-          'post': ':\n'
+        TryCatchNode: {
+          pre: 'try:\n',
+          between: 'except',
+          post: ':\n'
         },
-        'CountLoopNode': { 'pre': 'for ',
-          'post': ':\n'
+        CountLoopNode: {
+          pre: 'for ',
+          post: ':\n'
         },
-        'HeadLoopNode': { 'pre': 'while ',
-          'post': ':\n'
+        HeadLoopNode: {
+          pre: 'while ',
+          post: ':\n'
         },
-        'FunctionNode': { 'pre': 'def ',
-          'between': '(',
-          'post': '):\n'
+        FunctionNode: {
+          pre: 'def ',
+          between: '(',
+          post: '):\n'
         },
-        'FootLoopNode': { 'prepre': 'while True:\n',
-          'pre': '    if not ',
-          'post': ':\n        break'
+        FootLoopNode: {
+          prepre: 'while True:\n',
+          pre: '    if not ',
+          post: ':\n        break\n'
         },
-        'CaseNode': { 'pre': 'if ',
-          'post': ':\n'
+        CaseNode: {
+          pre: 'if ',
+          post: ':\n'
         },
-        'InsertCase': { 'preNormal': 'elif ',
-          'preDefault': 'default',
-          'post': ':\n',
-          'postpost': '\n'
+        InsertCase: {
+          preNormal: 'elif ',
+          preDefault: 'default',
+          post: ':\n',
+          postpost: '\n'
         },
-        'leftBracket': '',
-        'rightBracket': '',
-        'pseudoSwitch': true
+        leftBracket: '',
+        rightBracket: '',
+        pseudoSwitch: true
       },
-      'Python ab v3.10': { 'untranslatable': [],
-        'InputNode': { 'pre': '',
-          'post': ' = input("Eingabe")\n'
+      'Python ab v3.10': {
+        untranslatable: [],
+        InputNode: {
+          pre: '',
+          post: ' = input("Eingabe")\n'
         },
-        'OutputNode': { 'pre': 'print(',
-          'post': ')\n'
+        OutputNode: {
+          pre: 'print(',
+          post: ')\n'
         },
-        'TaskNode': { 'pre': '',
-          'post': '\n'
+        TaskNode: {
+          pre: '',
+          post: '\n'
         },
-        'BranchNode': { 'pre': 'if ',
-          'post': ':\n',
-          'between': 'else:\n'
+        BranchNode: {
+          pre: 'if ',
+          post: ':\n',
+          between: 'else:\n'
         },
-        'TryCatchNode': { 'pre': 'try:\n',
-          'between': 'except',
-          'post': ':\n'
+        TryCatchNode: {
+          pre: 'try:\n',
+          between: 'except',
+          post: ':\n'
         },
-        'CountLoopNode': { 'pre': 'for ',
-          'post': ':\n'
+        CountLoopNode: {
+          pre: 'for ',
+          post: ':\n'
         },
-        'HeadLoopNode': { 'pre': 'while ',
-          'post': ':\n'
+        HeadLoopNode: {
+          pre: 'while ',
+          post: ':\n'
         },
-        'FunctionNode': { 'pre': 'def ',
-          'between': '(',
-          'post': '):\n'
+        FunctionNode: {
+          pre: 'def ',
+          between: '(',
+          post: '):\n'
         },
-        'FootLoopNode': { 'prepre': 'while True:\n',
-          'pre': '    if not ',
-          'post': ':\n        break'
+        FootLoopNode: {
+          prepre: 'while True:\n',
+          pre: '    if not ',
+          post: ':\n        break\n'
         },
-        'CaseNode': { 'pre': 'match ',
-          'post': ':\n'
+        CaseNode: {
+          pre: 'match ',
+          post: ':\n'
         },
-        'InsertCase': { 'preNormal': 'case ',
-          'preDefault': 'case _',
-          'post': ':\n',
-          'postpost': '\n'
+        InsertCase: {
+          preNormal: 'case ',
+          preDefault: 'case _',
+          post: ':\n',
+          postpost: '\n'
         },
-        'leftBracket': '',
-        'rightBracket': '',
-        'pseudoSwitch': false
+        leftBracket: '',
+        rightBracket: '',
+        pseudoSwitch: false
       },
-      'PHP': { 'untranslatable': [],
-        'InputNode': { 'pre': '',
-          'post': ' = readline("Eingabe");\n'
+      PHP: {
+        untranslatable: [],
+        InputNode: {
+          pre: '',
+          post: ' = readline("Eingabe");\n'
         },
-        'OutputNode': { 'pre': 'echo ',
-          'post': ';\n'
+        OutputNode: {
+          pre: 'echo ',
+          post: ';\n'
         },
-        'TaskNode': { 'pre': '',
-          'post': ';\n'
+        TaskNode: {
+          pre: '',
+          post: ';\n'
         },
-        'BranchNode': { 'pre': 'if (',
-          'post': ')\n',
-          'between': '} else {\n'
+        BranchNode: {
+          pre: 'if (',
+          post: ')\n',
+          between: '} else {\n'
         },
-        'TryCatchNode': { 'pre': 'try\n',
-          'between': 'catch (',
-          'post': ')\n'
+        TryCatchNode: {
+          pre: 'try\n',
+          between: 'catch (',
+          post: ')\n'
         },
-        'CountLoopNode': { 'pre': 'for (',
-          'post': ')\n'
+        CountLoopNode: {
+          pre: 'for (',
+          post: ')\n'
         },
-        'HeadLoopNode': { 'pre': 'while (',
-          'post': ')\n'
+        HeadLoopNode: {
+          pre: 'while (',
+          post: ')\n'
         },
-        'FootLoopNode': { 'prepre': 'do\n',
-          'pre': 'while (',
-          'post': ');\n'
+        FootLoopNode: {
+          prepre: 'do\n',
+          pre: 'while (',
+          post: ');\n'
         },
-        'FunctionNode': { 'pre': 'def ',
-          'between': '(',
-          'post': '):\n'
+        FunctionNode: {
+          pre: 'def ',
+          between: '(',
+          post: '):\n'
         },
-        'CaseNode': { 'pre': 'switch (',
-          'post': ')\n'
+        CaseNode: {
+          pre: 'switch (',
+          post: ')\n'
         },
-        'InsertCase': { 'preNormal': 'case ',
-          'preDefault': 'default',
-          'post': ':\n',
-          'postpost': 'break;\n'
+        InsertCase: {
+          preNormal: 'case ',
+          preDefault: 'default',
+          post: ':\n',
+          postpost: 'break;\n'
         },
-        'leftBracket': '{',
-        'rightBracket': '}',
-        'pseudoSwitch': false
+        leftBracket: '{',
+        rightBracket: '}',
+        pseudoSwitch: false
       },
-      'Java': { 'untranslatable': [],
-        'InputNode': { 'pre': '',
-          'post': ' = System.console().readLine();\n'
+      Java: {
+        untranslatable: [],
+        InputNode: {
+          pre: '',
+          post: ' = System.console().readLine();\n'
         },
-        'OutputNode': { 'pre': 'System.out.println(',
-          'post': ');\n'
+        OutputNode: {
+          pre: 'System.out.println(',
+          post: ');\n'
         },
-        'TaskNode': { 'pre': '',
-          'post': ';\n'
+        TaskNode: {
+          pre: '',
+          post: ';\n'
         },
-        'BranchNode': { 'pre': 'if (',
-          'post': ')\n',
-          'between': '} else {\n'
+        BranchNode: {
+          pre: 'if (',
+          post: ')\n',
+          between: '} else {\n'
         },
-        'TryCatchNode': { 'pre': 'try\n',
-          'between': 'catch (',
-          'post': ')\n'
+        TryCatchNode: {
+          pre: 'try\n',
+          between: 'catch (',
+          post: ')\n'
         },
-        'CountLoopNode': { 'pre': 'for (',
-          'post': ')\n'
+        CountLoopNode: {
+          pre: 'for (',
+          post: ')\n'
         },
-        'HeadLoopNode': { 'pre': 'while (',
-          'post': ')\n'
+        HeadLoopNode: {
+          pre: 'while (',
+          post: ')\n'
         },
-        'FootLoopNode': { 'prepre': 'do\n',
-          'pre': 'while (',
-          'post': ');\n'
+        FootLoopNode: {
+          prepre: 'do\n',
+          pre: 'while (',
+          post: ');\n'
         },
-        'FunctionNode': { 'pre': 'public void ',
-          'between': '(',
-          'post': ')\n'
+        FunctionNode: {
+          pre: 'public void ',
+          between: '(',
+          post: ')\n'
         },
-        'CaseNode': { 'pre': 'switch (',
-          'post': ')\n'
+        CaseNode: {
+          pre: 'switch (',
+          post: ')\n'
         },
-        'InsertCase': { 'preNormal': 'case ',
-          'preDefault': 'default',
-          'post': ':\n',
-          'postpost': 'break;\n'
+        InsertCase: {
+          preNormal: 'case ',
+          preDefault: 'default',
+          post: ':\n',
+          postpost: 'break;\n'
         },
-        'leftBracket': '{',
-        'rightBracket': '}',
-        'pseudoSwitch': false
+        leftBracket: '{',
+        rightBracket: '}',
+        pseudoSwitch: false
       }
     }
 
@@ -189,20 +237,20 @@ export class CodeView {
 
   preRender () {
     const sourcecode = document.getElementById('SourcecodeDisplay')
-    let sourcecodeDisplay = document.createElement('div')
+    const sourcecodeDisplay = document.createElement('div')
     sourcecodeDisplay.classList.add('fixFullWidth', 'margin-top-small')
-    let sourcecodeHeader = document.createElement('div')
+    const sourcecodeHeader = document.createElement('div')
     sourcecodeHeader.classList.add('columnAuto', 'container')
-    let sourcecodeTitle = document.createElement('strong')
+    const sourcecodeTitle = document.createElement('strong')
     sourcecodeTitle.classList.add('center')
     sourcecodeTitle.appendChild(document.createTextNode('Übersetzen in:'))
-    let sourcecodeForm = document.createElement('div')
+    const sourcecodeForm = document.createElement('div')
     sourcecodeForm.classList.add('center')
-    let sourcecodeSelect = document.createElement('select')
+    const sourcecodeSelect = document.createElement('select')
     sourcecodeSelect.classList.add('form-select')
     sourcecodeSelect.id = 'SourcecodeSelect'
     sourcecodeSelect.addEventListener('change', (event) => this.presenter.startTransforming(event))
-    let sourcecodeOption = document.createElement('option')
+    const sourcecodeOption = document.createElement('option')
     sourcecodeOption.value = '--'
     sourcecodeOption.appendChild(document.createTextNode('--'))
     sourcecodeSelect.appendChild(sourcecodeOption)
@@ -213,7 +261,7 @@ export class CodeView {
       sourcecodeSelect.appendChild(langDiv)
     }
 
-    let sourcecodeCopy = document.createElement('div')
+    const sourcecodeCopy = document.createElement('div')
     sourcecodeCopy.setAttribute('data-tooltip', 'Kopiere Code')
     sourcecodeCopy.classList.add('center', 'copyIcon', 'struktoOption', 'sourcecodeHeader', 'hand', 'tooltip')
     sourcecode.addEventListener('click', function (event) {
@@ -225,7 +273,7 @@ export class CodeView {
     sourcecodeHeader.appendChild(sourcecodeForm)
     sourcecodeHeader.appendChild(sourcecodeCopy)
 
-    let sourcecodeWorkingArea = document.createElement('div')
+    const sourcecodeWorkingArea = document.createElement('div')
     sourcecodeWorkingArea.classList.add('columnAuto')
     sourcecodeWorkingArea.id = 'Sourcecode'
 
@@ -266,17 +314,17 @@ export class CodeView {
       }
 
       // create container for the spans
-      let preBlock = document.createElement('pre')
+      const preBlock = document.createElement('pre')
       preBlock.classList.add('code')
       // set the language attribute
       preBlock.setAttribute('data-lang', this.lang)
 
-      let codeBlock = document.createElement('code')
+      const codeBlock = document.createElement('code')
 
       // start appending the translated elements
       let codeText = ''
       if (!isTranslatable) {
-        let content = this.transformToCode(model, 0, this.lang)
+        const content = this.transformToCode(model, 0, this.lang)
         content.forEach(function (i) {
           codeBlock.appendChild(i)
           codeText = codeText + i.textContent
@@ -317,7 +365,7 @@ export class CodeView {
      */
   addIndentations (indentLevel) {
     let text = ''
-    let defaultIndent = '    '
+    const defaultIndent = '    '
     for (let i = 0; i < indentLevel; i++) {
       text = text + defaultIndent
     }
@@ -331,7 +379,7 @@ export class CodeView {
      * @return   span   complete HTML structure with text and class
      */
   createHighlightedSpan (text) {
-    let span = document.createElement('span')
+    const span = document.createElement('span')
     span.classList.add('text-code')
     span.appendChild(document.createTextNode(text))
     return span
@@ -395,7 +443,7 @@ export class CodeView {
       return []
     } else {
       // create the span
-      let elemSpan = document.createElement('span')
+      const elemSpan = document.createElement('span')
       elemSpan.id = subTree.id + '-codeLine'
       // add eventlisteners for mouseover and click events
       // highlight equivalent element in struktogramm on mouseover
@@ -408,7 +456,7 @@ export class CodeView {
         node.firstChild.classList.remove('highlight')
       })
       // switch to edit mode of equivalent element in the struktogramm
-      let text = this.createHighlightedSpan(subTree.text)
+      const text = this.createHighlightedSpan(subTree.text)
       text.classList.add('hand')
       text.addEventListener('click', () => this.presenter.switchEditState(subTree.id))
 
@@ -461,21 +509,21 @@ export class CodeView {
           elemSpan.appendChild(branchHeaderPost)
           let branch = [elemSpan]
           if (this.translationMap[lang].leftBracket !== '') {
-            let leftBracket = document.createElement('span')
+            const leftBracket = document.createElement('span')
             leftBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].leftBracket + '\n'))
             branch.push(leftBracket)
           }
-          let trueContent = this.transformToCode(subTree.trueChild, indentLevel + 1, lang)
-          let falseContent = this.transformToCode(subTree.falseChild, indentLevel + 1, lang)
+          const trueContent = this.transformToCode(subTree.trueChild, indentLevel + 1, lang)
+          const falseContent = this.transformToCode(subTree.falseChild, indentLevel + 1, lang)
           branch = branch.concat(trueContent)
           if (falseContent.length > 0) {
-            let between = document.createElement('span')
+            const between = document.createElement('span')
             between.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].BranchNode.between))
             branch.push(between)
           }
           branch = branch.concat(falseContent)
           if (this.translationMap[lang].rightBracket !== '') {
-            let rightBracket = document.createElement('span')
+            const rightBracket = document.createElement('span')
             rightBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].rightBracket + '\n'))
             branch.push(rightBracket)
           }
@@ -538,13 +586,13 @@ export class CodeView {
           elemSpan.appendChild(loopHeaderPost)
           let loop = [elemSpan]
           if (this.translationMap[lang].leftBracket !== '') {
-            let leftBracket = document.createElement('span')
+            const leftBracket = document.createElement('span')
             leftBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].leftBracket + '\n'))
             loop.push(leftBracket)
           }
           loop = loop.concat(this.transformToCode(subTree.child, indentLevel + 1, lang))
           if (this.translationMap[lang].rightBracket !== '') {
-            let rightBracket = document.createElement('span')
+            const rightBracket = document.createElement('span')
             rightBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].rightBracket + '\n'))
             loop.push(rightBracket)
           }
@@ -563,13 +611,13 @@ export class CodeView {
           elemSpan.appendChild(loopHeaderPost)
           let loop = [elemSpan]
           if (this.translationMap[lang].leftBracket !== '') {
-            let leftBracket = document.createElement('span')
+            const leftBracket = document.createElement('span')
             leftBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].leftBracket + '\n'))
             loop.push(leftBracket)
           }
           loop = loop.concat(this.transformToCode(subTree.child, indentLevel + 1, lang))
           if (this.translationMap[lang].rightBracket !== '') {
-            let rightBracket = document.createElement('span')
+            const rightBracket = document.createElement('span')
             rightBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].rightBracket + '\n'))
             loop.push(rightBracket)
           }
@@ -583,18 +631,18 @@ export class CodeView {
           elemSpan.appendChild(loopContent)
           let loop = [elemSpan]
           if (this.translationMap[lang].leftBracket !== '') {
-            let leftBracket = document.createElement('span')
+            const leftBracket = document.createElement('span')
             leftBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].leftBracket + '\n'))
             loop.push(leftBracket)
           }
-          let child = this.transformToCode(subTree.child, indentLevel + 1, lang)
+          const child = this.transformToCode(subTree.child, indentLevel + 1, lang)
           loop = loop.concat(child)
           if (this.translationMap[lang].rightBracket !== '') {
-            let rightBracket = document.createElement('span')
+            const rightBracket = document.createElement('span')
             rightBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].rightBracket + '\n'))
             loop.push(rightBracket)
           }
-          let subContent = document.createElement('span')
+          const subContent = document.createElement('span')
           subContent.id = subTree.id + '-codeLine'
           elemSpan.id = ''
           const subContentPre = document.createElement('span')
@@ -651,13 +699,13 @@ export class CodeView {
           elemSpan.appendChild(funcHeaderPost)
           let loop = [elemSpan]
           if (this.translationMap[lang].leftBracket !== '') {
-            let leftBracket = document.createElement('span')
+            const leftBracket = document.createElement('span')
             leftBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].leftBracket + '\n'))
             loop.push(leftBracket)
           }
           loop = loop.concat(this.transformToCode(subTree.child, indentLevel + 1, lang))
           if (this.translationMap[lang].rightBracket !== '') {
-            let rightBracket = document.createElement('span')
+            const rightBracket = document.createElement('span')
             rightBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].rightBracket + '\n'))
             loop.push(rightBracket)
           }
@@ -682,7 +730,7 @@ export class CodeView {
             cases = []
           }
           if (this.translationMap[lang].leftBracket !== '') {
-            let leftBracket = document.createElement('span')
+            const leftBracket = document.createElement('span')
             leftBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].leftBracket + '\n'))
             cases.push(leftBracket)
           }
@@ -700,7 +748,7 @@ export class CodeView {
             cases[0].firstChild.innerText = 'if '
           }
           if (subTree.defaultOn) {
-            let defaultCase = document.createElement('span')
+            const defaultCase = document.createElement('span')
             defaultCase.classList.add('keyword')
             defaultCase.id = subTree.defaultNode.id + '-codeLine'
             if (this.translationMap[lang].pseudoSwitch) {
@@ -724,7 +772,7 @@ export class CodeView {
             }
           }
           if (this.translationMap[lang].rightBracket !== '') {
-            let rightBracket = document.createElement('span')
+            const rightBracket = document.createElement('span')
             rightBracket.appendChild(document.createTextNode(this.addIndentations(indentLevel) + this.translationMap[lang].rightBracket + '\n'))
             cases.push(rightBracket)
           }
@@ -751,7 +799,7 @@ export class CodeView {
           content = content.concat(this.transformToCode(subTree.followElement, indentLevel + 1, lang))
 
           if (!this.translationMap[lang].pseudoSwitch) {
-            let endContent = document.createElement('span')
+            const endContent = document.createElement('span')
             endContent.classList.add('keyword')
             endContent.appendChild(document.createTextNode(this.addIndentations(indentLevel + 1) + this.translationMap[lang].InsertCase.postpost))
             content.push(endContent)
@@ -766,7 +814,7 @@ export class CodeView {
      * Get the currently selected code language
      */
   prepareTransforming () {
-    var lang = document.getElementById('SourcecodeSelect').value
+    const lang = document.getElementById('SourcecodeSelect').value
     // start the transformation
     presenter.startTransforming(lang)
   }
