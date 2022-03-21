@@ -190,6 +190,8 @@ export class Structogram {
     if (!divContainer.classList.contains('func-box-header')) {
       const removeParamBtn = document.createElement('button')
       removeParamBtn.classList.add('trashcan', 'optionIcon', 'hand', 'tooltip', 'tooltip-bottoml')
+      removeParamBtn.style.minWidth = '1.2em'
+      removeParamBtn.style.border = 'none'
       removeParamBtn.setAttribute('data-tooltip', 'Entfernen')
       removeParamBtn.addEventListener('click', () => {
         this.presenter.removeParamFromParameters(pos)
@@ -208,9 +210,13 @@ export class Structogram {
     textNodeSpan.addEventListener('click', () => {
       textNodeDiv.remove()
 
+      // div containing input field and field option
+      const inputDiv = document.createElement('div')
+      inputDiv.style.display = 'flex'
+      inputDiv.style.flexDirection = 'row'
+
       // create Input Field
-      const inputElement = document.createElement('input')
-      inputElement.classList.add('function-elem', 'func-header-input')
+      const inputElement = newElement('input', ['function-elem', 'func-header-input'], inputDiv)
       inputElement.contentEditable = true
       inputElement.style.border = 'solid 1px black'
       inputElement.style.margin = '0 0 0 0'
@@ -219,49 +225,74 @@ export class Structogram {
       inputElement.type = 'text'
       inputElement.placeholder = placeHolder
       inputElement.value = content
-      divContainer.insertBefore(inputElement, divContainer.childNodes[pos])
+
+      // function for creating the text node (function name or parameter name)
+      const createTextNode = () => {
+        const textNodeDiv = document.createElement('div')
+        textNodeDiv.classList.add('function-elem')
+
+        // add text from input field as span-element to the header-div
+        const textNodeSpan = newElement('span', ['func-header-text-div'], textNodeDiv)
+        textNodeSpan.appendChild(document.createTextNode(inputElement.value))
+
+        // text can be clicked and afterwards can be changed
+        textNodeSpan.addEventListener('click', () => {
+          textNodeDiv.remove()
+          divContainer.insertBefore(inputDiv, divContainer.childNodes[pos])
+        })
+
+        inputElement.remove()
+        divContainer.insertBefore(textNodeDiv, divContainer.childNodes[pos])
+      }
+
+      // button to save function or parameter name
+      const inputAccept = newElement('div', ['acceptIcon', 'hand'], inputDiv)
+      inputAccept.style.minWidth = '1.4em'
+      inputAccept.style.marginLeft = '0.2em'
+      inputAccept.addEventListener('click', () => {
+        // update function name and function parameters in the model tree
+        if (divContainer.classList.contains('func-box-header')) {
+          this.presenter.editElement(uid, inputElement.value, 'funcname|')
+        } else {
+          this.presenter.editElement(uid, inputElement.value, String(pos) + '|')
+        }
+
+        // change function name also in the model (tree)
+        this.presenter.renderAllViews()
+        createTextNode()
+      })
+
+      const inputClose = newElement('div', ['deleteIcon', 'hand'], inputDiv)
+      inputClose.style.minWidth = '1.4em'
+      inputClose.style.marginLeft = '0.2em'
+      inputClose.addEventListener('click', () => this.presenter.renderAllViews())
+      divContainer.insertBefore(inputDiv, divContainer.childNodes[pos])
+
+      const listenerFunction = (event) => {
+        if (event.code === 'Enter' || event.type === 'blur') {
+          // remove the blur event listener in case of pressing-enter-event to avoid DOM exceptions
+          if (event.code === 'Enter') {
+            inputElement.removeEventListener('blur', listenerFunction)
+          }
+
+          // update function name and function parameters in the model tree
+          if (divContainer.classList.contains('func-box-header')) {
+            this.presenter.editElement(uid, inputElement.value, 'funcname|')
+          } else {
+            this.presenter.editElement(uid, inputElement.value, String(pos) + '|')
+          }
+
+          // change function name also in the model (tree)
+          this.presenter.renderAllViews()
+          createTextNode()
+        }
+      }
 
       // observed events (to change input field size)
       const events = 'keyup,keypress,focus,blur,change,input'.split(',')
 
       for (const e of events) {
-        inputElement.addEventListener(e, (event) => {
-          if (event.type === 'keypress') {
-            if (event.code === 'Enter') {
-              // add text from input field as span-element to the header-div
-              const textNodeSpan = document.createElement('span')
-              textNodeSpan.classList.add('func-header-text-div')
-              textNodeSpan.appendChild(document.createTextNode(inputElement.value))
-
-              // update function name and function parameters in the model tree
-              if (divContainer.classList.contains('func-box-header')) {
-                this.presenter.editElement(uid, inputElement.value, 'funcname|')
-              } else {
-                this.presenter.editElement(uid, inputElement.value, String(pos) + '|')
-              }
-
-              // change function name also in the model (tree)
-              this.presenter.renderAllViews()
-              const textNodeDiv = document.createElement('div')
-              textNodeDiv.classList.add('function-elem')
-              textNodeDiv.appendChild(textNodeSpan)
-
-              // text can be clicked and afterwards can be changed
-              textNodeSpan.addEventListener('click', () => {
-                textNodeDiv.remove()
-                divContainer.insertBefore(inputElement, divContainer.childNodes[pos])
-              })
-
-              inputElement.remove()
-              divContainer.insertBefore(textNodeDiv, divContainer.childNodes[pos])
-            }
-          }
-
-          // adjust length of input field to its content
-          if (inputElement.value.length >= fieldSize) {
-            inputElement.style.width = inputElement.value.length + 1 + 'ch'
-          }
-        })
+        inputElement.addEventListener(e, listenerFunction)
       }
     })
 
@@ -333,8 +364,10 @@ export class Structogram {
 
     // append a button for adding new parameters at the end of the param div
     const addParamBtn = document.createElement('button')
-    addParamBtn.classList.add('add-function-param-btn')
-    addParamBtn.innerHTML = '+'
+    addParamBtn.classList.add('addCaseIcon', 'hand', 'caseOptionsIcons', 'tooltip', 'tooltip-bottom')
+    addParamBtn.style.marginTop = 'auto'
+    addParamBtn.style.marginBottom = 'auto'
+    addParamBtn.setAttribute('data-tooltip', 'Parameter hinzufügen')
     addParamBtn.addEventListener('click', () => {
       addParamBtn.remove()
       const countParam = document.getElementsByClassName('function-elem').length - 1
