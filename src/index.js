@@ -37,11 +37,4 @@ window.onload = function () {
   presenter.addView(urlView);
 
   presenter.init();
-
-  if (window.location.hash) {
-    const json = deserializeState(window.location.hash.slice(1));
-    if (json?.model) {
-      presenter.readJSON(json.model);
-    }
-  }
 };
