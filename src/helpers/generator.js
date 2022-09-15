@@ -121,7 +121,11 @@ export function generateHtmltree () {
   footer.appendChild(footerDiv)
 
   const footerSpan = document.createElement('span')
-  footerSpan.appendChild(document.createTextNode('v1.2 Didaktik der Informatik der TU Dresden'))
+  footerSpan.appendChild(document.createTextNode('Repository: '))
+  const repository = document.createElement('a');
+  repository.href = "https://github.com/openpatch/struktog"
+  repository.innerText = "GitHub"
+  footerSpan.appendChild(repository)
   footerDiv.appendChild(footerSpan)
 }
 

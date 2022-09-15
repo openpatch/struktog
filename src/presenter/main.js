@@ -663,6 +663,14 @@ export class Presenter {
     reader.readAsText(event.target.files[0])
   }
 
+  readJSON (json) {
+      this.updateUndo()
+      this.model.setTree(json)
+      this.checkUndo()
+      this.renderAllViews()
+      this.updateBrowserStore()
+  }
+
   updateUndo () {
     this.undoList.push(this.getStringifiedTree())
     for (const item of document.getElementsByClassName('UndoIconButtonOverlay')) {

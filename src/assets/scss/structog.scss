@@ -12,17 +12,23 @@ header {
 
 body {
     font: 100% $font-stack;
-    max-width: 1500px;
-    min-height: 100vh;
+    width: 100vw;
+    height: 100vh;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     background-color: rgb(250, 250, 250);
+    overflow-x: hidden;
 
     main {
         flex: 1;
     }
+}
+
+footer {
+  text-align: center;
+  padding: 8px;
 }
 
 strong {

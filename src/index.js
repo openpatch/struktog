@@ -1,51 +1,47 @@
-import './assets/favicons/favicons'
-import { config } from './config.js'
-import { model } from './model/main'
-import { Presenter } from './presenter/main'
-import { Structogram } from './views/structogram'
-import { CodeView } from './views/code'
-import { ImportExport } from './views/importExport'
-import { generateHtmltree, generateInfoButton } from './helpers/generator'
-import { templates } from './templates.js'
+import "./assets/favicons/favicons";
+import { model } from "./model/main";
+import { Presenter } from "./presenter/main";
+import { Structogram } from "./views/structogram";
+import { deserializeState } from "./helpers/serde";
+import { CodeView } from "./views/code";
+import { UrlView } from "./views/url";
+import { ImportExport } from "./views/importExport";
+import { generateHtmltree, generateInfoButton } from "./helpers/generator";
 
-import './assets/scss/structog.scss'
+import "./assets/scss/structog.scss";
 
 window.onload = function () {
-  // manipulate the localStorage before loading the presenter
-  if (typeof (Storage) !== 'undefined') {
-    const url = new URL(window.location.href)
-    const template = url.searchParams.get('template')
-    if (template in templates) {
-      if ('model' in templates[template]) {
-        window.localStorage.tree = JSON.stringify(templates[template].model)
-        model.setTree(templates[template].model)
-      }
-      if ('lang' in templates[template]) {
-        window.localStorage.lang = templates[template].lang
-      }
-      if ('displaySourcecode' in templates[template]) {
-        window.localStorage.displaySourcecode = templates[template].displaySourcecode
-      }
-    }
-    const configId = url.searchParams.get('config')
-    config.loadConfig(configId)
-  }
-
-  generateHtmltree()
+  generateHtmltree();
   // create presenter object
-  const presenter = new Presenter(model)
+  const presenter = new Presenter(model);
   // TODO: this should not be necessary, but some functions depend on moveId and nextInsertElement
-  model.setPresenter(presenter)
+  model.setPresenter(presenter);
 
   // create our view objects
-  const structogram = new Structogram(presenter, document.getElementById('editorDisplay'))
-  presenter.addView(structogram)
-  const code = new CodeView(presenter, document.getElementById('editorDisplay'))
-  presenter.addView(code)
-  const importExport = new ImportExport(presenter, document.getElementById('Export'))
-  presenter.addView(importExport)
+  const structogram = new Structogram(
+    presenter,
+    document.getElementById("editorDisplay")
+  );
+  presenter.addView(structogram);
+  const code = new CodeView(
+    presenter,
+    document.getElementById("editorDisplay")
+  );
+  presenter.addView(code);
+  const importExport = new ImportExport(
+    presenter,
+    document.getElementById("Export")
+  );
+  presenter.addView(importExport);
+  const urlView = new UrlView(presenter);
+  presenter.addView(urlView);
 
-  generateInfoButton(document.getElementById('optionButtons'))
+  presenter.init();
 
-  presenter.init()
-}
+  if (window.location.hash) {
+    const json = deserializeState(window.location.hash.slice(1));
+    if (json?.model) {
+      presenter.readJSON(json.model);
+    }
+  }
+};
