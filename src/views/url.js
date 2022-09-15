@@ -6,11 +6,12 @@ export class UrlView {
   }
 
   render(model) {
-    const pako = serializeState({model});
-    window.location.hash = pako
+    const node = document.getElementById("structogram");
+    const pako = serializeState({ model, height: node.clientHeight, width: node.clientWidth });
+    window.location.hash = pako;
   }
 
-  resetButtons () {}
-  displaySourcecode () {}
-  setLang () {}
+  resetButtons() {}
+  displaySourcecode() {}
+  setLang() {}
 }
