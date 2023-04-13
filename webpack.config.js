@@ -57,7 +57,9 @@ const config = {
         test: /\.svg$/,
         use: {
           loader: 'svg-url-loader',
-          options: {}
+          options: {
+            stripdeclarations: true
+          }
         }
       }
     ]

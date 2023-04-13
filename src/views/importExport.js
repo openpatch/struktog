@@ -66,10 +66,16 @@ export class ImportExport {
   /**
    * Create a PNG file of the current model and append a button for downloading
    */
-  exportAsPng() {
+  async exportAsPng() {
     const node = document.getElementById("structogram");
 
-    toPng(
+    // The background svg images are not loaded on the first render.
+    // We render the image multiple times to be "sure" that they will be loaded and included in the final image.
+    // See https://github.com/bubkoo/html-to-image/issues/361
+    await toPng(node);
+    await toPng(node);
+    await toPng(node);
+    await toPng(
       node,
       {
         filter: function (node) {
