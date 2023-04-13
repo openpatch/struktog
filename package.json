@@ -20,20 +20,20 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.13.16",
+    "@babel/core": "^7.21.4",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.2.2",
     "babel-preset-env": "^1.7.0",
-    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^5.2.4",
     "eslint": "^7.25.0",
     "eslint-config-standard": "^16.0.2",
-    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "html-webpack-plugin": "^5.3.1",
-    "jointjs": "^3.3.1",
+    "html-webpack-plugin": "^5.5.0",
+    "jointjs": "^3.6.5",
     "mini-css-extract-plugin": "^1.5.1",
     "sass": "^1.32.12",
     "sass-loader": "^11.0.1",
@@ -46,8 +46,8 @@
     "yarn": "^1.22.17"
   },
   "dependencies": {
-    "html-to-image": "^1.10.8",
-    "js-base64": "^3.7.2",
-    "pako": "^2.0.4"
+    "html-to-image": "^1.11.11",
+    "js-base64": "^3.7.5",
+    "pako": "^2.1.0"
   }
 }

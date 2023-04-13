@@ -1,4 +1,4 @@
-import { toCanvas } from "html-to-image";
+import { toPng } from "html-to-image";
 
 export class ImportExport {
   constructor(presenter, domRoot) {
@@ -69,7 +69,7 @@ export class ImportExport {
   exportAsPng() {
     const node = document.getElementById("structogram");
 
-    toCanvas(
+    toPng(
       node,
       {
         filter: function (node) {
@@ -81,7 +81,7 @@ export class ImportExport {
         },
         pixelRatio: 2
       }
-    ).then(function (canvas) {
+    ).then(function (dataURL) {
       // define filename
 
       const exportFileDefaultName =
@@ -89,7 +89,7 @@ export class ImportExport {
 
       // create button / anker element
       const linkElement = document.createElement("a");
-      linkElement.setAttribute("href", canvas.toDataURL("image/png"));
+      linkElement.setAttribute("href", dataURL);
       linkElement.setAttribute("download", exportFileDefaultName);
       linkElement.click();
     });
