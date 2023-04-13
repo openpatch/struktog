@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.2
+## 1.3.0
 
 - 🚀 Feat: Add new code translations for C#, C++ and C. This is a merge
   from the original project located at
