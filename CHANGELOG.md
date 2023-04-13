@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.2
+
+- 🚀 Feat: Add new code translations for C#, C++ and C. This is a merge
+  from the original project located at
+  https://gitlab.com/ddi-tu-dresden/cs-school-tools/struktog.
+
 ## 1.2.1
 
 - 🐛 Fix: Exported PNG does not include borders on first try. We used a

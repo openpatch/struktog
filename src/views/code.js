@@ -156,9 +156,9 @@ export class CodeView {
           post: ');\n'
         },
         FunctionNode: {
-          pre: 'def ',
+          pre: 'function ',
           between: '(',
-          post: '):\n'
+          post: ')\n'
         },
         CaseNode: {
           pre: 'switch (',
@@ -213,6 +213,174 @@ export class CodeView {
         },
         FunctionNode: {
           pre: 'public void ',
+          between: '(',
+          post: ')\n'
+        },
+        CaseNode: {
+          pre: 'switch (',
+          post: ')\n'
+        },
+        InsertCase: {
+          preNormal: 'case ',
+          preDefault: 'default',
+          post: ':\n',
+          postpost: 'break;\n'
+        },
+        leftBracket: '{',
+        rightBracket: '}',
+        pseudoSwitch: false
+      },
+      'C#': {
+        untranslatable: [],
+        InputNode: {
+          pre: '',
+          post: ' = Console.ReadLine();\n'
+        },
+        OutputNode: {
+          pre: 'Console.WriteLine(',
+          post: ');\n'
+        },
+        TaskNode: {
+          pre: '',
+          post: ';\n'
+        },
+        BranchNode: {
+          pre: 'if (',
+          post: ')\n',
+          between: '} else {\n'
+        },
+        TryCatchNode: {
+          pre: 'try\n',
+          between: 'catch (',
+          post: ')\n'
+        },
+        CountLoopNode: {
+          pre: 'for (',
+          post: ')\n'
+        },
+        HeadLoopNode: {
+          pre: 'while (',
+          post: ')\n'
+        },
+        FootLoopNode: {
+          prepre: 'do\n',
+          pre: 'while (',
+          post: ');\n'
+        },
+        FunctionNode: {
+          pre: 'public void ',
+          between: '(',
+          post: ')\n'
+        },
+        CaseNode: {
+          pre: 'switch (',
+          post: ')\n'
+        },
+        InsertCase: {
+          preNormal: 'case ',
+          preDefault: 'default',
+          post: ':\n',
+          postpost: 'break;\n'
+        },
+        leftBracket: '{',
+        rightBracket: '}',
+        pseudoSwitch: false
+      },
+      'C++': {
+        untranslatable: [],
+        InputNode: {
+          pre: 'std::cin >> ',
+          post: ';\n'
+        },
+        OutputNode: {
+          pre: 'std::cout << ',
+          post: ';\n'
+        },
+        TaskNode: {
+          pre: '',
+          post: ';\n'
+        },
+        BranchNode: {
+          pre: 'if (',
+          post: ')\n',
+          between: '} else {\n'
+        },
+        TryCatchNode: {
+          pre: 'try\n',
+          between: 'catch (',
+          post: ')\n'
+        },
+        CountLoopNode: {
+          pre: 'for (',
+          post: ')\n'
+        },
+        HeadLoopNode: {
+          pre: 'while (',
+          post: ')\n'
+        },
+        FootLoopNode: {
+          prepre: 'do\n',
+          pre: 'while (',
+          post: ');\n'
+        },
+        FunctionNode: {
+          pre: 'void ',
+          between: '(',
+          post: ')\n'
+        },
+        CaseNode: {
+          pre: 'switch (',
+          post: ')\n'
+        },
+        InsertCase: {
+          preNormal: 'case ',
+          preDefault: 'default',
+          post: ':\n',
+          postpost: 'break;\n'
+        },
+        leftBracket: '{',
+        rightBracket: '}',
+        pseudoSwitch: false
+      },
+      C: {
+        untranslatable: ['TryCatchNode'],
+        InputNode: {
+          pre: 'scanf(',
+          post: ');\n'
+        },
+        OutputNode: {
+          pre: 'printf(',
+          post: ');\n'
+        },
+        TaskNode: {
+          pre: '',
+          post: ';\n'
+        },
+        BranchNode: {
+          pre: 'if (',
+          post: ')\n',
+          between: '} else {\n'
+        },
+        TryCatchNode: {
+          pre: '',
+          between: '',
+          post: ''
+        },
+        CountLoopNode: {
+          pre: 'for (',
+          post: ')\n'
+        },
+        HeadLoopNode: {
+          pre: 'while (',
+          post: ')\n'
+        },
+        FootLoopNode: {
+          prepre: 'do\n',
+          pre: 'while (',
+          post: ');\n'
+        },
+        FunctionNode: {
+          pre: 'void ',
           between: '(',
           post: ')\n'
         },
@@ -777,6 +945,12 @@ export class CodeView {
               cases = cases.concat(this.transformToCode(subTree.defaultNode.followElement, indentLevel + 1, lang))
             } else {
               cases = cases.concat(this.transformToCode(subTree.defaultNode.followElement, indentLevel + 2, lang))
+            }
+            if (!this.translationMap[lang].pseudoSwitch && (lang === 'C#' || lang === 'Java')) {
+              const endContent = document.createElement('span')
+              endContent.classList.add('keyword')
+              endContent.appendChild(document.createTextNode(this.addIndentations(indentLevel + 2) + this.translationMap[lang].InsertCase.postpost))
+              cases.push(endContent)
             }
           }
           if (this.translationMap[lang].rightBracket !== '') {
