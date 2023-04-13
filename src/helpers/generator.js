@@ -1,3 +1,5 @@
+import pkg from "../../package.json";
+
 /**
  * Generate a random id string
  *
@@ -126,6 +128,11 @@ export function generateHtmltree () {
   repository.href = "https://github.com/openpatch/struktog"
   repository.innerText = "GitHub"
   footerSpan.appendChild(repository)
+  footerSpan.appendChild(document.createTextNode(`, Version: `))
+  const version = document.createElement('a');
+  version.href = "https://github.com/openpatch/struktog/blob/main/CHANGELOG.md";
+  version.innerText = pkg.version;
+  footerSpan.appendChild(version);
   footerDiv.appendChild(footerSpan)
 }
 
@@ -156,15 +163,4 @@ export function generateResetButton (presenter, domNode) {
     document.getElementById('IEModal').classList.add('active')
   })
   domNode.appendChild(resetButtonDiv)
-}
-
-export function generateInfoButton (domNode) {
-  const infoButtonDiv = document.createElement('div')
-  infoButtonDiv.classList.add('options-element', 'infoIcon', 'tooltip', 'tooltip-bottomInfo', 'hand')
-  infoButtonDiv.setAttribute('data-tooltip', 'Gitlab Repository')
-  infoButtonDiv.addEventListener('click', () => {
-    window.open('https://gitlab.com/ddi-tu-dresden/cs-school-tools/struktog', '_blank')
-  })
-
-  domNode.appendChild(infoButtonDiv)
 }

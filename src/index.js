@@ -2,11 +2,10 @@ import "./assets/favicons/favicons";
 import { model } from "./model/main";
 import { Presenter } from "./presenter/main";
 import { Structogram } from "./views/structogram";
-import { deserializeState } from "./helpers/serde";
 import { CodeView } from "./views/code";
 import { UrlView } from "./views/url";
 import { ImportExport } from "./views/importExport";
-import { generateHtmltree, generateInfoButton } from "./helpers/generator";
+import { generateHtmltree } from "./helpers/generator";
 
 import "./assets/scss/structog.scss";
 
