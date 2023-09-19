@@ -1,4 +1,5 @@
 import { toPng } from "html-to-image";
+import jsPDF from "jspdf";
 
 export class ImportExport {
   constructor(presenter, domRoot) {
@@ -61,6 +62,19 @@ export class ImportExport {
       this.exportAsPng(this.presenter.getModelTree())
     );
     document.getElementById("optionButtons").appendChild(exportDiv);
+    
+    // add a new button to export as pdf
+    const exportPdfDiv = document.createElement("div");
+    exportPdfDiv.classList.add(
+      "options-element",
+      "exportIcon",
+      "tooltip",
+      "tooltip-bottom",
+      "hand"
+    );
+    exportPdfDiv.setAttribute("data-tooltip", "PDF-Export");
+    exportPdfDiv.addEventListener("click", () => this.exportAsPdf());
+    document.getElementById("optionButtons").appendChild(exportPdfDiv);
   }
 
   /**
@@ -99,6 +113,36 @@ export class ImportExport {
       linkElement.setAttribute("download", exportFileDefaultName);
       linkElement.click();
     });
+  }
+
+  async exportAsPdf() {
+    const node = document.getElementById("structogram");
+
+    await toPng(node);
+    await toPng(node);
+    await toPng(node);
+
+    const structogramSize = node.getBoundingClientRect();
+
+    // Create a new jsPDF object
+    const doc = new jsPDF('l', 'mm', [structogramSize.width/1.9, structogramSize.height/1.9]);
+
+
+    // Add the structogram to the PDF
+    doc.addImage(await toPng(node, {
+      filter: function (node) {
+        if (node.classList) {
+          return !node.classList.contains("optionContainer");
+        } else {
+          return true;
+        }
+      },
+      pixelRatio: 2
+    }), "PNG", 0, 0);
+
+
+    // Save the PDF
+    doc.save("struktog_" + new Date(Date.now()).toJSON().substring(0, 10) + ".pdf");
   }
 
   resetButtons() {}
