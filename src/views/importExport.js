@@ -124,8 +124,9 @@ export class ImportExport {
 
     const structogramSize = node.getBoundingClientRect();
     
+    console.log(structogramSize)
     // Create a new jsPDF object
-    const doc = new jsPDF('p', 'px', [structogramSize.width, structogramSize.height], false, false, 16, 1.0, ["px_scaling"]);
+    const doc = new jsPDF('p', 'px', [1250, structogramSize.height], false, false, 16, 1.0, ["px_scaling"]);
 
     // Add the structogram to the PDF
     doc.addImage(await toPng(node, {
@@ -137,7 +138,7 @@ export class ImportExport {
         }
       },
       pixelRatio: 1
-    }), "PNG", 0, 0, structogramSize.width, structogramSize.height);
+    }), "PNG", 0, 0, 1250, structogramSize.height);
 
 
     // Save the PDF
