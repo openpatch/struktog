@@ -1,4 +1,5 @@
 import { toPng } from "html-to-image";
+import jsPDF from "jspdf";
 
 export class ImportExport {
   constructor(presenter, domRoot) {
@@ -61,6 +62,19 @@ export class ImportExport {
       this.exportAsPng(this.presenter.getModelTree())
     );
     document.getElementById("optionButtons").appendChild(exportDiv);
+
+    // add a new button to export as pdf
+    const exportPdfDiv = document.createElement("div");
+    exportPdfDiv.classList.add(
+      "options-element",
+      "exportIcon",
+      "tooltip",
+      "tooltip-bottom",
+      "hand"
+    );
+    exportPdfDiv.setAttribute("data-tooltip", "PDF-Export");
+    exportPdfDiv.addEventListener("click", () => this.exportAsPdf());
+    document.getElementById("optionButtons").appendChild(exportPdfDiv);
   }
 
   /**
@@ -75,19 +89,16 @@ export class ImportExport {
     await toPng(node);
     await toPng(node);
     await toPng(node);
-    await toPng(
-      node,
-      {
-        filter: function (node) {
-          if (node.classList) {
-            return !node.classList.contains("optionContainer");
-          } else {
-            return true;
-          }
-        },
-        pixelRatio: 2
-      }
-    ).then(function (dataURL) {
+    await toPng(node, {
+      filter: function (node) {
+        if (node.classList) {
+          return !node.classList.contains("optionContainer");
+        } else {
+          return true;
+        }
+      },
+      pixelRatio: 2,
+    }).then(function (dataURL) {
       // define filename
 
       const exportFileDefaultName =
@@ -99,6 +110,46 @@ export class ImportExport {
       linkElement.setAttribute("download", exportFileDefaultName);
       linkElement.click();
     });
+  }
+
+  async exportAsPdf() {
+    const node = document.getElementById("structogram"); // HTML-Element, das als PDF exportiert werden soll
+
+    const width = node.offsetWidth; // Breite des PDFs
+    const height = node.offsetHeight; // Höhe des PDFs
+
+    const pdf = new jsPDF({
+      orientation: width > height ? "l" : "p", // ob es sich um ein Hoch- oder Querformat handelt
+      unit: "px", // Einheit pixels
+      format: [width, height], // Hier wird die Größe des PDFs definiert
+    });
+
+    pdf.addImage(
+      await toPng(node, {
+        // Hier wird das HTML-Element in ein PNG umgewandelt
+        filter: function (node) {
+          // Hier werden die Optionen für das HTML-to-Image-Modul definiert
+          if (node.classList) {
+            // Hier wird definiert, dass die Optionen nicht für das optionContainer-Element gelten
+            return !node.classList.contains("optionContainer"); // Das optionContainer-Element wird nicht in das PNG umgewandelt
+          } else {
+            return true; // Wenn das Element keine Klasse hat, wird es in das PNG umgewandelt
+          }
+        },
+        pixelRatio: 2, // Hier wird die Auflösung des PNGs definiert
+      }),
+      "PNG", // Hier wird das Format des Bildes definiert
+      0, // Hier wird die X-Koordinate des Bildes definiert
+      0, // Hier wird die Y-Koordinate des Bildes definiert
+      width, // Hier wird die Breite des Bildes definiert
+      height // Hier wird die Höhe des Bildes definiert
+    );
+
+    // Save the PDF
+    // pdf.save("structogram.pdf");
+    pdf.save(
+      "struktog_" + new Date(Date.now()).toJSON().substring(0, 10) + ".pdf"
+    );
   }
 
   resetButtons() {}
