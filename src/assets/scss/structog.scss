@@ -27,8 +27,8 @@ body {
 }
 
 footer {
-  text-align: center;
-  padding: 8px;
+    text-align: center;
+    padding: 8px;
 }
 
 strong {
@@ -134,6 +134,7 @@ strong {
 .columnEditorStructogram {
     flex-basis: 100%;
     margin: 0.2em;
+    font-size: 1em;
 }
 
 .columnEditorCode {
@@ -146,18 +147,6 @@ strong {
 @media screen and (min-width: 480px) {
     .columnEditorCode {
         width: 50%;
-    }
-}
-
-@media screen and (min-width: 1200px) {
-    .columnEditorStructogram {
-        flex-basis: 75%;
-    }
-
-    .columnEditorCode {
-        padding-top: 0;
-        margin: 0 1em;
-        width: calc(25% - 4.5em);
     }
 }
 
@@ -189,6 +178,7 @@ strong {
 
 .tooltip {
     position: relative;
+
     &:after {
         background: rgba(50, 50, 50, 0.95);
         border-radius: 0;
@@ -209,6 +199,7 @@ strong {
         white-space: pre;
         z-index: 1;
     }
+
     &:focus,
     &:hover {
         &::after {
@@ -216,6 +207,7 @@ strong {
             transform: translate(-50%, -0.3em);
         }
     }
+
     &[disabled],
     &.disabled {
         pointer-events: auto;
@@ -227,6 +219,7 @@ strong {
             top: 100%;
             transform: translate(-50%, -0.3em);
         }
+
         &:focus,
         &:hover {
             &::after {
@@ -242,6 +235,7 @@ strong {
             left: -170%;
             transform: translate(-50%, -0.3em);
         }
+
         &:focus,
         &:hover {
             &::after {
@@ -257,6 +251,7 @@ strong {
             left: 0;
             transform: translate(-50%, -0.3em);
         }
+
         &:focus,
         &:hover {
             &::after {
@@ -272,6 +267,7 @@ strong {
             left: -100%;
             transform: translate(-50%, -0.3em);
         }
+
         &:focus,
         &:hover {
             &::after {
@@ -282,16 +278,17 @@ strong {
 }
 
 .divider {
-  display: block;
-  position: relative;
-  border-top: 0.1em solid rgb(38, 64, 64);
-  height: 0.1em;
-  margin: 0.2em 0;
+    display: block;
+    position: relative;
+    border-top: 0.1em solid rgb(38, 64, 64);
+    height: 0.1em;
+    margin: 0.2em 0;
 }
 
 .borderWidth {
     flex: 0 0 3px;
 }
+
 .borderHeight {
     height: 2px;
 }

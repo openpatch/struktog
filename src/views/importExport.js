@@ -19,7 +19,7 @@ export class ImportExport {
       "uploadIcon",
       "tooltip",
       "tooltip-bottom",
-      "hand"
+      "hand",
     );
     importDiv.setAttribute("data-tooltip", "Laden");
     const importInput = document.createElement("input");
@@ -30,9 +30,10 @@ export class ImportExport {
     webdriverImportInput.classList.add("webdriver-input");
     webdriverImportInput.setAttribute("type", "file");
     webdriverImportInput.addEventListener("change", (e) =>
-      this.presenter.readFile(e)
+      this.presenter.readFile(e),
     );
     webdriverImportInput.style.display = "none";
+
     document.getElementById("optionButtons").appendChild(webdriverImportInput);
     document.getElementById("optionButtons").appendChild(importDiv);
 
@@ -42,7 +43,7 @@ export class ImportExport {
       "saveIcon",
       "tooltip",
       "tooltip-bottom",
-      "hand"
+      "hand",
     );
     saveDiv.setAttribute("data-tooltip", "Speichern");
     saveDiv.addEventListener("click", () => this.presenter.saveDialog());
@@ -55,11 +56,11 @@ export class ImportExport {
       "exportIcon",
       "tooltip",
       "tooltip-bottom",
-      "hand"
+      "hand",
     );
     exportDiv.setAttribute("data-tooltip", "Bildexport");
     exportDiv.addEventListener("click", () =>
-      this.exportAsPng(this.presenter.getModelTree())
+      this.exportAsPng(this.presenter.getModelTree()),
     );
     document.getElementById("optionButtons").appendChild(exportDiv);
 
@@ -70,7 +71,7 @@ export class ImportExport {
       "exportIcon",
       "tooltip",
       "tooltip-bottom",
-      "hand"
+      "hand",
     );
     exportPdfDiv.setAttribute("data-tooltip", "PDF-Export");
     exportPdfDiv.addEventListener("click", () => this.exportAsPdf());
@@ -142,13 +143,13 @@ export class ImportExport {
       0, // Hier wird die X-Koordinate des Bildes definiert
       0, // Hier wird die Y-Koordinate des Bildes definiert
       width, // Hier wird die Breite des Bildes definiert
-      height // Hier wird die Höhe des Bildes definiert
+      height, // Hier wird die Höhe des Bildes definiert
     );
 
     // Save the PDF
     // pdf.save("structogram.pdf");
     pdf.save(
-      "struktog_" + new Date(Date.now()).toJSON().substring(0, 10) + ".pdf"
+      "struktog_" + new Date(Date.now()).toJSON().substring(0, 10) + ".pdf",
     );
   }
 
