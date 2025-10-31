@@ -200,19 +200,38 @@ export class Structogram {
     while (this.domRoot.hasChildNodes()) {
       this.domRoot.removeChild(this.domRoot.lastChild);
     }
-    // this.domRoot.appendChild(this.prepareRenderTree(tree, false, false));
-    for (const elem of this.renderElement(
+    
+    // Create SVG container for the entire structogram
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    svg.style.display = "block";
+    svg.style.minHeight = "100px";
+    
+    // Calculate structure and render to SVG
+    const renderResult = this.renderElementToSVG(
       tree,
+      0,
+      0,
+      800, // default width, will be adjusted
       false,
       false,
-      this.presenter.getSettingFunctionMode(),
-    )) {
-      this.applyCodeEventListeners(elem);
-      this.domRoot.appendChild(elem);
+      this.presenter.getSettingFunctionMode()
+    );
+    
+    if (renderResult.group) {
+      svg.appendChild(renderResult.group);
     }
-    const lastLine = document.createElement("div");
-    lastLine.classList.add("frameTop", "borderHeight");
-    this.domRoot.appendChild(lastLine);
+    
+    // Set SVG height based on content
+    const totalHeight = renderResult.height + 4;
+    svg.setAttribute("height", totalHeight);
+    svg.setAttribute("viewBox", `0 0 ${renderResult.width} ${totalHeight}`);
+    
+    // Store reference to SVG for later use
+    this.svgElement = svg;
+    
+    this.domRoot.appendChild(svg);
   }
 
   /**
@@ -1520,6 +1539,861 @@ export class Structogram {
     textDiv.appendChild(editDiv);
 
     return textDiv;
+  }
+
+  /**
+   * Render element tree to SVG
+   * Returns {group, width, height}
+   */
+  renderElementToSVG(subTree, x, y, maxWidth, parentIsMoving, noInsert, renderInsertNode = false) {
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const baseHeight = 32; // Height of a single row
+    const fontSize = 14;
+    
+    if (subTree === null) {
+      return { group: null, width: maxWidth, height: 0 };
+    }
+
+    // Check if this is the element being moved
+    if (!(this.presenter.getMoveId() === null) && subTree.id === this.presenter.getMoveId()) {
+      parentIsMoving = true;
+      noInsert = true;
+    }
+
+    const group = document.createElementNS(SVG_NS, "g");
+    if (subTree.id) {
+      group.setAttribute("data-id", subTree.id);
+    }
+    
+    let currentY = y;
+    let totalHeight = 0;
+    
+    switch (subTree.type) {
+      case "InsertNode":
+        if (parentIsMoving) {
+          return this.renderElementToSVG(subTree.followElement, x, y, maxWidth, false, false, renderInsertNode);
+        } else if (noInsert) {
+          return this.renderElementToSVG(subTree.followElement, x, y, maxWidth, false, true, renderInsertNode);
+        } else if (this.presenter.getInsertMode()) {
+          if (!this.presenter.getSettingFunctionMode() || renderInsertNode) {
+            // Render insert placeholder
+            const insertHeight = baseHeight * 0.7;
+            const rect = document.createElementNS(SVG_NS, "rect");
+            rect.setAttribute("x", x);
+            rect.setAttribute("y", y);
+            rect.setAttribute("width", maxWidth);
+            rect.setAttribute("height", insertHeight);
+            rect.setAttribute("fill", "#f0f0f0");
+            rect.setAttribute("stroke", "black");
+            rect.setAttribute("stroke-width", "1.5");
+            rect.setAttribute("stroke-dasharray", "5,5");
+            rect.style.cursor = "pointer";
+            rect.addEventListener("click", () => this.presenter.appendElement(subTree.id));
+            group.appendChild(rect);
+            
+            totalHeight = insertHeight;
+            currentY += insertHeight;
+            
+            if (subTree.followElement && subTree.followElement.type !== "Placeholder") {
+              const follow = this.renderElementToSVG(subTree.followElement, x, currentY, maxWidth, false, noInsert, renderInsertNode);
+              if (follow.group) {
+                group.appendChild(follow.group);
+              }
+              totalHeight += follow.height;
+            }
+            
+            return { group, width: maxWidth, height: totalHeight };
+          } else {
+            return this.renderElementToSVG(subTree.followElement, x, y, maxWidth, false, noInsert, renderInsertNode);
+          }
+        } else {
+          return this.renderElementToSVG(subTree.followElement, x, y, maxWidth, parentIsMoving, noInsert, renderInsertNode);
+        }
+
+      case "Placeholder": {
+        const rect = document.createElementNS(SVG_NS, "rect");
+        rect.setAttribute("x", x);
+        rect.setAttribute("y", y);
+        rect.setAttribute("width", maxWidth);
+        rect.setAttribute("height", baseHeight);
+        rect.setAttribute("fill", "#f0f0f0");
+        rect.setAttribute("stroke", "black");
+        rect.setAttribute("stroke-width", "1.5");
+        group.appendChild(rect);
+        return { group, width: maxWidth, height: baseHeight };
+      }
+
+      case "InputNode":
+      case "OutputNode":
+      case "TaskNode": {
+        // Draw rectangle
+        const rect = document.createElementNS(SVG_NS, "rect");
+        rect.setAttribute("x", x);
+        rect.setAttribute("y", y);
+        rect.setAttribute("width", maxWidth);
+        rect.setAttribute("height", baseHeight);
+        rect.setAttribute("fill", config.get()[subTree.type].color);
+        rect.setAttribute("stroke", "black");
+        rect.setAttribute("stroke-width", "1.5");
+        group.appendChild(rect);
+        
+        // Add text
+        let displayText = subTree.text;
+        if (subTree.type === "InputNode") {
+          displayText = "E: " + displayText;
+        } else if (subTree.type === "OutputNode") {
+          displayText = "A: " + displayText;
+        }
+        
+        const text = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, displayText, fontSize);
+        text.style.cursor = "pointer";
+        text.addEventListener("click", () => {
+          this.presenter.renderAllViews();
+          this.presenter.switchEditState(subTree.id);
+        });
+        group.appendChild(text);
+        
+        // Add option icons (delete, move) as foreignObject
+        const optionsGroup = this.createSVGOptions(x, y, maxWidth, baseHeight, subTree.type, subTree.id);
+        group.appendChild(optionsGroup);
+        
+        totalHeight = baseHeight;
+        currentY += baseHeight;
+        
+        // Render following element
+        if (subTree.followElement) {
+          const follow = this.renderElementToSVG(subTree.followElement, x, currentY, maxWidth, parentIsMoving, noInsert, renderInsertNode);
+          if (follow.group) {
+            group.appendChild(follow.group);
+          }
+          totalHeight += follow.height;
+        }
+        
+        return { group, width: maxWidth, height: totalHeight };
+      }
+
+      case "BranchNode": {
+        const headHeight = baseHeight * 2;
+        
+        // Draw main rectangle for condition
+        const condRect = document.createElementNS(SVG_NS, "rect");
+        condRect.setAttribute("x", x);
+        condRect.setAttribute("y", y);
+        condRect.setAttribute("width", maxWidth);
+        condRect.setAttribute("height", baseHeight);
+        condRect.setAttribute("fill", config.get()[subTree.type].color);
+        condRect.setAttribute("stroke", "black");
+        condRect.setAttribute("stroke-width", "1.5");
+        group.appendChild(condRect);
+        
+        // Add condition text
+        const condText = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, subTree.text, fontSize);
+        condText.style.cursor = "pointer";
+        condText.addEventListener("click", () => {
+          this.presenter.renderAllViews();
+          this.presenter.switchEditState(subTree.id);
+        });
+        group.appendChild(condText);
+        
+        // Add options
+        const optionsGroup = this.createSVGOptions(x, y, maxWidth, baseHeight, subTree.type, subTree.id);
+        group.appendChild(optionsGroup);
+        
+        currentY += baseHeight;
+        
+        // Draw triangular split
+        const triangleHeight = baseHeight;
+        const midX = x + maxWidth / 2;
+        
+        const leftLine = document.createElementNS(SVG_NS, "line");
+        leftLine.setAttribute("x1", x);
+        leftLine.setAttribute("y1", currentY);
+        leftLine.setAttribute("x2", midX);
+        leftLine.setAttribute("y2", currentY + triangleHeight);
+        leftLine.setAttribute("stroke", "black");
+        leftLine.setAttribute("stroke-width", "1.5");
+        group.appendChild(leftLine);
+        
+        const rightLine = document.createElementNS(SVG_NS, "line");
+        rightLine.setAttribute("x1", x + maxWidth);
+        rightLine.setAttribute("y1", currentY);
+        rightLine.setAttribute("x2", midX);
+        rightLine.setAttribute("y2", currentY + triangleHeight);
+        rightLine.setAttribute("stroke", "black");
+        rightLine.setAttribute("stroke-width", "1.5");
+        group.appendChild(rightLine);
+        
+        // Add "Wahr" and "Falsch" labels
+        const trueLabel = this.createSVGText(x + maxWidth * 0.25, currentY + triangleHeight * 0.4, "Wahr", fontSize * 0.85);
+        group.appendChild(trueLabel);
+        
+        const falseLabel = this.createSVGText(x + maxWidth * 0.75, currentY + triangleHeight * 0.4, "Falsch", fontSize * 0.85);
+        group.appendChild(falseLabel);
+        
+        currentY += triangleHeight;
+        
+        // Render branches side by side
+        const halfWidth = maxWidth / 2;
+        
+        const trueResult = this.renderElementToSVG(subTree.trueChild, x, currentY, halfWidth, false, noInsert, renderInsertNode);
+        if (trueResult.group) {
+          group.appendChild(trueResult.group);
+        }
+        
+        const falseResult = this.renderElementToSVG(subTree.falseChild, x + halfWidth, currentY, halfWidth, false, noInsert, renderInsertNode);
+        if (falseResult.group) {
+          group.appendChild(falseResult.group);
+        }
+        
+        // Vertical separator line
+        const maxBranchHeight = Math.max(trueResult.height, falseResult.height);
+        const separatorLine = document.createElementNS(SVG_NS, "line");
+        separatorLine.setAttribute("x1", midX);
+        separatorLine.setAttribute("y1", currentY);
+        separatorLine.setAttribute("x2", midX);
+        separatorLine.setAttribute("y2", currentY + maxBranchHeight);
+        separatorLine.setAttribute("stroke", "black");
+        separatorLine.setAttribute("stroke-width", "1.5");
+        group.appendChild(separatorLine);
+        
+        currentY += maxBranchHeight;
+        totalHeight = headHeight + maxBranchHeight;
+        
+        // Render following element
+        if (subTree.followElement) {
+          const follow = this.renderElementToSVG(subTree.followElement, x, currentY, maxWidth, parentIsMoving, noInsert, renderInsertNode);
+          if (follow.group) {
+            group.appendChild(follow.group);
+          }
+          totalHeight += follow.height;
+        }
+        
+        return { group, width: maxWidth, height: totalHeight };
+      }
+
+      case "HeadLoopNode":
+      case "CountLoopNode": {
+        const indent = 32;
+        
+        // Draw header rectangle
+        const headerRect = document.createElementNS(SVG_NS, "rect");
+        headerRect.setAttribute("x", x);
+        headerRect.setAttribute("y", y);
+        headerRect.setAttribute("width", maxWidth);
+        headerRect.setAttribute("height", baseHeight);
+        headerRect.setAttribute("fill", config.get()[subTree.type].color);
+        headerRect.setAttribute("stroke", "black");
+        headerRect.setAttribute("stroke-width", "1.5");
+        group.appendChild(headerRect);
+        
+        // Add text
+        const text = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, subTree.text, fontSize);
+        text.style.cursor = "pointer";
+        text.addEventListener("click", () => {
+          this.presenter.renderAllViews();
+          this.presenter.switchEditState(subTree.id);
+        });
+        group.appendChild(text);
+        
+        // Add options
+        const optionsGroup = this.createSVGOptions(x, y, maxWidth, baseHeight, subTree.type, subTree.id);
+        group.appendChild(optionsGroup);
+        
+        currentY += baseHeight;
+        
+        // Render loop body with left border
+        const bodyResult = this.renderElementToSVG(subTree.child, x + indent, currentY, maxWidth - indent, false, noInsert, renderInsertNode);
+        if (bodyResult.group) {
+          group.appendChild(bodyResult.group);
+        }
+        
+        // Left border line
+        const leftBorder = document.createElementNS(SVG_NS, "line");
+        leftBorder.setAttribute("x1", x + indent);
+        leftBorder.setAttribute("y1", currentY);
+        leftBorder.setAttribute("x2", x + indent);
+        leftBorder.setAttribute("y2", currentY + bodyResult.height);
+        leftBorder.setAttribute("stroke", "black");
+        leftBorder.setAttribute("stroke-width", "1.5");
+        group.appendChild(leftBorder);
+        
+        totalHeight = baseHeight + bodyResult.height;
+        currentY += bodyResult.height;
+        
+        // Render following element
+        if (subTree.followElement) {
+          const follow = this.renderElementToSVG(subTree.followElement, x, currentY, maxWidth, parentIsMoving, noInsert, renderInsertNode);
+          if (follow.group) {
+            group.appendChild(follow.group);
+          }
+          totalHeight += follow.height;
+        }
+        
+        return { group, width: maxWidth, height: totalHeight };
+      }
+
+      case "FootLoopNode": {
+        const indent = 32;
+        
+        // Render loop body with left and bottom border
+        const bodyResult = this.renderElementToSVG(subTree.child, x + indent, y, maxWidth - indent, false, noInsert, renderInsertNode);
+        if (bodyResult.group) {
+          group.appendChild(bodyResult.group);
+        }
+        
+        // Left border line
+        const leftBorder = document.createElementNS(SVG_NS, "line");
+        leftBorder.setAttribute("x1", x + indent);
+        leftBorder.setAttribute("y1", y);
+        leftBorder.setAttribute("x2", x + indent);
+        leftBorder.setAttribute("y2", y + bodyResult.height);
+        leftBorder.setAttribute("stroke", "black");
+        leftBorder.setAttribute("stroke-width", "1.5");
+        group.appendChild(leftBorder);
+        
+        // Bottom border line
+        const bottomBorder = document.createElementNS(SVG_NS, "line");
+        bottomBorder.setAttribute("x1", x + indent);
+        bottomBorder.setAttribute("y1", y + bodyResult.height);
+        bottomBorder.setAttribute("x2", x + maxWidth);
+        bottomBorder.setAttribute("y2", y + bodyResult.height);
+        bottomBorder.setAttribute("stroke", "black");
+        bottomBorder.setAttribute("stroke-width", "1.5");
+        group.appendChild(bottomBorder);
+        
+        currentY += bodyResult.height;
+        
+        // Draw footer rectangle
+        const footerRect = document.createElementNS(SVG_NS, "rect");
+        footerRect.setAttribute("x", x);
+        footerRect.setAttribute("y", currentY);
+        footerRect.setAttribute("width", maxWidth);
+        footerRect.setAttribute("height", baseHeight);
+        footerRect.setAttribute("fill", config.get()[subTree.type].color);
+        footerRect.setAttribute("stroke", "black");
+        footerRect.setAttribute("stroke-width", "1.5");
+        group.appendChild(footerRect);
+        
+        // Add text
+        const text = this.createSVGText(x + maxWidth / 2, currentY + baseHeight / 2, subTree.text, fontSize);
+        text.style.cursor = "pointer";
+        text.addEventListener("click", () => {
+          this.presenter.renderAllViews();
+          this.presenter.switchEditState(subTree.id);
+        });
+        group.appendChild(text);
+        
+        // Add options
+        const optionsGroup = this.createSVGOptions(x, currentY, maxWidth, baseHeight, subTree.type, subTree.id);
+        group.appendChild(optionsGroup);
+        
+        totalHeight = bodyResult.height + baseHeight;
+        currentY += baseHeight;
+        
+        // Render following element
+        if (subTree.followElement) {
+          const follow = this.renderElementToSVG(subTree.followElement, x, currentY, maxWidth, parentIsMoving, noInsert, renderInsertNode);
+          if (follow.group) {
+            group.appendChild(follow.group);
+          }
+          totalHeight += follow.height;
+        }
+        
+        return { group, width: maxWidth, height: totalHeight };
+      }
+
+      case "CaseNode": {
+        const totalCases = subTree.defaultOn ? subTree.cases.length + 1 : subTree.cases.length;
+        
+        // Draw header rectangle
+        const headerRect = document.createElementNS(SVG_NS, "rect");
+        headerRect.setAttribute("x", x);
+        headerRect.setAttribute("y", y);
+        headerRect.setAttribute("width", maxWidth);
+        headerRect.setAttribute("height", baseHeight);
+        headerRect.setAttribute("fill", config.get()[subTree.type].color);
+        headerRect.setAttribute("stroke", "black");
+        headerRect.setAttribute("stroke-width", "1.5");
+        group.appendChild(headerRect);
+        
+        // Draw case triangular divisions
+        if (subTree.defaultOn) {
+          const convergePoint = (subTree.cases.length / totalCases) * maxWidth;
+          
+          const leftLine = document.createElementNS(SVG_NS, "line");
+          leftLine.setAttribute("x1", x);
+          leftLine.setAttribute("y1", y);
+          leftLine.setAttribute("x2", x + convergePoint);
+          leftLine.setAttribute("y2", y + baseHeight);
+          leftLine.setAttribute("stroke", "black");
+          leftLine.setAttribute("stroke-width", "1.5");
+          group.appendChild(leftLine);
+          
+          const rightLine = document.createElementNS(SVG_NS, "line");
+          rightLine.setAttribute("x1", x + maxWidth);
+          rightLine.setAttribute("y1", y);
+          rightLine.setAttribute("x2", x + convergePoint);
+          rightLine.setAttribute("y2", y + baseHeight);
+          rightLine.setAttribute("stroke", "black");
+          rightLine.setAttribute("stroke-width", "1.5");
+          group.appendChild(rightLine);
+          
+          for (let i = 1; i < subTree.cases.length; i++) {
+            const xPos = x + (i / totalCases) * maxWidth;
+            const yStart = y + (i / subTree.cases.length) * baseHeight;
+            
+            const vertLine = document.createElementNS(SVG_NS, "line");
+            vertLine.setAttribute("x1", xPos);
+            vertLine.setAttribute("y1", yStart);
+            vertLine.setAttribute("x2", xPos);
+            vertLine.setAttribute("y2", y + baseHeight);
+            vertLine.setAttribute("stroke", "black");
+            vertLine.setAttribute("stroke-width", "1.5");
+            group.appendChild(vertLine);
+          }
+        } else {
+          const diagonal = document.createElementNS(SVG_NS, "line");
+          diagonal.setAttribute("x1", x);
+          diagonal.setAttribute("y1", y);
+          diagonal.setAttribute("x2", x + maxWidth);
+          diagonal.setAttribute("y2", y + baseHeight);
+          diagonal.setAttribute("stroke", "black");
+          diagonal.setAttribute("stroke-width", "1.5");
+          group.appendChild(diagonal);
+          
+          for (let i = 1; i < subTree.cases.length; i++) {
+            const xPos = x + (i / subTree.cases.length) * maxWidth;
+            const yStart = y + (i / subTree.cases.length) * baseHeight;
+            
+            const vertLine = document.createElementNS(SVG_NS, "line");
+            vertLine.setAttribute("x1", xPos);
+            vertLine.setAttribute("y1", yStart);
+            vertLine.setAttribute("x2", xPos);
+            vertLine.setAttribute("y2", y + baseHeight);
+            vertLine.setAttribute("stroke", "black");
+            vertLine.setAttribute("stroke-width", "1.5");
+            group.appendChild(vertLine);
+          }
+        }
+        
+        // Add case text
+        const textX = x + ((subTree.cases.length / (totalCases + 1)) * maxWidth);
+        const text = this.createSVGText(textX, y + baseHeight / 2, subTree.text, fontSize);
+        text.style.cursor = "pointer";
+        text.addEventListener("click", () => {
+          this.presenter.renderAllViews();
+          this.presenter.switchEditState(subTree.id);
+        });
+        group.appendChild(text);
+        
+        // Add options
+        const optionsGroup = this.createSVGOptions(x, y, maxWidth, baseHeight, subTree.type, subTree.id);
+        group.appendChild(optionsGroup);
+        
+        currentY += baseHeight;
+        
+        // Render case bodies
+        const caseWidth = maxWidth / totalCases;
+        const caseResults = [];
+        let maxCaseHeight = 0;
+        
+        for (let i = 0; i < subTree.cases.length; i++) {
+          const caseX = x + i * caseWidth;
+          const caseResult = this.renderElementToSVG(subTree.cases[i], caseX, currentY, caseWidth, false, noInsert, renderInsertNode);
+          if (caseResult.group) {
+            group.appendChild(caseResult.group);
+          }
+          caseResults.push(caseResult);
+          maxCaseHeight = Math.max(maxCaseHeight, caseResult.height);
+        }
+        
+        if (subTree.defaultOn) {
+          const defaultX = x + subTree.cases.length * caseWidth;
+          const defaultResult = this.renderElementToSVG(subTree.defaultNode, defaultX, currentY, caseWidth, false, noInsert, renderInsertNode);
+          if (defaultResult.group) {
+            group.appendChild(defaultResult.group);
+          }
+          maxCaseHeight = Math.max(maxCaseHeight, defaultResult.height);
+        }
+        
+        // Draw vertical separators for case bodies
+        const effectiveCases = subTree.defaultOn ? subTree.cases.length : subTree.cases.length - 1;
+        for (let i = 1; i <= effectiveCases; i++) {
+          const xPos = x + (i / totalCases) * maxWidth;
+          
+          const separatorLine = document.createElementNS(SVG_NS, "line");
+          separatorLine.setAttribute("x1", xPos);
+          separatorLine.setAttribute("y1", currentY);
+          separatorLine.setAttribute("x2", xPos);
+          separatorLine.setAttribute("y2", currentY + maxCaseHeight);
+          separatorLine.setAttribute("stroke", "black");
+          separatorLine.setAttribute("stroke-width", "1.5");
+          group.appendChild(separatorLine);
+        }
+        
+        totalHeight = baseHeight + maxCaseHeight;
+        currentY += maxCaseHeight;
+        
+        // Render following element
+        if (subTree.followElement) {
+          const follow = this.renderElementToSVG(subTree.followElement, x, currentY, maxWidth, parentIsMoving, noInsert, renderInsertNode);
+          if (follow.group) {
+            group.appendChild(follow.group);
+          }
+          totalHeight += follow.height;
+        }
+        
+        return { group, width: maxWidth, height: totalHeight };
+      }
+
+      case "TryCatchNode": {
+        const indent = 32;
+        
+        // Draw "Try" header
+        const tryHeaderRect = document.createElementNS(SVG_NS, "rect");
+        tryHeaderRect.setAttribute("x", x);
+        tryHeaderRect.setAttribute("y", y);
+        tryHeaderRect.setAttribute("width", maxWidth);
+        tryHeaderRect.setAttribute("height", baseHeight);
+        tryHeaderRect.setAttribute("fill", config.get()[subTree.type].color);
+        tryHeaderRect.setAttribute("stroke", "black");
+        tryHeaderRect.setAttribute("stroke-width", "1.5");
+        group.appendChild(tryHeaderRect);
+        
+        const tryText = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, "Try", fontSize);
+        group.appendChild(tryText);
+        
+        // Add options
+        const optionsGroup = this.createSVGOptions(x, y, maxWidth, baseHeight, subTree.type, subTree.id);
+        group.appendChild(optionsGroup);
+        
+        currentY += baseHeight;
+        
+        // Render try body
+        const tryResult = this.renderElementToSVG(subTree.tryChild, x + indent, currentY, maxWidth - indent, false, noInsert, renderInsertNode);
+        if (tryResult.group) {
+          group.appendChild(tryResult.group);
+        }
+        
+        // Left border for try body
+        const tryLeftBorder = document.createElementNS(SVG_NS, "line");
+        tryLeftBorder.setAttribute("x1", x + indent);
+        tryLeftBorder.setAttribute("y1", currentY);
+        tryLeftBorder.setAttribute("x2", x + indent);
+        tryLeftBorder.setAttribute("y2", currentY + tryResult.height);
+        tryLeftBorder.setAttribute("stroke", "black");
+        tryLeftBorder.setAttribute("stroke-width", "1.5");
+        group.appendChild(tryLeftBorder);
+        
+        currentY += tryResult.height;
+        
+        // Vertical line between try and catch
+        const vertLine = document.createElementNS(SVG_NS, "line");
+        vertLine.setAttribute("x1", x + indent);
+        vertLine.setAttribute("y1", currentY);
+        vertLine.setAttribute("x2", x + indent);
+        vertLine.setAttribute("y2", currentY + 3);
+        vertLine.setAttribute("stroke", "black");
+        vertLine.setAttribute("stroke-width", "1.5");
+        group.appendChild(vertLine);
+        
+        const bottomLine = document.createElementNS(SVG_NS, "line");
+        bottomLine.setAttribute("x1", x + indent);
+        bottomLine.setAttribute("y1", currentY + 3);
+        bottomLine.setAttribute("x2", x + maxWidth);
+        bottomLine.setAttribute("y2", currentY + 3);
+        bottomLine.setAttribute("stroke", "black");
+        bottomLine.setAttribute("stroke-width", "1.5");
+        group.appendChild(bottomLine);
+        
+        currentY += 3;
+        
+        // Draw "Catch" header
+        const catchHeaderRect = document.createElementNS(SVG_NS, "rect");
+        catchHeaderRect.setAttribute("x", x);
+        catchHeaderRect.setAttribute("y", currentY);
+        catchHeaderRect.setAttribute("width", maxWidth);
+        catchHeaderRect.setAttribute("height", baseHeight);
+        catchHeaderRect.setAttribute("fill", config.get()[subTree.type].color);
+        catchHeaderRect.setAttribute("stroke", "black");
+        catchHeaderRect.setAttribute("stroke-width", "1.5");
+        group.appendChild(catchHeaderRect);
+        
+        const catchLabel = this.createSVGText(x + maxWidth * 0.2, currentY + baseHeight / 2, "Catch", fontSize);
+        group.appendChild(catchLabel);
+        
+        const catchText = this.createSVGText(x + maxWidth * 0.6, currentY + baseHeight / 2, subTree.text, fontSize);
+        catchText.style.cursor = "pointer";
+        catchText.addEventListener("click", () => {
+          this.presenter.renderAllViews();
+          this.presenter.switchEditState(subTree.id);
+        });
+        group.appendChild(catchText);
+        
+        currentY += baseHeight;
+        
+        // Render catch body
+        const catchResult = this.renderElementToSVG(subTree.catchChild, x + indent, currentY, maxWidth - indent, false, noInsert, renderInsertNode);
+        if (catchResult.group) {
+          group.appendChild(catchResult.group);
+        }
+        
+        // Left border for catch body
+        const catchLeftBorder = document.createElementNS(SVG_NS, "line");
+        catchLeftBorder.setAttribute("x1", x + indent);
+        catchLeftBorder.setAttribute("y1", currentY);
+        catchLeftBorder.setAttribute("x2", x + indent);
+        catchLeftBorder.setAttribute("y2", currentY + catchResult.height);
+        catchLeftBorder.setAttribute("stroke", "black");
+        catchLeftBorder.setAttribute("stroke-width", "1.5");
+        group.appendChild(catchLeftBorder);
+        
+        totalHeight = baseHeight + tryResult.height + 3 + baseHeight + catchResult.height;
+        currentY += catchResult.height;
+        
+        // Render following element
+        if (subTree.followElement) {
+          const follow = this.renderElementToSVG(subTree.followElement, x, currentY, maxWidth, parentIsMoving, noInsert, renderInsertNode);
+          if (follow.group) {
+            group.appendChild(follow.group);
+          }
+          totalHeight += follow.height;
+        }
+        
+        return { group, width: maxWidth, height: totalHeight };
+      }
+
+      case "FunctionNode": {
+        const indent = 32;
+        
+        // Draw function header rectangle
+        const headerRect = document.createElementNS(SVG_NS, "rect");
+        headerRect.setAttribute("x", x);
+        headerRect.setAttribute("y", y);
+        headerRect.setAttribute("width", maxWidth);
+        headerRect.setAttribute("height", baseHeight);
+        headerRect.setAttribute("fill", config.get()[subTree.type].color);
+        headerRect.setAttribute("stroke", "black");
+        headerRect.setAttribute("stroke-width", "1.5");
+        group.appendChild(headerRect);
+        
+        // Function signature text
+        let funcSignature = `function ${subTree.text}(`;
+        if (subTree.parameters && subTree.parameters.length > 0) {
+          funcSignature += subTree.parameters.map(p => p.parName).join(", ");
+        }
+        funcSignature += ") {";
+        
+        const funcText = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, funcSignature, fontSize);
+        funcText.style.cursor = "pointer";
+        funcText.addEventListener("click", () => {
+          this.presenter.renderAllViews();
+          this.presenter.switchEditState(subTree.id);
+        });
+        group.appendChild(funcText);
+        
+        // Add options
+        const optionsGroup = this.createSVGOptions(x, y, maxWidth, baseHeight, subTree.type, subTree.id);
+        group.appendChild(optionsGroup);
+        
+        currentY += baseHeight;
+        
+        // Render function body
+        const bodyResult = this.renderElementToSVG(subTree.child, x + indent, currentY, maxWidth - indent, false, noInsert, renderInsertNode);
+        if (bodyResult.group) {
+          group.appendChild(bodyResult.group);
+        }
+        
+        // Left border
+        const leftBorder = document.createElementNS(SVG_NS, "line");
+        leftBorder.setAttribute("x1", x + indent);
+        leftBorder.setAttribute("y1", currentY);
+        leftBorder.setAttribute("x2", x + indent);
+        leftBorder.setAttribute("y2", currentY + bodyResult.height);
+        leftBorder.setAttribute("stroke", "black");
+        leftBorder.setAttribute("stroke-width", "1.5");
+        group.appendChild(leftBorder);
+        
+        currentY += bodyResult.height;
+        
+        // Vertical line before footer
+        const vertLine = document.createElementNS(SVG_NS, "line");
+        vertLine.setAttribute("x1", x + indent);
+        vertLine.setAttribute("y1", currentY);
+        vertLine.setAttribute("x2", x + indent);
+        vertLine.setAttribute("y2", currentY + 3);
+        vertLine.setAttribute("stroke", "black");
+        vertLine.setAttribute("stroke-width", "1.5");
+        group.appendChild(vertLine);
+        
+        const bottomLine = document.createElementNS(SVG_NS, "line");
+        bottomLine.setAttribute("x1", x + indent);
+        bottomLine.setAttribute("y1", currentY + 3);
+        bottomLine.setAttribute("x2", x + maxWidth);
+        bottomLine.setAttribute("y2", currentY + 3);
+        bottomLine.setAttribute("stroke", "black");
+        bottomLine.setAttribute("stroke-width", "1.5");
+        group.appendChild(bottomLine);
+        
+        currentY += 3;
+        
+        // Draw footer rectangle
+        const footerRect = document.createElementNS(SVG_NS, "rect");
+        footerRect.setAttribute("x", x);
+        footerRect.setAttribute("y", currentY);
+        footerRect.setAttribute("width", maxWidth);
+        footerRect.setAttribute("height", baseHeight);
+        footerRect.setAttribute("fill", config.get()[subTree.type].color);
+        footerRect.setAttribute("stroke", "black");
+        footerRect.setAttribute("stroke-width", "1.5");
+        group.appendChild(footerRect);
+        
+        const closingBrace = this.createSVGText(x + maxWidth / 2, currentY + baseHeight / 2, "}", fontSize);
+        group.appendChild(closingBrace);
+        
+        totalHeight = baseHeight + bodyResult.height + 3 + baseHeight;
+        currentY += baseHeight;
+        
+        // Render following element
+        if (subTree.followElement) {
+          const follow = this.renderElementToSVG(subTree.followElement, x, currentY, maxWidth, parentIsMoving, noInsert, renderInsertNode);
+          if (follow.group) {
+            group.appendChild(follow.group);
+          }
+          totalHeight += follow.height;
+        }
+        
+        return { group, width: maxWidth, height: totalHeight };
+      }
+
+      case "InsertCase": {
+        // Draw rectangle with case text
+        const rect = document.createElementNS(SVG_NS, "rect");
+        rect.setAttribute("x", x);
+        rect.setAttribute("y", y);
+        rect.setAttribute("width", maxWidth);
+        rect.setAttribute("height", baseHeight);
+        rect.setAttribute("fill", config.get()[subTree.type]?.color || "#fff");
+        rect.setAttribute("stroke", "black");
+        rect.setAttribute("stroke-width", "1.5");
+        group.appendChild(rect);
+        
+        const text = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, subTree.text, fontSize);
+        group.appendChild(text);
+        
+        // Add options if not "Sonst"
+        if (subTree.text !== "Sonst") {
+          const optionsGroup = this.createSVGOptions(x, y, maxWidth, baseHeight, subTree.type, subTree.id);
+          group.appendChild(optionsGroup);
+        }
+        
+        totalHeight = baseHeight;
+        currentY += baseHeight;
+        
+        // Render following element
+        if (subTree.followElement) {
+          const follow = this.renderElementToSVG(subTree.followElement, x, currentY, maxWidth, parentIsMoving, noInsert, renderInsertNode);
+          if (follow.group) {
+            group.appendChild(follow.group);
+          }
+          totalHeight += follow.height;
+        }
+        
+        return { group, width: maxWidth, height: totalHeight };
+      }
+
+      default:
+        return this.renderElementToSVG(subTree.followElement, x, y, maxWidth, parentIsMoving, noInsert, renderInsertNode);
+    }
+  }
+
+  /**
+   * Create SVG text element with proper wrapping
+   */
+  createSVGText(x, y, text, fontSize) {
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const svgText = document.createElementNS(SVG_NS, "text");
+    svgText.setAttribute("x", x);
+    svgText.setAttribute("y", y);
+    svgText.setAttribute("text-anchor", "middle");
+    svgText.setAttribute("dominant-baseline", "middle");
+    svgText.setAttribute("font-size", fontSize);
+    svgText.setAttribute("font-family", "Verdana, Geneva, sans-serif");
+    svgText.textContent = text;
+    return svgText;
+  }
+
+  /**
+   * Create SVG options (delete, move icons) using foreignObject
+   */
+  createSVGOptions(x, y, width, height, type, uid) {
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const group = document.createElementNS(SVG_NS, "g");
+    
+    // Use foreignObject to embed HTML for icons
+    const fo = document.createElementNS(SVG_NS, "foreignObject");
+    fo.setAttribute("x", x + width - 80);
+    fo.setAttribute("y", y);
+    fo.setAttribute("width", 80);
+    fo.setAttribute("height", height);
+    
+    const optionsDiv = document.createElement("div");
+    optionsDiv.classList.add("optionContainer");
+    optionsDiv.style.position = "relative";
+    optionsDiv.style.width = "100%";
+    optionsDiv.style.height = "100%";
+    optionsDiv.style.display = "flex";
+    optionsDiv.style.justifyContent = "flex-end";
+    optionsDiv.style.alignItems = "center";
+    optionsDiv.style.opacity = "0";
+    optionsDiv.style.transition = "opacity 0.2s";
+    
+    // Show on hover
+    fo.addEventListener("mouseenter", () => {
+      optionsDiv.style.opacity = "1";
+    });
+    fo.addEventListener("mouseleave", () => {
+      optionsDiv.style.opacity = "0";
+    });
+    
+    // Move button (if applicable)
+    if (type !== "InsertCase" && type !== "FunctionNode") {
+      const moveBtn = document.createElement("div");
+      moveBtn.classList.add("moveIcon", "optionIcon", "hand");
+      moveBtn.style.width = "1em";
+      moveBtn.style.height = "100%";
+      moveBtn.style.marginLeft = "0.4em";
+      moveBtn.title = "Verschieben";
+      moveBtn.addEventListener("click", () => this.presenter.moveElement(uid));
+      optionsDiv.appendChild(moveBtn);
+    }
+    
+    // Delete button
+    const deleteBtn = document.createElement("div");
+    deleteBtn.classList.add("trashcan", "optionIcon", "hand");
+    deleteBtn.style.width = "1em";
+    deleteBtn.style.height = "100%";
+    deleteBtn.style.marginLeft = "0.4em";
+    deleteBtn.title = "Entfernen";
+    deleteBtn.addEventListener("click", () => this.presenter.removeElement(uid));
+    optionsDiv.appendChild(deleteBtn);
+    
+    // Case node gear icon
+    if (type === "CaseNode") {
+      const gearBtn = document.createElement("div");
+      gearBtn.classList.add("gearIcon", "optionIcon", "hand");
+      gearBtn.style.width = "1em";
+      gearBtn.style.height = "100%";
+      gearBtn.style.marginLeft = "0.4em";
+      gearBtn.title = "Einstellung";
+      gearBtn.addEventListener("click", () => this.openCaseOptions(uid));
+      optionsDiv.insertBefore(gearBtn, optionsDiv.firstChild);
+    }
+    
+    fo.appendChild(optionsDiv);
+    group.appendChild(fo);
+    
+    return group;
   }
 
   applyCodeEventListeners(obj) {
