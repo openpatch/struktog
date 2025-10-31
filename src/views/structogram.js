@@ -1393,15 +1393,19 @@ export class Structogram {
       editDiv.classList.add(uid);
     }
 
-    // inputfield with eventlisteners
-    const editText = document.createElement("input");
-    editText.type = "text";
+    // textarea for multiline text with eventlisteners
+    const editText = document.createElement("textarea");
     editText.value = content;
+    editText.rows = 3; // default to 3 rows
+    editText.style.resize = "vertical"; // allow vertical resizing
+    editText.style.width = "100%";
     // TODO: move to presenter
     editText.addEventListener("keyup", (event) => {
-      if (event.keyCode === 13) {
+      // Ctrl+Enter or Cmd+Enter to apply changes
+      if (event.keyCode === 13 && (event.ctrlKey || event.metaKey)) {
         this.presenter.editElement(uid, editText.value);
       }
+      // Escape to cancel
       if (event.keyCode === 27) {
         this.presenter.renderAllViews();
       }
@@ -1451,8 +1455,9 @@ export class Structogram {
       });
     }
 
-    // insert text
+    // insert text with line break support
     const textSpan = document.createElement("span");
+    textSpan.style.whiteSpace = "pre-wrap"; // preserve line breaks and wrap text
     if (type === "CaseNode") {
       textSpan.style.marginLeft =
         "calc(" + (nrCases / (nrCases + 1)) * 100 + "% - 2em)";
