@@ -1645,7 +1645,7 @@ export class Structogram {
           displayText = "A: " + displayText;
         }
         
-        const text = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, displayText, fontSize);
+        const text = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, displayText, fontSize, maxWidth * 0.9);
         text.style.cursor = "pointer";
         text.addEventListener("click", () => {
           this.presenter.renderAllViews();
@@ -1687,7 +1687,7 @@ export class Structogram {
         group.appendChild(condRect);
         
         // Add condition text
-        const condText = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, subTree.text, fontSize);
+        const condText = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, subTree.text, fontSize, maxWidth * 0.9);
         condText.style.cursor = "pointer";
         condText.addEventListener("click", () => {
           this.presenter.renderAllViews();
@@ -1787,7 +1787,7 @@ export class Structogram {
         group.appendChild(headerRect);
         
         // Add text
-        const text = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, subTree.text, fontSize);
+        const text = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, subTree.text, fontSize, maxWidth * 0.9);
         text.style.cursor = "pointer";
         text.addEventListener("click", () => {
           this.presenter.renderAllViews();
@@ -2278,7 +2278,7 @@ export class Structogram {
         rect.setAttribute("stroke-width", "1.5");
         group.appendChild(rect);
         
-        const text = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, subTree.text, fontSize);
+        const text = this.createSVGText(x + maxWidth / 2, y + baseHeight / 2, subTree.text, fontSize, maxWidth * 0.9);
         group.appendChild(text);
         
         // Add options if not "Sonst"
@@ -2310,7 +2310,7 @@ export class Structogram {
   /**
    * Create SVG text element with proper wrapping
    */
-  createSVGText(x, y, text, fontSize) {
+  createSVGText(x, y, text, fontSize, maxWidth = null) {
     const SVG_NS = "http://www.w3.org/2000/svg";
     const svgText = document.createElementNS(SVG_NS, "text");
     svgText.setAttribute("x", x);
@@ -2319,7 +2319,48 @@ export class Structogram {
     svgText.setAttribute("dominant-baseline", "middle");
     svgText.setAttribute("font-size", fontSize);
     svgText.setAttribute("font-family", "Verdana, Geneva, sans-serif");
-    svgText.textContent = text;
+    
+    // If maxWidth is provided, wrap text into multiple tspan elements
+    if (maxWidth && text.length > 0) {
+      const words = text.split(' ');
+      const lines = [];
+      let currentLine = '';
+      const charsPerLine = Math.floor(maxWidth / (fontSize * 0.5)); // Rough estimate
+      
+      for (const word of words) {
+        const testLine = currentLine ? `${currentLine} ${word}` : word;
+        if (testLine.length <= charsPerLine) {
+          currentLine = testLine;
+        } else {
+          if (currentLine) {
+            lines.push(currentLine);
+          }
+          currentLine = word;
+        }
+      }
+      if (currentLine) {
+        lines.push(currentLine);
+      }
+      
+      // Create tspan for each line
+      if (lines.length > 1) {
+        const lineHeight = fontSize * 1.2;
+        const startY = y - ((lines.length - 1) * lineHeight) / 2;
+        
+        lines.forEach((line, index) => {
+          const tspan = document.createElementNS(SVG_NS, "tspan");
+          tspan.setAttribute("x", x);
+          tspan.setAttribute("y", startY + (index * lineHeight));
+          tspan.textContent = line;
+          svgText.appendChild(tspan);
+        });
+      } else {
+        svgText.textContent = text;
+      }
+    } else {
+      svgText.textContent = text;
+    }
+    
     return svgText;
   }
 
