@@ -1,15 +1,16 @@
 /**
  * SVG Renderer Helper Utilities
  * 
- * This module provides utility functions for creating SVG elements programmatically.
- * These utilities are prepared for future enhancements to the structogram renderer,
- * such as:
+ * NOTE: These utilities are currently not used by the main implementation.
+ * The current implementation in structogram.js directly uses document.createElementNS
+ * for creating inline SVG elements for branch and case nodes.
+ * 
+ * These utilities are kept as a foundation for future enhancements:
  * - Text wrapping within triangular shapes in branch nodes
  * - More sophisticated SVG-based rendering of complex nodes
- * - Better export and printing capabilities
+ * - Potential migration to full SVG-based structogram rendering
  * 
- * Current implementation directly uses document.createElementNS in structogram.js
- * for creating inline SVG elements for branch and case nodes.
+ * If future development doesn't need these utilities, this file can be removed.
  */
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
