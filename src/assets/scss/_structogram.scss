@@ -169,6 +169,7 @@ $main-background-color: rgba(128,212,255, 0.5);
 
 .columnAuto {
   flex: 1;
+  min-width: fit-content; // Allow expansion beyond container width
 }
 
 .columnAuto-6 {
@@ -179,6 +180,24 @@ $main-background-color: rgba(128,212,255, 0.5);
   flex: auto;
   margin: auto;
   padding-bottom: 0.15em;
+}
+
+// Structogram container - allow horizontal expansion
+#structogram {
+  min-width: fit-content;
+  width: auto;
+}
+
+// Allow structogram editor to scroll horizontally when content expands
+.columnEditorStructogram {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+// Ensure text doesn't get cut off
+.symbol {
+  word-break: normal;
+  overflow-wrap: break-word;
 }
 
 .bottomHeader {
