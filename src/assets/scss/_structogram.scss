@@ -46,6 +46,9 @@ $main-background-color: rgba(128,212,255, 0.5);
 
 .symbol {
   margin: 6.5px 0;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 
   .input-group {
     position: absolute;
@@ -115,6 +118,8 @@ $main-background-color: rgba(128,212,255, 0.5);
 .padding {
   padding-left: 1em;
   padding-right: 1em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
 }
 
 .editField {
@@ -284,4 +289,25 @@ $main-background-color: rgba(128,212,255, 0.5);
   border-radius: 0.15em;
   border: 0.15em solid #264040;
   font-size: 100%;
+}
+
+// Branch node text wrapping support
+.branchCenter {
+  .columnAuto {
+    // Allow branches to size based on content with min-width constraint
+    flex: 1 1 auto;
+    min-width: 0; // Allow flex items to shrink below content size
+    
+    .symbol {
+      // Ensure text wraps in branch nodes
+      white-space: normal;
+      word-break: break-word;
+    }
+    
+    // Allow height to grow with content
+    .fixedHeight {
+      flex: 0 1 auto;
+      min-height: 2em;
+    }
+  }
 }
