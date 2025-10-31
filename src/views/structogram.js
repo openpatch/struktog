@@ -743,13 +743,26 @@ export class Structogram {
 
           const divHead = document.createElement("div");
           divHead.classList.add(
-            "branchSplit",
             "vcontainer",
             "fixedDoubleHeight",
           );
+          divHead.style.position = "relative";
+
+          // Create inline SVG for the triangular split instead of CSS background
+          const svgTriangle = this.createBranchSplitSVG();
+          svgTriangle.style.position = "absolute";
+          svgTriangle.style.top = "0";
+          svgTriangle.style.left = "0";
+          svgTriangle.style.width = "100%";
+          svgTriangle.style.height = "100%";
+          svgTriangle.style.pointerEvents = "none";
+          svgTriangle.style.zIndex = "0";
+          divHead.appendChild(svgTriangle);
 
           const divHeadTop = document.createElement("div");
           divHeadTop.classList.add("fixedHeight", "container");
+          divHeadTop.style.position = "relative";
+          divHeadTop.style.zIndex = "1";
 
           const textDiv = this.createTextDiv(
             subTree.type,
@@ -762,6 +775,8 @@ export class Structogram {
 
           const divHeadBottom = document.createElement("div");
           divHeadBottom.classList.add("fixedHeight", "container", "padding");
+          divHeadBottom.style.position = "relative";
+          divHeadBottom.style.zIndex = "1";
 
           const divHeaderTrue = document.createElement("div");
           divHeaderTrue.classList.add(
@@ -787,10 +802,24 @@ export class Structogram {
           divBranchNode.appendChild(divHead);
 
           const divChildren = document.createElement("div");
-          divChildren.classList.add("columnAuto", "branchCenter", "container");
+          divChildren.classList.add("columnAuto", "container");
+          divChildren.style.position = "relative";
+
+          // Create inline SVG for the center separator line instead of CSS background
+          const svgCenter = this.createBranchCenterSVG();
+          svgCenter.style.position = "absolute";
+          svgCenter.style.top = "0";
+          svgCenter.style.left = "0";
+          svgCenter.style.width = "100%";
+          svgCenter.style.height = "100%";
+          svgCenter.style.pointerEvents = "none";
+          svgCenter.style.zIndex = "0";
+          divChildren.appendChild(svgCenter);
 
           const divTrue = document.createElement("div");
           divTrue.classList.add("columnAuto", "vcontainer", "ov-hidden");
+          divTrue.style.position = "relative";
+          divTrue.style.zIndex = "1";
           for (const elem of this.renderElement(
             subTree.trueChild,
             false,
@@ -802,6 +831,8 @@ export class Structogram {
 
           const divFalse = document.createElement("div");
           divFalse.classList.add("columnAuto", "vcontainer", "ov-hidden");
+          divFalse.style.position = "relative";
+          divFalse.style.zIndex = "1";
           for (const elem of this.renderElement(
             subTree.falseChild,
             false,
@@ -1075,12 +1106,18 @@ export class Structogram {
 
           const divHead = document.createElement("div");
           divHead.classList.add("vcontainer", "fixedHeight");
-          if (subTree.defaultOn) {
-            divHead.classList.add("caseHead-" + subTree.cases.length);
-          } else {
-            divHead.classList.add("caseHead-noDefault-" + subTree.cases.length);
-          }
-          divHead.style.backgroundPosition = "1px 0px";
+          divHead.style.position = "relative";
+
+          // Create inline SVG for case triangles instead of CSS background
+          const svgCaseHead = this.createCaseHeadSVG(subTree.cases.length, subTree.defaultOn);
+          svgCaseHead.style.position = "absolute";
+          svgCaseHead.style.top = "0";
+          svgCaseHead.style.left = "0";
+          svgCaseHead.style.width = "100%";
+          svgCaseHead.style.height = "100%";
+          svgCaseHead.style.pointerEvents = "none";
+          svgCaseHead.style.zIndex = "0";
+          divHead.appendChild(svgCaseHead);
 
           let nrCases = subTree.cases.length;
           if (!subTree.defaultOn) {
@@ -1092,23 +1129,35 @@ export class Structogram {
             subTree.id,
             nrCases,
           );
+          textDiv.style.position = "relative";
+          textDiv.style.zIndex = "1";
           const optionDiv = this.createOptionDiv(subTree.type, subTree.id);
+          optionDiv.style.position = "relative";
+          optionDiv.style.zIndex = "1";
           divHead.appendChild(textDiv);
           divHead.appendChild(optionDiv);
           div.appendChild(divHead);
 
           const divChildren = document.createElement("div");
           divChildren.classList.add("columnAuto", "container");
-          if (subTree.defaultOn) {
-            divChildren.classList.add("caseBody-" + subTree.cases.length);
-          } else {
-            const level = subTree.cases.length - 1;
-            divChildren.classList.add("caseBody-" + level);
-          }
+          divChildren.style.position = "relative";
+
+          // Create inline SVG for case body separators
+          const svgCaseBody = this.createCaseBodySVG(subTree.cases.length, subTree.defaultOn);
+          svgCaseBody.style.position = "absolute";
+          svgCaseBody.style.top = "0";
+          svgCaseBody.style.left = "0";
+          svgCaseBody.style.width = "100%";
+          svgCaseBody.style.height = "100%";
+          svgCaseBody.style.pointerEvents = "none";
+          svgCaseBody.style.zIndex = "0";
+          divChildren.appendChild(svgCaseBody);
 
           for (const caseElem of subTree.cases) {
             const divCase = document.createElement("div");
             divCase.classList.add("columnAuto", "vcontainer", "ov-hidden");
+            divCase.style.position = "relative";
+            divCase.style.zIndex = "1";
 
             for (const elem of this.renderElement(caseElem, false, noInsert)) {
               this.applyCodeEventListeners(elem);
@@ -1120,6 +1169,8 @@ export class Structogram {
           if (subTree.defaultOn) {
             const divCase = document.createElement("div");
             divCase.classList.add("columnAuto", "vcontainer", "ov-hidden");
+            divCase.style.position = "relative";
+            divCase.style.zIndex = "1";
             for (const elem of this.renderElement(
               subTree.defaultNode,
               false,
@@ -1964,6 +2015,172 @@ export class Structogram {
           );
       }
     }
+  }
+
+  /**
+   * Create inline SVG for branch split (triangular top)
+   */
+  createBranchSplitSVG() {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    
+    // Left diagonal line (from top-left to bottom-center)
+    const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line1.setAttribute("x1", "0%");
+    line1.setAttribute("y1", "0%");
+    line1.setAttribute("x2", "50%");
+    line1.setAttribute("y2", "100%");
+    line1.setAttribute("stroke", "black");
+    line1.setAttribute("stroke-width", "1.5");
+    svg.appendChild(line1);
+    
+    // Right diagonal line (from top-right to bottom-center)
+    const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line2.setAttribute("x1", "100%");
+    line2.setAttribute("y1", "0%");
+    line2.setAttribute("x2", "50%");
+    line2.setAttribute("y2", "100%");
+    line2.setAttribute("stroke", "black");
+    line2.setAttribute("stroke-width", "1.5");
+    svg.appendChild(line2);
+    
+    return svg;
+  }
+
+  /**
+   * Create inline SVG for branch center separator line
+   */
+  createBranchCenterSVG() {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    
+    // Vertical center line
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", "50%");
+    line.setAttribute("y1", "0%");
+    line.setAttribute("x2", "50%");
+    line.setAttribute("y2", "100%");
+    line.setAttribute("stroke", "black");
+    line.setAttribute("stroke-width", "1.5");
+    svg.appendChild(line);
+    
+    return svg;
+  }
+
+  /**
+   * Create inline SVG for case head with triangular divisions
+   */
+  createCaseHeadSVG(numCases, hasDefault) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    
+    const totalCases = hasDefault ? numCases + 1 : numCases;
+    
+    if (hasDefault) {
+      // With default case: triangular pattern converging to the last section
+      const convergePoint = (numCases / totalCases) * 100; // Percentage where lines converge
+      
+      // Left line from top-left to converge point
+      const leftLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      leftLine.setAttribute("x1", "0%");
+      leftLine.setAttribute("y1", "0%");
+      leftLine.setAttribute("x2", `${convergePoint}%`);
+      leftLine.setAttribute("y2", "100%");
+      leftLine.setAttribute("stroke", "black");
+      leftLine.setAttribute("stroke-width", "1.5");
+      svg.appendChild(leftLine);
+      
+      // Right line from top-right to converge point
+      const rightLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      rightLine.setAttribute("x1", "100%");
+      rightLine.setAttribute("y1", "0%");
+      rightLine.setAttribute("x2", `${convergePoint}%`);
+      rightLine.setAttribute("y2", "100%");
+      rightLine.setAttribute("stroke", "black");
+      rightLine.setAttribute("stroke-width", "1.5");
+      svg.appendChild(rightLine);
+      
+      // Vertical lines for each case division
+      for (let i = 1; i < numCases; i++) {
+        const xPercent = (i / totalCases) * 100;
+        const yStart = (i / numCases) * 100; // Start from diagonal intersection
+        
+        const vertLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        vertLine.setAttribute("x1", `${xPercent}%`);
+        vertLine.setAttribute("y1", `${yStart}%`);
+        vertLine.setAttribute("x2", `${xPercent}%`);
+        vertLine.setAttribute("y2", "100%");
+        vertLine.setAttribute("stroke", "black");
+        vertLine.setAttribute("stroke-width", "1.5");
+        svg.appendChild(vertLine);
+      }
+    } else {
+      // Without default: single diagonal line with vertical divisions
+      const diagonal = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      diagonal.setAttribute("x1", "0%");
+      diagonal.setAttribute("y1", "0%");
+      diagonal.setAttribute("x2", "100%");
+      diagonal.setAttribute("y2", "100%");
+      diagonal.setAttribute("stroke", "black");
+      diagonal.setAttribute("stroke-width", "1.5");
+      svg.appendChild(diagonal);
+      
+      // Vertical lines for each case
+      for (let i = 1; i < numCases; i++) {
+        const xPercent = (i / numCases) * 100;
+        const yStart = xPercent; // Start from diagonal intersection
+        
+        const vertLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        vertLine.setAttribute("x1", `${xPercent}%`);
+        vertLine.setAttribute("y1", `${yStart}%`);
+        vertLine.setAttribute("x2", `${xPercent}%`);
+        vertLine.setAttribute("y2", "100%");
+        vertLine.setAttribute("stroke", "black");
+        vertLine.setAttribute("stroke-width", "1.5");
+        svg.appendChild(vertLine);
+      }
+    }
+    
+    return svg;
+  }
+
+  /**
+   * Create inline SVG for case body with vertical separators
+   */
+  createCaseBodySVG(numCases, hasDefault) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    
+    const totalCases = hasDefault ? numCases + 1 : numCases;
+    const effectiveCases = hasDefault ? numCases : numCases - 1;
+    
+    // Create vertical separator lines
+    for (let i = 1; i <= effectiveCases; i++) {
+      const xPercent = (i / totalCases) * 100;
+      
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", `${xPercent}%`);
+      line.setAttribute("y1", "0%");
+      line.setAttribute("x2", `${xPercent}%`);
+      line.setAttribute("y2", "100%");
+      line.setAttribute("stroke", "black");
+      line.setAttribute("stroke-width", "1.5");
+      svg.appendChild(line);
+    }
+    
+    return svg;
   }
 
   displaySourcecode(buttonId) {}
