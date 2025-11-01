@@ -15,8 +15,8 @@ export class Presenter {
 
     if (window.location.hash) {
       const json = deserializeState(window.location.hash.slice(1));
-      if (json?.model) {
-        this.readJSON(json.model);
+      if (json) {
+        this.readJSON(json);
       }
     }
   }
@@ -35,6 +35,22 @@ export class Presenter {
 
   getModelTree() {
     return this.model.getTree();
+  }
+
+  getSettings() {
+    return this.model.getSettings();
+  }
+
+  /**
+   * Update model settings partially and propagate changes
+   * Values will be shallow-merged; invalid values are ignored by caller-side validation
+   */
+  updateSettings(partial) {
+    const current = this.model.getSettings() || {};
+    const next = { ...current, ...partial };
+    this.model.setSettings(next);
+    this.updateBrowserStore();
+    this.renderAllViews();
   }
 
   getElementByUid(uid) {
@@ -72,6 +88,11 @@ export class Presenter {
       // update the model as stringified JSON data
       localStorage.tree = JSON.stringify(this.model.getTree());
       localStorage.displaySourcecode = this.displaySourcecode;
+      try {
+        localStorage.settings = JSON.stringify(this.model.getSettings());
+      } catch (e) {
+        // ignore storage errors
+      }
     }
   }
 
@@ -85,7 +106,7 @@ export class Presenter {
 
   renderAllViews() {
     for (const view of this.views) {
-      view.render(this.model.getTree());
+      view.render(this.model);
     }
   }
 
@@ -380,8 +401,8 @@ export class Presenter {
         this.model.getTree(),
         this.model.switchDefaultCase,
         false,
-        ""
-      )
+        "",
+      ),
     );
     this.checkUndo();
     this.updateBrowserStore();
@@ -401,8 +422,8 @@ export class Presenter {
         this.model.getTree(),
         this.model.insertNewCase,
         false,
-        ""
-      )
+        "",
+      ),
     );
     this.checkUndo();
     this.updateBrowserStore();
@@ -493,19 +514,19 @@ export class Presenter {
     }
     content.appendChild(
       document.createTextNode(
-        "Dieses Element und alle darin erstellten Blöcke löschen?"
-      )
+        "Dieses Element und alle darin erstellten Blöcke löschen?",
+      ),
     );
     const doButton = document.createElement("div");
     doButton.classList.add("modal-buttons", "acceptIcon", "hand");
     doButton.addEventListener("click", () =>
-      this.removeNodeFromTree(uid, true)
+      this.removeNodeFromTree(uid, true),
     );
     footer.appendChild(doButton);
     const cancelButton = document.createElement("div");
     cancelButton.classList.add("modal-buttons", "deleteIcon", "hand");
     cancelButton.addEventListener("click", () =>
-      document.getElementById("IEModal").classList.remove("active")
+      document.getElementById("IEModal").classList.remove("active"),
     );
     footer.appendChild(cancelButton);
 
@@ -520,8 +541,8 @@ export class Presenter {
         this.model.getTree(),
         this.model.removeNode,
         false,
-        ""
-      )
+        "",
+      ),
     );
     this.checkUndo();
     this.updateBrowserStore();
@@ -587,7 +608,7 @@ export class Presenter {
     this.insertMode = true;
     this.nextInsertElement = this.model.getElementInTree(
       uid,
-      this.model.getTree()
+      this.model.getTree(),
     );
     this.nextInsertElement.followElement.followElement = null;
     // rerender
@@ -603,8 +624,8 @@ export class Presenter {
         this.model.getTree(),
         this.model.editElement,
         false,
-        textType + textValue
-      )
+        textType + textValue,
+      ),
     );
     this.checkUndo();
     this.updateBrowserStore();
@@ -627,8 +648,8 @@ export class Presenter {
           this.model.getTree(),
           this.model.removeNode,
           false,
-          ""
-        )
+          "",
+        ),
       );
     }
     // insert the new node, on moving, its the removed
@@ -639,8 +660,8 @@ export class Presenter {
         this.model.getTree(),
         this.model.insertElement,
         false,
-        ""
-      )
+        "",
+      ),
     );
     // reset the buttons if moving occured
     if (moveState) {
@@ -749,7 +770,8 @@ export class Presenter {
 
   readJSON(json) {
     this.updateUndo();
-    this.model.setTree(json);
+    this.model.setTree(json.model);
+    this.model.setSettings(json.settings);
     this.checkUndo();
     this.renderAllViews();
     this.updateBrowserStore();
@@ -758,13 +780,13 @@ export class Presenter {
   updateUndo() {
     this.undoList.push(this.getStringifiedTree());
     for (const item of document.getElementsByClassName(
-      "UndoIconButtonOverlay"
+      "UndoIconButtonOverlay",
     )) {
       item.classList.remove("disableIcon");
     }
     this.redoList = [];
     for (const item of document.getElementsByClassName(
-      "RedoIconButtonOverlay"
+      "RedoIconButtonOverlay",
     )) {
       item.classList.add("disableIcon");
     }
@@ -777,13 +799,13 @@ export class Presenter {
       this.undoList.pop();
       if (this.undoList === 0) {
         for (const item of document.getElementsByClassName(
-          "UndoIconButtonOverlay"
+          "UndoIconButtonOverlay",
         )) {
           item.classList.add("disableIcon");
         }
       }
       for (const item of document.getElementsByClassName(
-        "RedoIconButtonOverlay"
+        "RedoIconButtonOverlay",
       )) {
         item.classList.remove("disableIcon");
       }
@@ -797,7 +819,7 @@ export class Presenter {
       this.undoList.pop();
       if (this.undoList === 0) {
         for (const item of document.getElementsByClassName(
-          "UndoIconButtonOverlay"
+          "UndoIconButtonOverlay",
         )) {
           item.classList.add("disableIcon");
         }
@@ -812,13 +834,13 @@ export class Presenter {
       this.redoList.shift();
       if (this.redoList.length === 0) {
         for (const item of document.getElementsByClassName(
-          "RedoIconButtonOverlay"
+          "RedoIconButtonOverlay",
         )) {
           item.classList.add("disableIcon");
         }
       }
       for (const item of document.getElementsByClassName(
-        "UndoIconButtonOverlay"
+        "UndoIconButtonOverlay",
       )) {
         item.classList.remove("disableIcon");
       }

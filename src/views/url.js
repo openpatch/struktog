@@ -6,8 +6,12 @@ export class UrlView {
   }
 
   render(model) {
-    const node = document.getElementById("structogram");
-    const pako = serializeState({ model, height: node.clientHeight, width: node.clientWidth });
+    const pako = serializeState({
+      origin: "https://struktog.openpatch.org",
+      version: 1,
+      model: model.getTree(),
+      settings: model.getSettings(),
+    });
     window.location.hash = pako;
   }
 

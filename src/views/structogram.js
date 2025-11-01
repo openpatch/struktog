@@ -6,7 +6,13 @@ export class Structogram {
   constructor(presenter, domRoot) {
     this.presenter = presenter;
     this.domRoot = domRoot;
-    this.fontSize = 1;
+    // defaults and bounds for settings
+    this.DEFAULT_FONT_SIZE = 16; // px
+    this.MIN_FONT_SIZE = 10;
+    this.MAX_FONT_SIZE = 36;
+    this.DEFAULT_WIDTH = 900; // px
+    this.MIN_WIDTH = 400;
+    this.MAX_WIDTH = 1800;
     this.buttonList = [
       "InputNode",
       "OutputNode",
@@ -26,9 +32,9 @@ export class Structogram {
   preRender() {
     const divInsert = document.createElement("div");
     divInsert.classList.add("columnEditorFull");
-    const divHeader = document.createElement("div");
+    let divHeader = document.createElement("div");
     // divHeader.classList.add('elementButtonColumns');
-    const spanHeader = document.createElement("strong");
+    let spanHeader = document.createElement("strong");
     spanHeader.classList.add("margin-small");
     spanHeader.appendChild(document.createTextNode("Element wählen:"));
     divHeader.appendChild(spanHeader);
@@ -43,30 +49,33 @@ export class Structogram {
     }
     divInsert.appendChild(divButtons);
 
+    const divSettings = document.createElement("div");
+    divSettings.classList.add("columnEditorFull");
+    divHeader = document.createElement("div");
+    // divHeader.classList.add('elementButtonColumns');
+    spanHeader = document.createElement("strong");
+    spanHeader.classList.add("margin-small");
+    spanHeader.appendChild(document.createTextNode("Einstellungen:"));
+    divHeader.appendChild(spanHeader);
+    divSettings.appendChild(divHeader);
+
+    // add ui for changing the fontSize and the width of the structogram
+    const divFontSizeSetting = document.createElement("div");
+    divFontSizeSetting.id = "fontSizeSetting";
+    divSettings.appendChild(divFontSizeSetting);
+
+    const divWidthSetting = document.createElement("div");
+    divWidthSetting.id = "widthSetting";
+    divSettings.appendChild(divWidthSetting);
+
+  // Initialize settings defaults if missing, and build controls
+  this.initSettingsUI(divFontSizeSetting, divWidthSetting);
+
     const divEditorHeadline = document.createElement("div");
     divEditorHeadline.classList.add("columnEditorFull", "headerContainer");
     const editorHeadline = document.createElement("strong");
     editorHeadline.classList.add("margin-small", "floatBottom");
     editorHeadline.appendChild(document.createTextNode("Editor:"));
-    // Create plus and minus buttons for font size adjustment
-    const fontSizeControls = document.createElement("span");
-    fontSizeControls.style.marginLeft = "1em";
-    // Minus button
-    const minusBtn = document.createElement("button");
-    minusBtn.textContent = "-";
-    minusBtn.classList.add("fontSizeBtn", "hand");
-    minusBtn.style.marginRight = "0.3em";
-    minusBtn.title = "Decrease font size";
-    minusBtn.addEventListener("click", () => this.decreaseFontSize());
-    fontSizeControls.appendChild(minusBtn);
-    // Plus button
-    const plusBtn = document.createElement("button");
-    plusBtn.textContent = "+";
-    plusBtn.classList.add("fontSizeBtn", "hand");
-    plusBtn.title = "Increase font size";
-    plusBtn.addEventListener("click", () => this.increaseFontSize());
-    fontSizeControls.appendChild(plusBtn);
-    editorHeadline.appendChild(fontSizeControls);
     divEditorHeadline.appendChild(editorHeadline);
 
     const optionsContainer1 = document.createElement("div");
@@ -98,6 +107,7 @@ export class Structogram {
     divEditorContent.appendChild(divEditorContentSplitBottom);
 
     this.domRoot.appendChild(divInsert);
+    this.domRoot.appendChild(divSettings);
     this.domRoot.appendChild(divEditorHeadline);
     this.domRoot.appendChild(divEditorContent);
 
@@ -123,6 +133,140 @@ export class Structogram {
     codeAndOptions.appendChild(sourcecode);
 
     this.domRoot = document.getElementById("structogram");
+  }
+
+  // Build settings controls for font size and width
+  initSettingsUI(divFontSizeSetting, divWidthSetting) {
+    const settings = this.presenter.getSettings() || {};
+    const fontSize = this.clamp(
+      settings.fontSize ?? this.DEFAULT_FONT_SIZE,
+      this.MIN_FONT_SIZE,
+      this.MAX_FONT_SIZE,
+    );
+    const width = this.clamp(
+      settings.width ?? this.DEFAULT_WIDTH,
+      this.MIN_WIDTH,
+      this.MAX_WIDTH,
+    );
+    const widthFull = Boolean(settings.widthFull ?? false);
+    // Ensure model has defaults stored
+    if (
+      settings.fontSize !== fontSize ||
+      settings.width !== width ||
+      settings.widthFull !== widthFull ||
+      Object.keys(settings).length === 0
+    ) {
+      this.presenter.updateSettings({ fontSize, width, widthFull });
+    }
+
+    // Settings row wrapper (single row)
+    const row = document.createElement("div");
+    row.style.display = "flex";
+    row.style.flexWrap = "wrap";
+    row.style.alignItems = "center";
+    row.style.gap = "0.5em 1em";
+
+    // Font size control
+    const fsContainer = document.createElement("div");
+    fsContainer.classList.add("options-container");
+    fsContainer.style.justifyContent = "flex-start";
+    const fsLabel = document.createElement("label");
+    fsLabel.setAttribute("for", "fontSizeInput");
+    fsLabel.style.marginRight = "0.5em";
+    fsLabel.appendChild(document.createTextNode("Schriftgröße (px):"));
+    const fsInput = document.createElement("input");
+    fsInput.id = "fontSizeInput";
+    fsInput.type = "number";
+    fsInput.min = String(this.MIN_FONT_SIZE);
+    fsInput.max = String(this.MAX_FONT_SIZE);
+    fsInput.step = "1";
+    fsInput.value = String(fontSize);
+    fsInput.classList.add("options-element");
+    fsInput.addEventListener("change", () => this.onFontSizeChange(fsInput));
+    fsInput.addEventListener("input", () => this.onFontSizeChange(fsInput));
+    fsContainer.appendChild(fsLabel);
+    fsContainer.appendChild(fsInput);
+    fsContainer.appendChild(fsLabel);
+    fsContainer.appendChild(fsInput);
+    row.appendChild(fsContainer);
+
+    // Width control
+    const wContainer = document.createElement("div");
+    wContainer.classList.add("options-container");
+    wContainer.style.justifyContent = "flex-start";
+    const wLabel = document.createElement("label");
+    wLabel.setAttribute("for", "widthInput");
+    wLabel.style.marginRight = "0.5em";
+    wLabel.appendChild(document.createTextNode("Breite (px):"));
+    const wInput = document.createElement("input");
+    wInput.id = "widthInput";
+    wInput.type = "number";
+    wInput.min = String(this.MIN_WIDTH);
+    wInput.max = String(this.MAX_WIDTH);
+    wInput.step = "10";
+    wInput.value = String(width);
+    wInput.classList.add("options-element");
+    wInput.addEventListener("change", () => this.onWidthChange(wInput));
+    wInput.addEventListener("input", () => this.onWidthChange(wInput));
+    // Full width toggle
+    const fullContainer = document.createElement("div");
+    fullContainer.classList.add("options-container");
+    fullContainer.style.justifyContent = "flex-start";
+    const fullLabel = document.createElement("label");
+    fullLabel.setAttribute("for", "widthFullInput");
+    fullLabel.style.margin = "0 0.5em 0 1em";
+    fullLabel.appendChild(document.createTextNode("volle Breite"));
+    const fullInput = document.createElement("input");
+    fullInput.id = "widthFullInput";
+    fullInput.type = "checkbox";
+    fullInput.checked = widthFull;
+    fullInput.addEventListener("change", () => {
+      const checked = Boolean(fullInput.checked);
+      this.presenter.updateSettings({ widthFull: checked });
+      // Enable/disable width input accordingly
+      wInput.disabled = checked;
+    });
+
+    // Initial disabled state reflecting setting
+    wInput.disabled = widthFull;
+
+    wContainer.appendChild(wLabel);
+    wContainer.appendChild(wInput);
+    fullContainer.appendChild(fullInput);
+    fullContainer.appendChild(fullLabel);
+
+    row.appendChild(wContainer);
+    row.appendChild(fullContainer);
+
+    // Append single row to one of the provided containers to keep structure minimal invasive
+    divFontSizeSetting.appendChild(row);
+  }
+
+  clamp(val, min, max) {
+    const n = Number(val);
+    if (Number.isNaN(n)) return min;
+    return Math.min(max, Math.max(min, Math.round(n)));
+  }
+
+  onFontSizeChange(inputEl) {
+    const clamped = this.clamp(inputEl.value, this.MIN_FONT_SIZE, this.MAX_FONT_SIZE);
+    if (String(clamped) !== String(inputEl.value)) {
+      inputEl.value = String(clamped);
+    }
+    // Only update if value is valid number within bounds
+    if (!Number.isNaN(Number(inputEl.value))) {
+      this.presenter.updateSettings({ fontSize: clamped });
+    }
+  }
+
+  onWidthChange(inputEl) {
+    const clamped = this.clamp(inputEl.value, this.MIN_WIDTH, this.MAX_WIDTH);
+    if (String(clamped) !== String(inputEl.value)) {
+      inputEl.value = String(clamped);
+    }
+    if (!Number.isNaN(Number(inputEl.value))) {
+      this.presenter.updateSettings({ width: clamped });
+    }
   }
 
   createStrukOptions(domNode) {
@@ -195,7 +339,40 @@ export class Structogram {
     return div;
   }
 
-  render(tree) {
+  render(model) {
+    const tree = model.getTree();
+    // Apply settings to the structogram container
+    const settings = model.getSettings ? model.getSettings() : {};
+    const fsVal = this.clamp(
+        (settings && settings.fontSize) ?? this.DEFAULT_FONT_SIZE,
+      this.MIN_FONT_SIZE,
+      this.MAX_FONT_SIZE,
+    );
+    const wVal = this.clamp(
+      (settings && settings.width) ?? this.DEFAULT_WIDTH,
+      this.MIN_WIDTH,
+      this.MAX_WIDTH,
+    );
+    const widthFull = Boolean(settings && settings.widthFull);
+    if (this.domRoot) {
+      this.domRoot.style.fontSize = fsVal + "px";
+      // Apply width preference
+      if (widthFull) {
+        this.domRoot.style.maxWidth = "";
+        this.domRoot.style.width = "100%";
+      } else {
+        this.domRoot.style.width = "";
+        this.domRoot.style.maxWidth = wVal + "px";
+      }
+    }
+    // Keep UI inputs in sync if they exist
+    const fsInput = document.getElementById("fontSizeInput");
+    if (fsInput && fsInput.value !== String(fsVal)) fsInput.value = String(fsVal);
+    const wInput = document.getElementById("widthInput");
+    if (wInput && wInput.value !== String(wVal)) wInput.value = String(wVal);
+    const fullInput = document.getElementById("widthFullInput");
+    if (fullInput && fullInput.checked !== widthFull) fullInput.checked = widthFull;
+    if (wInput) wInput.disabled = !!(fullInput && fullInput.checked);
     // remove content
     while (this.domRoot.hasChildNodes()) {
       this.domRoot.removeChild(this.domRoot.lastChild);
@@ -748,6 +925,10 @@ export class Structogram {
             "fixedDoubleHeight",
           );
 
+          // Add a wrapper for triangular padding
+          const divHeadContent = document.createElement("div");
+          divHeadContent.classList.add("branchSplitContent");
+
           const divHeadTop = document.createElement("div");
           divHeadTop.classList.add("fixedHeight", "container");
 
@@ -761,7 +942,11 @@ export class Structogram {
           divHeadTop.appendChild(optionDiv);
 
           const divHeadBottom = document.createElement("div");
-          divHeadBottom.classList.add("fixedHeight", "container", "padding");
+          divHeadBottom.classList.add(
+            "branchSplitTrueFalse",
+            "fixedHeight",
+            "padding",
+          );
 
           const divHeaderTrue = document.createElement("div");
           divHeaderTrue.classList.add(
@@ -782,7 +967,9 @@ export class Structogram {
           divHeadBottom.appendChild(divHeaderTrue);
           divHeadBottom.appendChild(divHeaderFalse);
 
-          divHead.appendChild(divHeadTop);
+          // Move content into the wrapper
+          divHeadContent.appendChild(divHeadTop);
+          divHead.appendChild(divHeadContent);
           divHead.appendChild(divHeadBottom);
           divBranchNode.appendChild(divHead);
 
@@ -1158,31 +1345,6 @@ export class Structogram {
   }
 
   /**
-   * Increase the size of the working area
-   */
-  increaseFontSize() {
-    this.fontSize = this.fontSize + 0.1;
-
-    const elem = document.getElementsByClassName("columnEditorStructogram")[0];
-    elem.style.fontSize = this.fontSize + "em";
-  }
-
-  /**
-   * Decrease the size of the working area
-   */
-  decreaseFontSize() {
-    const newFontSize = this.fontSize - 0.1;
-    if (newFontSize < 0.05) {
-      return;
-    }
-
-    this.fontSize = newFontSize;
-
-    const elem = document.getElementsByClassName("columnEditorStructogram")[0];
-    elem.style.fontSize = this.fontSize + "em";
-  }
-
-  /**
    * Create a HTML wrapper around a div element, to fully work with the flexbox grid
    *
    * @param    div          the HTML structure to be wrapped
@@ -1394,12 +1556,14 @@ export class Structogram {
     }
 
     // inputfield with eventlisteners
-    const editText = document.createElement("input");
-    editText.type = "text";
+    const editText = document.createElement("textarea");
     editText.value = content;
+    editText.style.resize = "vertical";
+    editText.style.width = "100%";
+    editText.style.height = "80px";
     // TODO: move to presenter
     editText.addEventListener("keyup", (event) => {
-      if (event.keyCode === 13) {
+      if (event.keyCode === 13 && (event.ctrlKey || event.metaKey)) {
         this.presenter.editElement(uid, editText.value);
       }
       if (event.keyCode === 27) {
@@ -1453,6 +1617,7 @@ export class Structogram {
 
     // insert text
     const textSpan = document.createElement("span");
+    textSpan.style.whiteSpace = "pre-wrap";
     if (type === "CaseNode") {
       textSpan.style.marginLeft =
         "calc(" + (nrCases / (nrCases + 1)) * 100 + "% - 2em)";
