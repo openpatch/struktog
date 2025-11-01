@@ -784,8 +784,7 @@ export class Structogram {
             "text-left",
             "bottomHeader",
           );
-          divHeaderTrue.style.flex = "0 0 50%"; // Force exactly 50% width for perfect alignment
-          divHeaderTrue.style.width = "50%";
+          divHeaderTrue.style.flex = "1 1 50%"; // Equal flex with 50% basis for alignment
           divHeaderTrue.appendChild(document.createTextNode("Wahr"));
 
           const divHeaderFalse = document.createElement("div");
@@ -794,8 +793,7 @@ export class Structogram {
             "text-right",
             "bottomHeader",
           );
-          divHeaderFalse.style.flex = "0 0 50%"; // Force exactly 50% width for perfect alignment
-          divHeaderFalse.style.width = "50%";
+          divHeaderFalse.style.flex = "1 1 50%"; // Equal flex with 50% basis for alignment
           divHeaderFalse.appendChild(document.createTextNode("Falsch"));
 
           divHeadBottom.appendChild(divHeaderTrue);
@@ -824,8 +822,7 @@ export class Structogram {
           divTrue.classList.add("columnAuto", "vcontainer", "ov-hidden");
           divTrue.style.position = "relative";
           divTrue.style.zIndex = "1";
-          divTrue.style.flex = "0 0 50%"; // Force exactly 50% width for perfect alignment
-          divTrue.style.width = "50%";
+          divTrue.style.flex = "1 1 50%"; // Equal flex with 50% basis for alignment
           for (const elem of this.renderElement(
             subTree.trueChild,
             false,
@@ -839,8 +836,7 @@ export class Structogram {
           divFalse.classList.add("columnAuto", "vcontainer", "ov-hidden");
           divFalse.style.position = "relative";
           divFalse.style.zIndex = "1";
-          divFalse.style.flex = "0 0 50%"; // Force exactly 50% width for perfect alignment
-          divFalse.style.width = "50%";
+          divFalse.style.flex = "1 1 50%"; // Equal flex with 50% basis for alignment
           for (const elem of this.renderElement(
             subTree.falseChild,
             false,

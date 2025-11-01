@@ -196,6 +196,8 @@ $main-background-color: rgba(128,212,255, 0.5);
   
   .container {
     flex-wrap: nowrap; // Prevent wrapping in structogram containers
+    max-width: none !important; // Override Spectre CSS max-width constraint
+    min-width: fit-content; // Allow expansion based on content
   }
 }
 
