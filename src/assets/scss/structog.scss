@@ -13,16 +13,17 @@ header {
 body {
     font: 100% $font-stack;
     width: 100vw;
-    max-width: 1200px;
+    max-width: none; // Allow structogram to expand beyond typical max width
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
     background-color: rgb(250, 250, 250);
-    overflow-x: hidden;
+    overflow-x: auto; // Enable horizontal scrolling for wide structograms
 
     main {
         flex: 1;
+        min-width: fit-content; // Allow main to expand with structogram content
     }
 }
 

@@ -192,6 +192,11 @@ $main-background-color: rgba(128,212,255, 0.5);
 .columnEditorStructogram {
   overflow-x: auto;
   overflow-y: visible;
+  min-width: 100%; // Ensure it takes at least full viewport width
+  
+  .container {
+    flex-wrap: nowrap; // Prevent wrapping in structogram containers
+  }
 }
 
 // Ensure text doesn't get cut off
