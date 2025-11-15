@@ -149,14 +149,16 @@ export class Structogram {
       this.MAX_WIDTH,
     );
     const widthFull = Boolean(settings.widthFull ?? false);
+    const requireCtrlEnter = Boolean((settings && settings.requireCtrlEnter) ?? true);
     // Ensure model has defaults stored
     if (
       settings.fontSize !== fontSize ||
       settings.width !== width ||
       settings.widthFull !== widthFull ||
+      settings.requireCtrlEnter !== requireCtrlEnter ||
       Object.keys(settings).length === 0
     ) {
-      this.presenter.updateSettings({ fontSize, width, widthFull });
+      this.presenter.updateSettings({ fontSize, width, widthFull, requireCtrlEnter });
     }
 
     // Settings row wrapper (single row)
@@ -237,6 +239,28 @@ export class Structogram {
 
     row.appendChild(wContainer);
     row.appendChild(fullContainer);
+
+    // Enter key setting
+    const enterContainer = document.createElement("div");
+    enterContainer.classList.add("options-container");
+    enterContainer.style.justifyContent = "flex-start";
+    enterContainer.style.marginLeft = "1em";
+    const enterLabel = document.createElement("label");
+    enterLabel.setAttribute("for", "requireCtrlEnterInput");
+    enterLabel.style.margin = "0 0.5em 0 0";
+    enterLabel.appendChild(document.createTextNode("Ctrl+Enter erforderlich"));
+    const enterInput = document.createElement("input");
+    enterInput.id = "requireCtrlEnterInput";
+    enterInput.type = "checkbox";
+    enterInput.checked = requireCtrlEnter;
+    enterInput.addEventListener("change", () => {
+      const checked = Boolean(enterInput.checked);
+      this.presenter.updateSettings({ requireCtrlEnter: checked });
+    });
+
+    enterContainer.appendChild(enterInput);
+    enterContainer.appendChild(enterLabel);
+    row.appendChild(enterContainer);
 
     // Append single row to one of the provided containers to keep structure minimal invasive
     divFontSizeSetting.appendChild(row);
@@ -373,6 +397,9 @@ export class Structogram {
     const fullInput = document.getElementById("widthFullInput");
     if (fullInput && fullInput.checked !== widthFull) fullInput.checked = widthFull;
     if (wInput) wInput.disabled = !!(fullInput && fullInput.checked);
+    const enterInput = document.getElementById("requireCtrlEnterInput");
+    const requireCtrlEnter = Boolean((settings && settings.requireCtrlEnter) ?? true);
+    if (enterInput && enterInput.checked !== requireCtrlEnter) enterInput.checked = requireCtrlEnter;
     // remove content
     while (this.domRoot.hasChildNodes()) {
       this.domRoot.removeChild(this.domRoot.lastChild);
@@ -1563,8 +1590,20 @@ export class Structogram {
     editText.style.height = "80px";
     // TODO: move to presenter
     editText.addEventListener("keyup", (event) => {
-      if (event.keyCode === 13 && (event.ctrlKey || event.metaKey)) {
-        this.presenter.editElement(uid, editText.value);
+      const settings = this.presenter.getSettings() || {};
+      const requireCtrlEnter = Boolean((settings && settings.requireCtrlEnter) ?? true);
+      
+      if (event.keyCode === 13) {
+        // Check if Ctrl+Enter is required
+        if (requireCtrlEnter) {
+          // Only proceed if Ctrl or Cmd key is also pressed
+          if (event.ctrlKey || event.metaKey) {
+            this.presenter.editElement(uid, editText.value);
+          }
+        } else {
+          // Enter alone is sufficient
+          this.presenter.editElement(uid, editText.value);
+        }
       }
       if (event.keyCode === 27) {
         this.presenter.renderAllViews();
