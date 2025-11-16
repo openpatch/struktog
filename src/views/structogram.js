@@ -179,13 +179,11 @@ export class Structogram {
     const fsInput = document.createElement("input");
     fsInput.id = "fontSizeInput";
     fsInput.type = "number";
-    fsInput.min = String(this.MIN_FONT_SIZE);
-    fsInput.max = String(this.MAX_FONT_SIZE);
     fsInput.step = "1";
     fsInput.value = String(fontSize);
     fsInput.classList.add("options-element");
     fsInput.addEventListener("change", () => this.onFontSizeChange(fsInput));
-    fsInput.addEventListener("input", () => this.onFontSizeChange(fsInput));
+    fsInput.addEventListener("blur", () => this.onFontSizeChange(fsInput));
     fsContainer.appendChild(fsLabel);
     fsContainer.appendChild(fsInput);
     fsContainer.appendChild(fsLabel);
@@ -203,13 +201,11 @@ export class Structogram {
     const wInput = document.createElement("input");
     wInput.id = "widthInput";
     wInput.type = "number";
-    wInput.min = String(this.MIN_WIDTH);
-    wInput.max = String(this.MAX_WIDTH);
     wInput.step = "10";
     wInput.value = String(width);
     wInput.classList.add("options-element");
     wInput.addEventListener("change", () => this.onWidthChange(wInput));
-    wInput.addEventListener("input", () => this.onWidthChange(wInput));
+    wInput.addEventListener("blur", () => this.onWidthChange(wInput));
     // Full width toggle
     const fullContainer = document.createElement("div");
     fullContainer.classList.add("options-container");
